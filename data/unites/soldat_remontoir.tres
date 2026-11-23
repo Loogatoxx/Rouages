@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UniteDef" format=3]
+
+[ext_resource type="Script" path="res://game/swarm/unite_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"soldat_remontoir"
+camp = 0
+pv = 14.0
+degats = 3.0
+cadence = 1.2
+portee = 0.7
+vitesse = 2.4
+rayon = 0.25

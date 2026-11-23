@@ -16,6 +16,8 @@ d'engrenages ; les ateliers produisent des nuées de jouets à remontoir contre 
 - Domaine : `game/`, `data/`, `tests/`. **GDScript typé** (`var x: int`, `-> void`), Godot 4.7.
 - **La logique ne connaît pas les visuels** : les scripts de logique (`board/`, `swarm/`…) n'utilisent ni nœuds 3D ni meshes.
   Les visuels lisent l'état et l'affichent. Les tests ne testent que la logique.
+- Chaque classe et chaque fonction publique a un commentaire de doc `##` en français (une ligne suffit) :
+  Carlos apprend en lisant le code.
 - Données de jeu = **Resources `.tres`** dans `data/` (jamais de chiffres d'équilibrage codés en dur).
 - Communication entre systèmes = signaux de l'autoload `Events` (`game/core/events.gd`). Tu n'en ajoutes pas : demande à Claude.
 - Entrées = actions de l'InputMap (`poser_tuile`, `tourner_tuile`, `annuler`, `basculer_camera`, `camera_*`, `accelerer`),

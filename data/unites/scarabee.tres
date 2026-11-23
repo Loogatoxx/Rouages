@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="UniteDef" format=3]
+
+[ext_resource type="Script" path="res://game/swarm/unite_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"scarabee"
+camp = 1
+pv = 10.0
+degats = 2.0
+cadence = 1.0
+portee = 0.6
+vitesse = 2.0
+rayon = 0.25

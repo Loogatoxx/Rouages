@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/swarm/banc_nuees.gd" id="1"]
+[ext_resource type="Script" path="res://game/swarm/nuee_visuel.gd" id="2"]
+
+[node name="BancNuees" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Nuees" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="Camera" type="Camera3D" parent="."]
+position = Vector3(0, 30, 0)
+rotation = Vector3(-1.5707963, 0, 0)
+projection = 1
+size = 28.0
+current = true
+
+[node name="Soleil" type="DirectionalLight3D" parent="."]
+rotation = Vector3(-1.05, -0.55, 0)
+light_color = Color(1, 0.94, 0.82, 1)
+light_energy = 1.35
+
+[node name="Mesures" type="Label" parent="."]
+offset_left = 14.0
+offset_top = 10.0
+theme_override_constants/outline_size = 4
+text = "Mesure en cours…"

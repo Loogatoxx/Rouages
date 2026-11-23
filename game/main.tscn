@@ -1,20 +1,13 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://game/main.gd" id="1_main"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ciel"]
-sky_top_color = Color(0.98, 0.9, 0.76, 1)
-sky_horizon_color = Color(1, 0.86, 0.66, 1)
-ground_horizon_color = Color(1, 0.86, 0.66, 1)
-
-[sub_resource type="Sky" id="sky"]
-sky_material = SubResource("ciel")
-
-[sub_resource type="Environment" id="env"]
-background_mode = 2
-sky = SubResource("sky")
-ambient_light_source = 3
-tonemap_mode = 2
+[ext_resource type="Script" path="res://game/board/plateau_noeud.gd" id="plateau_noeud"]
+[ext_resource type="Script" path="res://game/board/plateau_visuel.gd" id="plateau_visuel"]
+[ext_resource type="Script" path="res://game/board/pose_controleur.gd" id="pose_controleur"]
+[ext_resource type="Script" path="res://game/camera/camera_plateau.gd" id="camera_plateau"]
+[ext_resource type="PackedScene" path="res://game/ui/palette_debug.tscn" id="palette"]
+[ext_resource type="PackedScene" path="res://assets/ambiance/ambiance.tscn" id="ambiance"]
 
 [sub_resource type="BoxMesh" id="table"]
 size = Vector3(24, 0.4, 24)
@@ -22,20 +15,25 @@ size = Vector3(24, 0.4, 24)
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 
-[node name="Environnement" type="WorldEnvironment" parent="."]
-environment = SubResource("env")
-
-[node name="Soleil" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 10, 0)
-light_color = Color(1, 0.88, 0.7, 1)
-light_energy = 1.3
-shadow_enabled = true
+[node name="Ambiance" parent="." instance=ExtResource("ambiance")]
 
 [node name="Camera" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.342, 0.94, 0, -0.94, 0.342, 0, 22, 8)
 projection = 1
 size = 26.0
+script = ExtResource("camera_plateau")
 
 [node name="TableGreybox" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
 mesh = SubResource("table")
+
+[node name="PlateauNoeud" type="Node3D" parent="."]
+script = ExtResource("plateau_noeud")
+
+[node name="PlateauVisuel" type="Node3D" parent="PlateauNoeud"]
+script = ExtResource("plateau_visuel")
+
+[node name="PoseControleur" type="Node3D" parent="PlateauNoeud"]
+script = ExtResource("pose_controleur")
+
+[node name="PaletteDebug" parent="." instance=ExtResource("palette")]

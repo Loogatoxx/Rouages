@@ -1,7 +1,7 @@
 extends Node3D
-## Scène principale. Pour l'instant : décor de test (sol, lumière chaude, caméra de dessus).
-## Les systèmes (plateau, nuées, interface) y seront ajoutés étape par étape.
+## Réunit le décor, le plateau manipulable, sa caméra et la palette provisoire.
 
 
 func _ready() -> void:
+	$TableGreybox.material_override = $PlateauNoeud/PlateauVisuel.materiau("bois_plateau")
 	print("Rouages : scène principale chargée (phase %d)." % Run.phase)

@@ -1,0 +1,14 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/ui/palette_debug.gd" id="1"]
+
+[node name="PaletteDebug" type="HBoxContainer"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -54.0
+offset_bottom = -12.0
+grow_horizontal = 2
+alignment = 1
+script = ExtResource("1")

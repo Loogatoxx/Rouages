@@ -17,3 +17,27 @@
     `tests/run_tests.gd`, `tests/test_socle.gd`, `scripts/tests.sh`, `scripts/codex_bridge.sh` (adapté),
     `CLAUDE.md`, `AGENTS.md`, `docs/` (architecture, roadmap, backlog), `taches/README.md`, `assets/CREDITS_HYPER3D.md`, `art_refs/`.
 - **Objectif** : poser un socle léger, testable en headless, où chaque IA a son domaine de fichiers et lit le minimum.
+
+## 2026-11-23 — Étape 1 : plateau et énergie (T01)
+- **Prompt** : « c bon pour antigravity mais j ai pas trouver lui pour connecter a hyper 3d sinon suite ».
+- **Réponse** : socle commité (`d8b7ad9`) ; Hyper3D se connecte via l'addon Blender MCP (clé saisie par Carlos, utile à l'étape 7) ; fiche T01 écrite, produite par Codex (gpt-6.2-astra medium, ~22 000 tokens), relue par Claude.
+- **Modifications** : `game/board/piece_def.gd`, `plateau.gd`, `energie.gd` ; 6 pièces dans `data/tuiles/` ; `tests/test_plateau.gd`, `tests/test_energie.gd` (9 tests verts) ; AGENTS.md (commentaires de doc obligatoires) ; roadmap (étape 1 faite).
+- **Objectif** : poser le cœur du puzzle (ports d'engrenages qui tournent, propagation en largeur depuis l'horloge) en logique pure et testée, avant tout visuel.
+
+## 2026-11-23 — Étapes 2 et 2b : caméra, pose et DA greybox
+- **Prompt** : « c bon le mcp est connecter a blender, prochaine etape », puis « Je m'en occupe » (autorisations Blender dans Antigravity).
+- **Réponse** : fiches T02 (Codex) et T02b (Antigravity) lancées en parallèle. T02 produite (gpt-6.2-astra medium, ~41 000 tokens), relue par Claude, 11 tests verts. T02b bloquée : en mode bridge, Antigravity refuse les outils Blender faute d'approbation humaine ; l'autorisation automatique tentée par Claude a été refusée par le garde-fou (décision laissée à Carlos).
+- **Modifications** : `game/board/grille_monde.gd`, `plateau_noeud.gd`, `plateau_visuel.gd`, `pose_controleur.gd`, `game/camera/camera_plateau.gd`, `game/ui/palette_debug.*`, `game/main.*`, `tests/test_grille_monde.gd` ; `scripts/codex_bridge.sh` (le garde-fou ignore les changements déjà indexés) ; roadmap.
+- **Objectif** : rendre le puzzle visible et manipulable (fantôme vert/rouge, rotation, engrenages qui tournent quand ils sont alimentés, double vue caméra) avant d'ajouter les nuées.
+
+## 2026-11-23 — Étape 3 : nuées (T03) et livraison de T02b
+- **Prompt** : « c bon il est aussi connecter et permission faite aussi continue ».
+- **Réponse** : la relance de T02b par le bridge a échoué une 2e fois (autorisation Blender non mémorisée) → arrêt anti-boucle, T02b exécutée par Carlos dans Antigravity. T03 écrite par Claude, produite par Codex (gpt-6.2-astra high), relue : 20 tests verts, 300 contre 300 à 60 FPS en fenêtre, 3,2 ms par pas de simulation.
+- **Modifications** : `game/swarm/` (unite_def, champ_flux, swarm_sim, nuee_visuel, banc_nuees), `game/core/materiaux.gd`, `data/unites/*.tres`, tests nuées ; chemin raccordé à l'horloge dans `plateau_noeud.gd` ; `assets/` (9 matériaux, ambiance, kit greybox de 8 .glb, aperçu ; 0 crédit Hyper3D) ; `game/main.tscn` utilise désormais `assets/ambiance/ambiance.tscn`.
+- **Objectif** : valider tôt le système le plus risqué (la masse vivante façon We March As One) et poser la DA sans dépenser de crédits.
+
+## 2026-11-23 — Commit des étapes 1 à 3, lancement de l'étape 4
+- **Prompt** : « tout correct tu peu commit et probleme regler coter antigravity avec le mcp continue ».
+- **Réponse** : commit des étapes 1 à 3 ; fiche T04 (ateliers producteurs, vagues, PV de l'horloge, défaite/victoire) confiée à Codex ; ping du bridge Antigravity → Blender.
+- **Modifications** : voir l'entrée suivante une fois T04 relue.
+- **Objectif** : obtenir la première boucle jouable de bout en bout.

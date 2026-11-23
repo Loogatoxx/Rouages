@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3]
+
+[resource]
+resource_name = "pastel_rose"
+albedo_color = Color(0.94902, 0.709804, 0.768627, 1)
+roughness = 0.45

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PieceDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/piece_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"engrenage_droit"
+nom = "Engrenage droit"
+type = 1
+ports = 5
+transmet = true

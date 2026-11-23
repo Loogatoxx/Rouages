@@ -49,8 +49,10 @@ case "$CATALOGUE" in
 esac
 
 if [ "$MODE" = "ecrire" ] && [ "${CODEX_FORCE:-0}" != "1" ]; then
-  if [ -n "$(git -C "$ROOT" status --porcelain -- game data tests 2>/dev/null)" ]; then
-    erreur "game/, data/ ou tests/ contiennent des changements non commités : commite ou mets de côté d'abord (ou CODEX_FORCE=1)"
+  # Seuls les changements NON indexés comptent : ce que Claude a relu et validé est indexé (`git add`),
+  # ainsi le travail de Codex = `git diff` + fichiers non suivis, même sans commit intermédiaire.
+  if git -C "$ROOT" status --porcelain -- game data tests 2>/dev/null | grep -qvE '^[MADRC] '; then
+    erreur "game/, data/ ou tests/ contiennent des changements non relus : indexe-les (git add) ou commite d'abord (ou CODEX_FORCE=1)"
   fi
 fi
 
