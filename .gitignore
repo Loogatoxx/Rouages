@@ -1,0 +1,20 @@
+# Cache Godot (régénéré automatiquement)
+.godot/
+*.import.tmp
+
+# Builds et journaux locaux
+builds/
+.codex-log/
+
+# Secrets et binaires (règle globale de Carlos)
+.env
+.env.*
+local.properties
+*.jks
+*.keystore
+*.apk
+*.aab
+export_credentials.cfg
+
+# macOS
+.DS_Store

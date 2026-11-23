@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "agy-bridge": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "agy-bridge@0.5.0"
+      ],
+      "env": {
+        "AGY_PATH": "/Users/carlos/.local/bin/agy",
+        "AGY_SKIP_PERMISSIONS": "false",
+        "AGY_SANDBOX": "true",
+        "AGY_ON_FAILURE": "strict",
+        "AGY_DEFAULT_MODEL": "gemini-4-neon-xhigh",
+        "AGY_TIMEOUT_DELEGATE": "900",
+        "AGY_TIMEOUT_ANALYZE_FILES": "480",
+        "AGY_TIMEOUT_ADVERSARIAL_REVIEW": "480"
+      }
+    }
+  }
+}
