@@ -252,7 +252,9 @@ func _dimensionner_tirage() -> void:
 	if not $Draft.visible:
 		return
 	var largeur: float = get_viewport().get_visible_rect().size.x
-	var retrait: float = maxf(0, (largeur * 0.88 - (Run.offre.size() * 270 + 100)) / 2)
+	# Les cartes de coffre portent un médaillon et une étiquette de rareté : elles sont plus larges.
+	var par_carte: float = 345.0 if Run.offre_coffre else 300.0
+	var retrait: float = maxf(0, (largeur * 0.92 - (Run.offre.size() * par_carte + 110)) / 2)
 	$Draft.offset_left = retrait
 	$Draft.offset_right = -retrait
 	_ajuster_hauteur()
