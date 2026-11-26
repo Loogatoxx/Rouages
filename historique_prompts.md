@@ -105,3 +105,6 @@
   si refus, menus robustes aux langues (cartes, infobulle, boutique alignée, réserve dans son cadre, compteur d'or en icône).
   75 tests verts, vérifié par captures FR/EN/PT.
 - **Objectif** : repartir sur une base sans régression avant l'UI, la caméra et le gameplay.
+- **Suite (lot 2, même demande)** : charte et 12 icônes par Gemini (T11a, relues par Claude), pastille de quantité
+  sans pointe, boutique repliable (B), menu en jeu (aide, quitter), zoom et inclinaison de la caméra (trackpad Mac
+  compris), vraie pause entre les vagues (remontage instantané une fois par pause, mesuré au banc), tirages sans doublon.

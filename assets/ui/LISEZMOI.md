@@ -13,7 +13,8 @@ Valeurs exactes à renseigner dans Godot 4 (`NinePatchRect` → `patch_margin_*`
 | `panneau_bois.png` | 256 × 256 | **44** | **44** | **44** | **44** | Barre principale, fenêtres modales, cadres structurels (coins renforcés laiton + rainure interne) |
 | `plaque_laiton.png` | 256 × 256 | **36** | **36** | **36** | **36** | Compteurs HUD, boutons d'action clés (laiton brossé chanfreiné + 4 rivets d'angle) |
 | `papier.png` | 256 × 256 | **32** | **32** | **32** | **32** | Infobulles, fiches descriptives, cartes de récompense (papier crème + double filet encre) |
-| `etiquette.png` | 320 × 128 | **76** | **24** | **22** | **22** | Coûts en ressorts, badges de vague, raccourcis (carton découpé + œillet laiton perforé) |
+| `etiquette.png` | 320 × 128 | **76** | **24** | **22** | **22** | Badges de vague, raccourcis (carton découpé + œillet laiton perforé) |
+| `pastille.png` | 96 × 48 | **22** | **22** | **18** | **22** | Quantités (« ×2 ») et prix (« 15 ») — jeton ovale symétrique crème cerclé laiton, étirable horizontalement |
 | `ruban.png` | 384 × 128 | **88** | **88** | **26** | **26** | Titres de vague, bannières victoire / défaite (ruban plié bordeaux/terracotta à liseré or) |
 
 ### Conseils d'intégration Godot (`StyleBoxTexture` / `NinePatchRect`)
@@ -22,6 +23,7 @@ Valeurs exactes à renseigner dans Godot 4 (`NinePatchRect` → `patch_margin_*`
   - `plaque_laiton.png` : `left=24, right=24, top=18, bottom=20`
   - `papier.png` : `left=24, right=24, top=22, bottom=24`
   - `etiquette.png` : `left=76, right=20, top=16, bottom=20` *(le texte démarre à droite du filet séparateur de l'œillet)*
+  - `pastille.png` : `left=14, right=14, top=6, bottom=10` *(+4 px en bas compensant l'ombre portée ; texte Nunito Bold 18 `#3B2618` centré horizontalement et verticalement)*
   - `ruban.png` : `left=84, right=84, top=24, bottom=36` *(le texte reste centré sur le corps central surélevé)*
 - **Étirement de `etiquette.png` et `ruban.png`** : ces deux pièces sont conçues pour s'étirer **horizontalement** (les zones centrales entre `left` et `right` sont parfaitement uniformes). Pour des badges compacts en hauteur (< 80 px), garder une hauteur proche de 64–128 px ou appliquer `texture_margin` avec `axis_stretch_horizontal = STRETCH` et un `scale` uniforme si nécessaire pour garder l'œillet parfaitement circulaire.
 - **États de bouton (hover / pressed)** : utiliser `modulate_color` dans `StyleBoxTexture` (ex. normal `#FFFFFF`, survol `#FFF5DE`, pressé `#E2D1B3` + décalage `+2 px` vers le bas).

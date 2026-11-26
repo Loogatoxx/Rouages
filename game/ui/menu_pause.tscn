@@ -30,7 +30,7 @@ custom_minimum_size = Vector2(375, 0)
 unique_name_in_owner = true
 theme_type_variation = &"Titre"
 horizontal_alignment = 1
-text = "Pause"
+text = "Menu"
 
 [node name="Reprendre" type="Button" parent="Voile/Centre/Panneau/Colonne"]
 unique_name_in_owner = true
@@ -45,10 +45,28 @@ text = "Recommencer la run"
 unique_name_in_owner = true
 text = "Options"
 
-[node name="MenuTitre" type="LinkButton" parent="Voile/Centre/Panneau/Colonne"]
+[node name="Aide" type="Button" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+toggle_mode = true
+text = "Aide et commandes"
+
+[node name="TexteAide" type="Label" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+visible = false
+theme_type_variation = &"Description"
+autowrap_mode = 3
+
+[node name="Liens" type="HBoxContainer" parent="Voile/Centre/Panneau/Colonne"]
+alignment = 1
+theme_override_constants/separation = 28
+
+[node name="MenuTitre" type="LinkButton" parent="Voile/Centre/Panneau/Colonne/Liens"]
 unique_name_in_owner = true
 text = "Menu titre"
-size_flags_horizontal = 4
+
+[node name="QuitterJeu" type="LinkButton" parent="Voile/Centre/Panneau/Colonne/Liens"]
+unique_name_in_owner = true
+text = "Quitter le jeu"
 
 [node name="Reglages" parent="." instance=ExtResource("options")]
 unique_name_in_owner = true

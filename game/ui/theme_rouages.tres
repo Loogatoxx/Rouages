@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/panneau_bois.png" id="panneau_bois"]
 [ext_resource type="Texture2D" path="res://assets/ui/plaque_laiton_petite.png" id="plaque_laiton"]
 [ext_resource type="Texture2D" path="res://assets/ui/papier.png" id="papier"]
-[ext_resource type="Texture2D" path="res://assets/ui/etiquette.png" id="etiquette"]
+[ext_resource type="Texture2D" path="res://assets/ui/pastille.png" id="pastille"]
 [ext_resource type="Texture2D" path="res://assets/ui/ruban.png" id="ruban"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-Bold.ttf" id="Fraunces-Bold"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-SemiBold.ttf" id="Fraunces-SemiBold"]
@@ -102,16 +102,16 @@ content_margin_top = 22.0
 content_margin_right = 24.0
 content_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="Etiquette"]
-texture = ExtResource("etiquette")
-texture_margin_left = 76.0
-texture_margin_top = 22.0
-texture_margin_right = 24.0
+[sub_resource type="StyleBoxTexture" id="Pastille"]
+texture = ExtResource("pastille")
+texture_margin_left = 22.0
+texture_margin_top = 18.0
+texture_margin_right = 22.0
 texture_margin_bottom = 22.0
-content_margin_left = 76.0
-content_margin_top = 5.0
-content_margin_right = 20.0
-content_margin_bottom = 7.0
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="Ruban"]
 texture = ExtResource("ruban")
@@ -224,7 +224,7 @@ Badge/base_type = &"Label"
 Badge/fonts/font = ExtResource("Nunito-Bold")
 Badge/font_sizes/font_size = 18
 Badge/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
-Badge/styles/normal = SubResource("Etiquette")
+Badge/styles/normal = SubResource("Pastille")
 CarteNom/base_type = &"Label"
 CarteNom/fonts/font = ExtResource("Fraunces-SemiBold")
 CarteNom/font_sizes/font_size = 23

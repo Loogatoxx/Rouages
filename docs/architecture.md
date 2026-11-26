@@ -136,3 +136,19 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - **Textes à retour à la ligne** : `Interface.caler_hauteur(label, largeur)` (dans `menu_titre.gd`) fixe la largeur et
   mesure la hauteur sur la police. → Un Label à retour automatique calcule sa hauteur sur sa largeur du moment (nulle
   avant la première mise en page) : fiches immenses, texte traduit qui débordait des cartes.
+
+## Après playtest 1 — lot 2 (UI, caméra, vraie pause, tirages)
+- **Vraie pause entre les vagues** : en construction, la production est arrêtée ; chaque atelier alimenté reçoit d'un coup
+  `Regles.remontage_lancement` (20 s) de production, **une seule fois par pause** (`Production.remonter` /
+  `nouvelle_pause`), puis les jouets rejoignent leur poste. → Attendre ne rapporte rien (retour de Carlos), mais une
+  vague ratée ne vide pas l'armée suivante. Le banc applique la même règle (20 s de marche simulées) : équilibre proche
+  de l'ancien (parfait 0/0/106 PV, moyen chute en V5).
+- **Tirages sans doublon** : `Draft.tirer` n'offre jamais deux lots du même objet ; `exclus` sert aux cartes de coffre
+  tirées une à une.
+- **Caméra** : zoom lissé vers le curseur (molette, +/−, pincement et défilement du trackpad Mac : gestes
+  `InputEventMagnifyGesture` / `InputEventPanGesture`, que l'ancienne caméra ignorait), inclinaison 30-80° (A/E,
+  clic molette glissé). Actions `camera_redresser` / `camera_coucher`.
+- **HUD** : boutique repliable (bouton + touche B, action `boutique`), « Lancer la vague » hors du panneau, bouton menu
+  (icône `menu.png`) ; menu en jeu avec aide et commandes, quitter le jeu. Badges = `pastille.png` (charte T11a).
+- **Charte d'icônes** (T11a, Gemini) : `art_refs/charte_icones.md`, `assets/ui/icones/REGISTRE.md` (une icône = un concept),
+  20 icônes dont ressort, cœur (PV), vague, ennemis restants, entrée, chance, déplacer, améliorer, boutique, menu.

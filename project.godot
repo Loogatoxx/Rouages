@@ -68,17 +68,32 @@ camera_bas={
 }
 camera_zoom_avant={
 "deadzone": 0.2,
-"events": [Object(InputEventMouseButton,"device":-1,"button_index":4)
+"events": [Object(InputEventMouseButton,"device":-1,"button_index":4), Object(InputEventKey,"device":-1,"physical_keycode":61), Object(InputEventKey,"device":-1,"physical_keycode":4194437)
 ]
 }
 camera_zoom_arriere={
 "deadzone": 0.2,
-"events": [Object(InputEventMouseButton,"device":-1,"button_index":5)
+"events": [Object(InputEventMouseButton,"device":-1,"button_index":5), Object(InputEventKey,"device":-1,"physical_keycode":45), Object(InputEventKey,"device":-1,"physical_keycode":4194435)
+]
+}
+camera_redresser={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":81)
+]
+}
+camera_coucher={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":69)
 ]
 }
 pause={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"device":-1,"physical_keycode":80)
+]
+}
+boutique={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"device":-1,"physical_keycode":66)
 ]
 }
 plein_ecran={

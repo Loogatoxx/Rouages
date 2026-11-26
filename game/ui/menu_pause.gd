@@ -18,6 +18,18 @@ func _ready() -> void:
 	%Reprendre.pressed.connect(_reprendre)
 	%Recommencer.pressed.connect(Interface.commencer_partie.bind(get_tree()))
 	%MenuTitre.pressed.connect(Interface.ouvrir_titre.bind(get_tree()))
+	%QuitterJeu.pressed.connect(get_tree().quit)
+	%Aide.toggled.connect(_afficher_aide)
+
+
+## Liste des commandes (le menu en jeu sert aussi d'aide-mémoire, playtest 1 : « un vrai menu en pleine partie »).
+const AIDE := "Clic gauche : poser · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran"
+
+
+func _afficher_aide(visible_aide: bool) -> void:
+	%TexteAide.text = tr(AIDE)
+	Interface.caler_hauteur(%TexteAide, 500.0)
+	%TexteAide.visible = visible_aide
 
 
 func _input(evenement: InputEvent) -> void:

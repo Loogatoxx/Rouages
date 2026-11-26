@@ -160,3 +160,30 @@ func _parcourir_run() -> String:
 	if Run.phase != Run.Phase.FIN or not Run.offre.is_empty():
 		return "La dernière vague doit clore la run."
 	return ""
+
+
+## Playtest 1 : un même objet n'apparaît jamais deux fois dans une offre, ni dans un coffre.
+func test_pas_de_doublon_par_objet() -> String:
+	var lots: Array[Lot] = []
+	for objet: Resource in [DROIT, DROIT, COUDE, DROIT]:
+		var lot: Lot = _lot(1)
+		lot.objet = objet
+		lots.append(lot)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	for graine: int in range(32):
+		rng.seed = graine
+		var offre: Array[Lot] = Draft.tirer(lots, 3, 1, rng)
+		if offre.size() != 2:
+			return "Deux objets distincts seulement : l'offre doit en montrer deux."
+		if offre[0].objet == offre[1].objet:
+			return "Le même objet est proposé deux fois."
+	var regles: Resource = load("res://data/regles.tres")
+	for graine: int in range(64):
+		rng.seed = graine
+		var vus: Array = []
+		for i: int in 3:
+			for lot: Lot in Draft.tirer(regles.coffre, 1, 9, rng, vus):
+				if vus.has(lot.objet):
+					return "Le coffre a proposé deux fois le même objet."
+				vus.append(lot.objet)
+	return ""

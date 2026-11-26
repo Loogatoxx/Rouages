@@ -14,6 +14,9 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var prix_rotation: int = 2
 @export var pv_horloge: int
 @export var plafond_allies_par_atelier: int
+## Secondes de production versées d'un coup à chaque atelier alimenté, une fois par pause entre les vagues
+## (« remontage »). La production elle-même est arrêtée entre les vagues : attendre ne rapporte rien (playtest 1).
+@export var remontage_lancement: float = 20.0
 @export var multiplicateur_acceleration: float
 @export var ressorts_depart: int
 @export var recompense_vague: int

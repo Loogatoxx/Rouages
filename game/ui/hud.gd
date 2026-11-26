@@ -33,6 +33,8 @@ var _barre_boss: ProgressBar
 var _cadre_boss: VBoxContainer
 var _animation_boss: Tween
 var _boss_visible: bool = false
+## Choix du joueur (bouton ou touche B) gardé toute la run : la boutique ne se rouvre pas toute seule s'il l'a fermée.
+var _boutique_ouverte: bool = true
 
 
 func _ready() -> void:
@@ -44,6 +46,7 @@ func _ready() -> void:
 	%Reparer.pressed.connect(Run.reparer_horloge)
 	%Vitesse.pressed.connect(_basculer_vitesse)
 	%Pause.pressed.connect(Events.pause_demandee.emit)
+	%OuvrirBoutique.toggled.connect(_basculer_boutique)
 	%Rejouer.pressed.connect(Interface.commencer_partie.bind(get_tree()))
 	%MenuTitre.pressed.connect(Interface.ouvrir_titre.bind(get_tree()))
 	Events.phase_changee.connect(_actualiser_phase)
@@ -137,7 +140,20 @@ func _notification(quoi: int) -> void:
 		_actualiser_bilan()
 
 
+# La boutique se replie pour dégager le plateau (playtest 1 : « elle reste constamment dépliée »).
+func _basculer_boutique(ouverte: bool) -> void:
+	_boutique_ouverte = ouverte
+	var construction: bool = Run.phase == Run.Phase.CONSTRUCTION
+	%Boutique.visible = construction and ouverte
+	if %Boutique.visible:
+		Interface.apparaitre(%Boutique)
+
+
 func _input(evenement: InputEvent) -> void:
+	if Run.phase == Run.Phase.CONSTRUCTION and evenement.is_action_pressed(&"boutique") and not get_tree().paused:
+		get_viewport().set_input_as_handled()
+		%OuvrirBoutique.button_pressed = not %OuvrirBoutique.button_pressed
+		return
 	if Run.phase != Run.Phase.FIN and evenement.is_action_pressed(&"accelerer"):
 		get_viewport().set_input_as_handled()
 		_basculer_vitesse()
@@ -170,11 +186,11 @@ func _creer_boutique() -> void:
 		_ventes.append(bouton)
 
 
-# Colonne de prix de largeur fixe, chiffres à droite : tous les boutons de la boutique ont la même largeur,
+# Colonne de prix de largeur fixe, chiffres centrés dans la pastille : tous les boutons de la boutique ont la même largeur,
 # quel que soit le prix ou la langue (playtest 1 : « textes désalignés »).
 func _caler_prix(prix: Label) -> void:
-	prix.custom_minimum_size.x = 128
-	prix.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	prix.custom_minimum_size.x = 76
+	prix.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	prix.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	prix.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
@@ -194,10 +210,11 @@ func _actualiser_phase(phase: int) -> void:
 	var construction: bool = phase == Run.Phase.CONSTRUCTION
 	$Colonne.visible = phase != Run.Phase.FIN
 	%Lancer.visible = construction
-	%Boutique.visible = construction
+	%OuvrirBoutique.visible = construction
+	%Boutique.visible = construction and _boutique_ouverte
 	$Draft.visible = phase == Run.Phase.DRAFT
 	$Fin.visible = phase == Run.Phase.FIN
-	if construction:
+	if construction and _boutique_ouverte:
 		Interface.apparaitre(%Boutique)
 	elif $Draft.visible:
 		_afficher_lots()

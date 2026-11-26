@@ -1,5 +1,5 @@
 extends Node
-## Fait avancer les ateliers, les arrivées et la simulation pendant une vague (et le remontage en construction).
+## Fait avancer les ateliers, les arrivées et la simulation pendant une vague (remontage instantané entre les vagues).
 
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const UniteDef = preload("res://game/swarm/unite_def.gd")
@@ -37,11 +37,14 @@ func _configurer() -> void:
 
 func _commencer(numero: int) -> void:
 	directeur.commencer(Run.vagues[numero - 1], _entrees)
+	production.nouvelle_pause()
 
 
-## Fait vivre la vague ; en construction, « remonte » les jouets : les ateliers produisent et les jouets
-## rejoignent leur poste, sans ennemi. Pourquoi : une vague ratée ne vide plus l'armée de la suivante
-## (spirale de défaite mesurée au banc d'équilibrage), et le joueur voit tout de suite qu'un atelier fonctionne.
+## Fait vivre la vague. Entre les vagues (construction), la production est à l'arrêt : chaque atelier alimenté reçoit
+## d'un coup son « remontage », une seule fois par pause, et les jouets rejoignent leur poste (aucun ennemi).
+## Pourquoi (playtest 1) : les jouets s'accumulaient avant le lancement et on attendait passivement pour frapper plus fort ;
+## désormais attendre ne rapporte rien. Le remontage évite toujours la spirale de défaite (une vague ratée ne vide pas
+## l'armée de la suivante, mesuré au banc) et montre tout de suite qu'un atelier relié fonctionne.
 func _physics_process(delta: float) -> void:
 	var vague: bool = Run.phase == Run.Phase.VAGUE
 	if not vague and Run.phase != Run.Phase.CONSTRUCTION:
@@ -49,12 +52,15 @@ func _physics_process(delta: float) -> void:
 	var dt: float = delta * Run.vitesse
 	production.bonus_cadence = Run.bonus_cadence
 	var allies_avant: int = sim.nombre(SwarmSim.ALLIE)
-	production.avancer(dt, _source.plateau, _source.alimentees, sim, Run.regles)
+	if vague:
+		production.avancer(dt, _source.plateau, _source.alimentees, sim, Run.regles)
+	else:
+		production.remonter(Run.regles.remontage_lancement, _source.plateau, _source.alimentees, sim, Run.regles)
 	if sim.nombre(SwarmSim.ALLIE) > allies_avant:
 		Sons.jouer(&"jouet_sort", 0.08)  # anti-répétition gérée par Sons
 	if vague:
 		directeur.avancer(dt, sim)
 		tourelles.avancer(dt, _source.plateau, _source.alimentees, sim)
 	sim.avancer(dt)
-	if vague and Run.phase == Run.Phase.VAGUE and directeur.est_terminee(sim):
+	if Run.phase == Run.Phase.VAGUE and directeur.est_terminee(sim):
 		Run.terminer_vague()

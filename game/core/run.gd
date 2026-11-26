@@ -108,8 +108,12 @@ func _tirer_offre() -> void:
 	if offre_coffre:
 		# Chaque carte a son tirage pour que la rareté compte même avec trois modèles.
 		offre.clear()
+		var montres: Array = []
 		for i: int in choix_par_draft:
-			offre.append_array(Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng))
+			var carte: Array[Lot] = Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng, montres)
+			offre.append_array(carte)
+			for lot: Lot in carte:
+				montres.append(lot.objet)
 	else:
 		offre = Draft.tirer(regles.pioche, choix_par_draft, vague_actuelle + 1, rng)
 

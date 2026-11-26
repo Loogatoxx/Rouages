@@ -13,6 +13,7 @@ const DIRECTIONS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 ## pour rester utilisable par les tests et le banc d'équilibrage.
 var bonus_cadence: float = 1.0
 var _progressions: Dictionary[Vector2i, float] = {}
+var _remontes: Dictionary[Vector2i, bool] = {}
 
 
 ## Avance les ateliers alimentés et limite leur effectif total de jouets vivants.
@@ -45,3 +46,40 @@ func _sortie(case: Vector2i, ports: int) -> Vector2:
 		if ports & (1 << i):
 			return centre + Vector2(DIRECTIONS[i]) * (GrilleMonde.TAILLE_CASE / 2.0)
 	return centre
+
+
+## Remonte d'un coup les ateliers alimentés qui ne l'ont pas encore été pendant cette pause : chacun sort `secondes`
+## de production (cadence × bonus), à tour de rôle, dans la limite du plafond de jouets vivants.
+## Appelé en continu entre les vagues : un atelier relié en cours de pause est remonté aussitôt, mais une seule fois,
+## donc attendre ne rapporte rien (playtest 1 : vraie pause, plus d'accumulation passive).
+func remonter(secondes: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim, regles: Regles) -> void:
+	var dus: Dictionary[Vector2i, int] = {}
+	var ateliers: int = 0
+	for case: Vector2i in alimentees:
+		var piece: Plateau.PieceDef = plateau.piece_de(case)
+		if piece == null or piece.type != Plateau.PieceDef.Type.ATELIER or piece.unite_produite == null:
+			continue
+		ateliers += 1
+		if not _remontes.has(case):
+			_remontes[case] = true
+			dus[case] = floori(secondes * piece.cadence_production * bonus_cadence)
+	var places: int = regles.plafond_allies_par_atelier * ateliers - sim.nombre(SwarmSim.ALLIE)
+	var cases: Array[Vector2i] = dus.keys()
+	cases.sort()
+	var reste: bool = true
+	while places > 0 and reste:
+		reste = false
+		for case: Vector2i in cases:
+			if dus[case] <= 0 or places <= 0:
+				continue
+			if not sim.ajouter(plateau.piece_de(case).unite_produite, _sortie(case, plateau.ports_de(case))):
+				return
+			dus[case] -= 1
+			places -= 1
+			reste = true
+			jouet_produit.emit(case)
+
+
+## Ouvre une nouvelle pause : tous les ateliers pourront de nouveau être remontés (appelé au lancement d'une vague).
+func nouvelle_pause() -> void:
+	_remontes.clear()

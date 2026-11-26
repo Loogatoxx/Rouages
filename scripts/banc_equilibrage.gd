@@ -46,8 +46,8 @@ func _initialize() -> void:
 	var profil: PackedStringArray = (args[0] if args.size() > 0 else "1,1,2,2,3,3,4,4,5,5").split(",")
 	seed(int(args[1]) if args.size() > 1 else 1)
 	var vague_extension: int = int(args[2]) if args.size() > 2 else 0
-	var remontage: float = float(OS.get_environment("REMONTAGE")) if OS.get_environment("REMONTAGE") != "" else 20.0
 	var regles: Regles = load("res://data/regles.tres")
+	var remontage: float = float(OS.get_environment("REMONTAGE")) if OS.get_environment("REMONTAGE") != "" else regles.remontage_lancement
 	var depart: DepartDef = load("res://data/depart.tres")
 	var plateau: Plateau = depart.creer_plateau()
 	var sim := SwarmSim.new()
@@ -70,10 +70,13 @@ func _initialize() -> void:
 		sim.configurer(plateau, regles.garde_ratio)
 		var entrees: Array[Vector2i] = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau))
 		var t: float = 0.0
-		while t < remontage:
-			production.avancer(DT, plateau, alimentees, sim, regles)
+		# Même règle que le jeu : production à l'arrêt entre les vagues, remontage instantané une fois par pause,
+		# puis les jouets rejoignent leur poste (20 s de marche simulées, sans ennemi).
+		production.remonter(remontage, plateau, alimentees, sim, regles)
+		while t < 20.0:
 			sim.avancer(DT)
 			t += DT
+		production.nouvelle_pause()
 		directeur.commencer(regles.vagues[i], entrees)
 		fuites[0] = 0.0
 		var allies: int = sim.nombre(SwarmSim.ALLIE)
