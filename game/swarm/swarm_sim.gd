@@ -279,7 +279,11 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 				cible = j
 
 	var recharge: float = nuee.recharges[i]
-	if cible >= 0 and meilleur <= modele.portee * modele.portee:
+	# Un boss est frappé à son bord : sinon son grand rayon (séparation) tiendrait les jouets hors de portée.
+	var allonge: float = modele.portee
+	if cible >= 0 and adverse.modeles[cible].boss:
+		allonge += adverse.modeles[cible].rayon
+	if cible >= 0 and meilleur <= allonge * allonge:
 		if modele.cadence > 0.0:
 			var periode: float = 1.0 / modele.cadence
 			# Compte aussi les frappes intermédiaires si un pas dépasse une période.

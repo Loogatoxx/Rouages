@@ -47,6 +47,7 @@ func _physics_process(delta: float) -> void:
 	if not vague and Run.phase != Run.Phase.CONSTRUCTION:
 		return
 	var dt: float = delta * Run.vitesse
+	production.bonus_cadence = Run.bonus_cadence
 	var allies_avant: int = sim.nombre(SwarmSim.ALLIE)
 	production.avancer(dt, _source.plateau, _source.alimentees, sim, Run.regles)
 	if sim.nombre(SwarmSim.ALLIE) > allies_avant:

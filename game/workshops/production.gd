@@ -9,6 +9,9 @@ const Regles = preload("res://game/core/regles.gd")
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
 const DIRECTIONS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 
+## Multiplicateur de cadence (progression méta), réglé par `Partie` : la logique ne lit pas les autoloads,
+## pour rester utilisable par les tests et le banc d'équilibrage.
+var bonus_cadence: float = 1.0
 var _progressions: Dictionary[Vector2i, float] = {}
 
 
@@ -24,7 +27,7 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 		var atelier: Plateau.PieceDef = plateau.piece_de(case)
 		if atelier.cadence_production <= 0.0 or atelier.unite_produite == null:
 			continue
-		var progression: float = _progressions.get(case, 0.0) + dt * atelier.cadence_production * Run.bonus_cadence
+		var progression: float = _progressions.get(case, 0.0) + dt * atelier.cadence_production * bonus_cadence
 		var prets: int = floori(progression)
 		_progressions[case] = progression - prets
 		var places: int = plafond - sim.nombre(SwarmSim.ALLIE)
