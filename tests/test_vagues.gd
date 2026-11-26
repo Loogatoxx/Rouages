@@ -8,10 +8,11 @@ const DirecteurVagues = preload("res://game/waves/directeur_vagues.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
 const Regles = preload("res://game/core/regles.gd")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
-const VAGUES = [
-	preload("res://data/vagues/vague_01.tres"),
-	preload("res://data/vagues/vague_02.tres"),
-	preload("res://data/vagues/vague_03.tres"),
+const DONNEES_REGLES = preload("res://data/regles.tres")
+## Courbe de difficulté (équilibrée au banc, voir taches/T05c_vagues_equilibrage.md) : [nombre, intervalle, × PV].
+const COURBE := [
+	[14, 1.25, 1.0], [44, 0.5, 1.0], [70, 0.37, 1.1], [97, 0.3, 1.2], [123, 0.26, 1.35],
+	[140, 0.25, 1.5], [150, 0.25, 1.7], [160, 0.25, 1.85], [190, 0.23, 2.05], [229, 0.21, 2.4],
 ]
 
 
@@ -31,13 +32,21 @@ func test_ressources() -> String:
 	if (regles == null or regles.pv_horloge != 20
 			or regles.plafond_allies_par_atelier != 15 or regles.multiplicateur_acceleration != 2.0):
 		return "Règles de partie incorrectes."
-	for i: int in VAGUES.size():
-		var vague: VagueDef = VAGUES[i] as VagueDef
-		if vague == null or vague.unite != SCARABEE or vague.nombre != [20, 45, 90][i]:
+	if regles.vagues.size() != COURBE.size():
+		return "La run doit compter %d vagues, pas %d." % [COURBE.size(), regles.vagues.size()]
+	var debit_precedent: float = 0.0
+	for i: int in COURBE.size():
+		var vague: VagueDef = regles.vagues[i]
+		if vague == null or vague.unite != SCARABEE or vague.nombre != COURBE[i][0]:
 			return "Unité ou effectif incorrect pour la vague %d." % (i + 1)
-		if (not is_equal_approx(vague.intervalle, [0.6, 0.35, 0.2][i])
-				or not is_equal_approx(vague.multiplicateur_pv, [1.0, 1.2, 1.5][i])):
+		if (not is_equal_approx(vague.intervalle, COURBE[i][1])
+				or not is_equal_approx(vague.multiplicateur_pv, COURBE[i][2])):
 			return "Intervalle ou vitalité incorrect pour la vague %d." % (i + 1)
+		# Débit de PV ennemis par seconde : il doit monter à chaque vague (vraie courbe de difficulté).
+		var debit: float = vague.unite.pv * vague.multiplicateur_pv / vague.intervalle
+		if debit <= debit_precedent:
+			return "La vague %d n'est pas plus dure que la précédente." % (i + 1)
+		debit_precedent = debit
 	return ""
 
 
@@ -62,7 +71,7 @@ func test_alternance_et_fin() -> String:
 	for case: Vector2i in entrees:
 		plateau.ajouter_sol(case, Plateau.Sol.CHEMIN)
 	sim.configurer(plateau)
-	var vague: VagueDef = VAGUES[0]
+	var vague: VagueDef = DONNEES_REGLES.vagues[0]
 	directeur.commencer(vague, entrees)
 	if directeur.est_terminee(sim):
 		return "La vague doit attendre ses premières apparitions."
@@ -88,7 +97,7 @@ func test_multiplicateur_pv() -> String:
 	var directeur: DirecteurVagues = DirecteurVagues.new()
 	var sim: SimulationTemoin = SimulationTemoin.new()
 	var pv_source: float = SCARABEE.pv
-	var vague: VagueDef = VAGUES[2]
+	var vague: VagueDef = DONNEES_REGLES.vagues[2]
 	directeur.commencer(vague, [Vector2i.ZERO])
 	directeur.avancer(0.0, sim)
 	if sim.unite_recue == null or not is_equal_approx(sim.unite_recue.pv, pv_source * vague.multiplicateur_pv):

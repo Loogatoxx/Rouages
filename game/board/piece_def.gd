@@ -7,6 +7,7 @@ enum Type { HORLOGE, ENGRENAGE, ATELIER }
 
 @export var id: StringName
 @export var nom: String
+@export var description: String
 @export var type: Type
 @export_flags("N", "E", "S", "O") var ports: int
 @export var transmet: bool = true

@@ -1,9 +1,75 @@
 [gd_resource type="Resource" script_class="Regles" format=3]
 
 [ext_resource type="Script" path="res://game/core/regles.gd" id="regles"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="coude"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_t.tres" id="t"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="croix"]
+[ext_resource type="Resource" path="res://data/extensions/sentier.tres" id="sentier"]
+[ext_resource type="Resource" path="res://data/extensions/carrefour.tres" id="carrefour"]
+[ext_resource type="Script" path="res://game/waves/vague_def.gd" id="vague"]
+[ext_resource type="Resource" path="res://data/vagues/vague_01.tres" id="vague_1"]
+[ext_resource type="Resource" path="res://data/vagues/vague_02.tres" id="vague_2"]
+[ext_resource type="Resource" path="res://data/vagues/vague_03.tres" id="vague_3"]
+[ext_resource type="Resource" path="res://data/vagues/vague_04.tres" id="vague_4"]
+[ext_resource type="Resource" path="res://data/vagues/vague_05.tres" id="vague_5"]
+[ext_resource type="Resource" path="res://data/vagues/vague_06.tres" id="vague_6"]
+[ext_resource type="Resource" path="res://data/vagues/vague_07.tres" id="vague_7"]
+[ext_resource type="Resource" path="res://data/vagues/vague_08.tres" id="vague_8"]
+[ext_resource type="Resource" path="res://data/vagues/vague_09.tres" id="vague_9"]
+[ext_resource type="Resource" path="res://data/vagues/vague_10.tres" id="vague_10"]
+
+[sub_resource type="Resource" id="lot_atelier"]
+script = ExtResource("lot")
+objet = ExtResource("atelier")
+quantite = 1
+poids = 3.0
+
+[sub_resource type="Resource" id="lot_droit"]
+script = ExtResource("lot")
+objet = ExtResource("droit")
+quantite = 3
+poids = 3.0
+
+[sub_resource type="Resource" id="lot_coude"]
+script = ExtResource("lot")
+objet = ExtResource("coude")
+quantite = 2
+poids = 2.0
+
+[sub_resource type="Resource" id="lot_t"]
+script = ExtResource("lot")
+objet = ExtResource("t")
+quantite = 2
+poids = 1.5
+
+[sub_resource type="Resource" id="lot_croix"]
+script = ExtResource("lot")
+objet = ExtResource("croix")
+quantite = 1
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_sentier"]
+script = ExtResource("lot")
+objet = ExtResource("sentier")
+quantite = 1
+poids = 1.5
+vague_min = 2
+
+[sub_resource type="Resource" id="lot_carrefour"]
+script = ExtResource("lot")
+objet = ExtResource("carrefour")
+quantite = 1
+poids = 1.0
+vague_min = 3
 
 [resource]
 script = ExtResource("regles")
 pv_horloge = 20
 plafond_allies_par_atelier = 15
 multiplicateur_acceleration = 2.0
+choix_par_draft = 3
+pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour")])
+vagues = Array[ExtResource("vague")]([ExtResource("vague_1"), ExtResource("vague_2"), ExtResource("vague_3"), ExtResource("vague_4"), ExtResource("vague_5"), ExtResource("vague_6"), ExtResource("vague_7"), ExtResource("vague_8"), ExtResource("vague_9"), ExtResource("vague_10")])

@@ -40,6 +40,28 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 text = "Lancer la vague"
 
+[node name="Draft" type="CenterContainer" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Panneau" type="PanelContainer" parent="Draft"]
+theme_override_styles/panel = SubResource("bois")
+
+[node name="Colonne" type="VBoxContainer" parent="Draft/Panneau"]
+theme_override_constants/separation = 10
+
+[node name="Titre" type="Label" parent="Draft/Panneau/Colonne"]
+text = "Choisis un lot"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.91, 0.73, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="Lots" type="VBoxContainer" parent="Draft/Panneau/Colonne"]
+unique_name_in_owner = true
+theme_override_constants/separation = 6
+
 [node name="Fin" type="ColorRect" parent="."]
 visible = false
 anchor_right = 1.0

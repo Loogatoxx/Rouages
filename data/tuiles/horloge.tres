@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"horloge"
 nom = "Horloge"
+description = "Son tic-tac donne vie aux ateliers reliés."
 type = 0
 ports = 15
 transmet = true

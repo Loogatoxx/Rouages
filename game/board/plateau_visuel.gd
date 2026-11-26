@@ -4,11 +4,16 @@ extends Node3D
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
 const PlateauNoeud = preload("res://game/board/plateau_noeud.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
+const ExtensionDef = preload("res://game/board/extension_def.gd")
+const Extension = preload("res://game/board/extension.gd")
+const ChampFlux = preload("res://game/swarm/champ_flux.gd")
 const Materiaux = preload("res://game/core/materiaux.gd")
 
 @onready var _source: PlateauNoeud = get_parent()
 var _rotors: Array[Node3D] = []
 var _pieces: Node3D
+var _cases_construites: Dictionary[Vector2i, bool] = {}
+var _poteaux: Dictionary[Vector2i, MeshInstance3D] = {}
 var _sol: Node3D
 var _gris: StandardMaterial3D = StandardMaterial3D.new()
 
@@ -28,12 +33,37 @@ func _actualiser() -> void:
 	if _sol == null:
 		_sol = Node3D.new()
 		add_child(_sol)
-		for x: int in range(_source.TERRAIN.position.x, _source.TERRAIN.end.x):
-			for y: int in range(_source.TERRAIN.position.y, _source.TERRAIN.end.y):
-				var c := Vector2i(x, y)
-				var chemin: bool = _source.plateau.sol_de(c) == _source.Plateau.Sol.CHEMIN
-				_boite(_sol, Vector3(2, 0.2, 2), GrilleMonde.vers_monde(c) + Vector3.DOWN * 0.1,
-						materiau("pierre_creme" if chemin else "herbe"))
+	for c: Vector2i in _source.plateau.coords_sols():
+		if _cases_construites.has(c):
+			continue
+		var chemin: bool = _source.plateau.sol_de(c) == _source.Plateau.Sol.CHEMIN
+		_creer_sol(_sol, c, chemin)
+		_cases_construites[c] = true
+	var entrees: Array[Vector2i] = ChampFlux.entrees(_source.plateau, ChampFlux.calculer(_source.plateau))
+	for case: Vector2i in _poteaux.keys():
+		if case not in entrees:
+			_poteaux[case].queue_free()
+			_poteaux.erase(case)
+	for case: Vector2i in entrees:
+		if not _poteaux.has(case):
+			var pied: Vector3 = GrilleMonde.vers_monde(case) + Vector3(0.72, 0.3, 0.72)
+			_poteaux[case] = _boite(_sol, Vector3(0.16, 0.6, 0.16), pied, materiau("pastel_rose"))
+
+
+func _creer_sol(parent: Node3D, case: Vector2i, chemin: bool) -> MeshInstance3D:
+	return _boite(parent, Vector3(2, 0.2, 2), GrilleMonde.vers_monde(case) + Vector3.DOWN * 0.1,
+			materiau("pierre_creme" if chemin else "herbe"))
+
+
+## Construit un aperçu orienté dont la teinte se superpose à l'herbe et au chemin.
+func creer_extension(def: ExtensionDef, rotation: int, teinte: Material) -> Node3D:
+	var racine := Node3D.new()
+	var sols: Dictionary = Extension.cases(def, Vector2i.ZERO, rotation)
+	for case: Vector2i in sols:
+		var dalle: MeshInstance3D = _creer_sol(racine, case, sols[case] == _source.Plateau.Sol.CHEMIN)
+		dalle.scale = Vector3(0.97, 1, 0.97)
+		dalle.material_overlay = teinte
+	return racine
 
 
 func _energie(_alimentees: Array[Vector2i]) -> void:

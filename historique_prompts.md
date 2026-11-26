@@ -49,3 +49,14 @@
 - **Réponse** : création de `docs/reprise.md` (état, procédure, pièges) pour qu'une session neuve démarre sans relire le dépôt ; étape 5 confiée à une nouvelle session Claude. Commit de T04 non fait (pas de demande explicite) : la nouvelle session le proposera.
 - **Modifications** : `docs/reprise.md` (nouveau), `CLAUDE.md` (règle 0 : lire la reprise), roadmap (étapes 2, 2b et 4 validées).
 - **Objectif** : réduire le coût en tokens et en cache : une conversation trop longue fait relire tout l'historique à chaque message.
+
+## 2026-11-26 — Commit de l'étape 4, étape 5 : cœur roguelike (draft, extensions, 10 vagues)
+- **Prompt** (session précédente, au nom de Carlos) : commiter T04 après accord de Carlos, puis réaliser l'étape 5 : draft d'un lot parmi 3 tiré d'une pioche pondérée, réserve de pièces, plateau et réserve de départ dans `data/`, extensions de terrain qui ouvrent un nouveau front, 10 vagues équilibrées, run d'environ 15 min.
+- **Réponse** : commit `d24f33b` (étape 4) après le « oui » de Carlos. Étape découpée en trois fiches : T05a (draft, réserve, machine à états, Codex), T05b (extensions + répartition des jouets aux embranchements, Codex), T05c (10 vagues, remontage, équilibrage, Claude). Un banc d'équilibrage headless a révélé deux défauts invisibles à l'œil : (1) à un embranchement, tous les jouets prenaient la même branche, ce qui laissait les autres fronts sans défense ; (2) une vague ratée vidait l'armée pour la suivante (spirale de défaite). Corrigés par la répartition aléatoire (T05b) et par le remontage pendant la construction (T05c).
+- **Modifications** : T05a (Codex) : `game/core/{lot,depart_def,reserve}.gd`, `game/draft/draft.gd`, `game/ui/reserve_ui.*`, `data/depart.tres`, machine à états dans `run.gd`, panneau de draft dans le HUD, palette provisoire supprimée. T05b (Codex) : `game/board/{extension,extension_def}.gd`, `data/extensions/{sentier,carrefour}.tres`, fantôme d'extension, poteaux roses sur les entrées, répartition des jouets dans `swarm_sim.gd`. T05c (Claude, relu par Codex) : 10 vagues, remontage dans `partie.gd`, branche choisie par hachage (embranchements indépendants, test ajouté), bonus des extensions, `scripts/banc_equilibrage.gd`. 40 tests verts. Docs : architecture, roadmap, reprise.
+- **Objectif** : rendre chaque choix de draft important et ouvrir le dilemme risque/récompense des extensions, avec une difficulté mesurée plutôt que devinée.
+
+## 2026-11-26 — Validation de l'étape 5
+- **Prompt** : « oui c'est très bien juste on voit pas vraiment les soldats parce que c'est du blanc sur du blanc sinon continue et s'il faut ouvre une nouvelle fenêtre ».
+- **Réponse** : commit de l'étape 5 ; lisibilité des soldats notée en priorité pour l'étape 6 ; session neuve ouverte pour l'étape 6.
+- **Objectif** : clore l'étape 5 et repartir avec un contexte frais.

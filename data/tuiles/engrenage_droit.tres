@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"engrenage_droit"
 nom = "Engrenage droit"
+description = "Transmet le mouvement en ligne droite."
 type = 1
 ports = 5
 transmet = true

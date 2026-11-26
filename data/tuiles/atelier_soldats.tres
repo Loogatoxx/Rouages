@@ -7,6 +7,7 @@
 script = ExtResource("1")
 id = &"atelier_soldats"
 nom = "Atelier de soldats"
+description = "Remonte de petits soldats quand ses rouages reçoivent l’énergie de l’horloge."
 type = 2
 ports = 4
 transmet = false

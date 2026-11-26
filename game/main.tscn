@@ -6,14 +6,14 @@
 [ext_resource type="Script" path="res://game/board/plateau_visuel.gd" id="plateau_visuel"]
 [ext_resource type="Script" path="res://game/board/pose_controleur.gd" id="pose_controleur"]
 [ext_resource type="Script" path="res://game/camera/camera_plateau.gd" id="camera_plateau"]
-[ext_resource type="PackedScene" path="res://game/ui/palette_debug.tscn" id="palette"]
+[ext_resource type="PackedScene" path="res://game/ui/reserve_ui.tscn" id="reserve"]
 [ext_resource type="Script" path="res://game/core/partie.gd" id="partie"]
 [ext_resource type="Script" path="res://game/swarm/nuee_visuel.gd" id="nuee"]
 [ext_resource type="PackedScene" path="res://game/ui/hud.tscn" id="hud"]
 [ext_resource type="PackedScene" path="res://assets/ambiance/ambiance.tscn" id="ambiance"]
 
 [sub_resource type="BoxMesh" id="table"]
-size = Vector3(24, 0.4, 24)
+size = Vector3(56, 0.4, 56)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
@@ -39,7 +39,7 @@ script = ExtResource("plateau_visuel")
 [node name="PoseControleur" type="Node3D" parent="PlateauNoeud"]
 script = ExtResource("pose_controleur")
 
-[node name="PaletteDebug" parent="." instance=ExtResource("palette")]
+[node name="ReserveUI" parent="." instance=ExtResource("reserve")]
 
 [node name="Partie" type="Node" parent="."]
 script = ExtResource("partie")

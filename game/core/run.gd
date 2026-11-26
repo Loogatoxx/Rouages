@@ -4,18 +4,41 @@ extends Node
 const Regles = preload("res://game/core/regles.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
 
+const DepartDef = preload("res://game/core/depart_def.gd")
+const Reserve = preload("res://game/core/reserve.gd")
+const Lot = preload("res://game/core/lot.gd")
+const Draft = preload("res://game/draft/draft.gd")
+
 enum Phase { DRAFT, CONSTRUCTION, VAGUE, FIN }
 
 var regles: Regles = preload("res://data/regles.tres")
-var vagues: Array[VagueDef] = [
-	preload("res://data/vagues/vague_01.tres"),
-	preload("res://data/vagues/vague_02.tres"),
-	preload("res://data/vagues/vague_03.tres"),
-]
-var nb_vagues: int = vagues.size()
+var depart: DepartDef = preload("res://data/depart.tres")
+var reserve: Reserve = Reserve.new()
+var offre: Array[Lot] = []
+var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var vagues: Array[VagueDef]:
+	get:
+		return regles.vagues
+var nb_vagues: int:
+	get:
+		return vagues.size()
 var pv_horloge: int = regles.pv_horloge
-var phase: Phase = Phase.CONSTRUCTION
+var phase: Phase = Phase.DRAFT
 var vague_actuelle: int = 0
+
+
+func _ready() -> void:
+	reinitialiser()
+
+
+## Ajoute le lot choisi à la réserve et ouvre la construction.
+func choisir_lot(i: int) -> void:
+	if phase != Phase.DRAFT or i < 0 or i >= offre.size():
+		return
+	var lot: Lot = offre[i]
+	offre.clear()
+	reserve.ajouter(lot.objet, lot.quantite)
+	changer_phase(Phase.CONSTRUCTION)
 
 
 ## Change de phase et prévient les systèmes qui en dépendent.
@@ -45,9 +68,25 @@ func subir_degats(d: float) -> void:
 		Events.run_terminee.emit(false)
 
 
-## Restaure l'horloge et revient à la construction de départ.
+## Clôt la vague, puis propose un nouveau tirage ou annonce la victoire.
+func terminer_vague() -> void:
+	if phase != Phase.VAGUE:
+		return
+	Events.vague_terminee.emit(vague_actuelle)
+	if vague_actuelle == nb_vagues:
+		changer_phase(Phase.FIN)
+		Events.run_terminee.emit(true)
+	else:
+		offre = Draft.tirer(regles.pioche, regles.choix_par_draft, vague_actuelle + 1, rng)
+		changer_phase(Phase.DRAFT)
+
+
+## Restaure l'horloge et la réserve, puis propose les lots de la première vague.
 func reinitialiser() -> void:
 	vague_actuelle = 0
 	pv_horloge = regles.pv_horloge
-	phase = Phase.CONSTRUCTION
+	reserve.vider()
+	reserve.ajouter_lots(depart.reserve)
+	offre = Draft.tirer(regles.pioche, regles.choix_par_draft, 1, rng)
+	phase = Phase.DRAFT
 	Events.phase_changee.emit(phase)

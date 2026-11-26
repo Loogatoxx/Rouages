@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"engrenage_t"
 nom = "Engrenage en T"
+description = "Relie trois côtés pour alimenter une branche de plus."
 type = 1
 ports = 11
 transmet = true

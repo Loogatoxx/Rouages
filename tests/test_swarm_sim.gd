@@ -7,6 +7,9 @@ const UniteDef = preload("res://game/swarm/unite_def.gd")
 const HORLOGE = preload("res://data/tuiles/horloge.tres")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
 const SOLDAT = preload("res://data/unites/soldat_remontoir.tres")
+const DEPART = preload("res://data/depart.tres")
+const Extension = preload("res://game/board/extension.gd")
+const CARREFOUR = preload("res://data/extensions/carrefour.tres")
 const PAS := 1.0 / 60.0
 
 
@@ -121,6 +124,53 @@ func test_allie_hors_chemin() -> String:
 		sim.avancer(PAS)
 	var fin: Vector2 = sim.positions(SwarmSim.ALLIE)[0]
 	return "" if absf(passage.y) < 1.0 and fin.x > passage.x + 4.0 and absf(fin.y) < 0.2 else "Trajet inattendu : %s puis %s." % [passage, fin]
+
+
+## Vérifie sur trois secondes que les deux fronts attirent chacun une part de la troupe.
+func test_repartition_embranchement() -> String:
+	var sim := SwarmSim.new()
+	sim.configurer(DEPART.creer_plateau())
+	seed(2718)
+	for i: int in 100:
+		sim.ajouter(SOLDAT, Vector2(4, 0) * SwarmSim.MAILLE)
+	randomize()
+	for i: int in 180:
+		sim.avancer(PAS)
+	var nord: int = 0
+	var sud: int = 0
+	for position: Vector2 in sim.positions(SwarmSim.ALLIE):
+		if position.y < -SwarmSim.MAILLE / 2:
+			nord += 1
+		elif position.y > SwarmSim.MAILLE / 2:
+			sud += 1
+	return "" if nord + sud == 100 and nord >= 35 and nord <= 65 else "%d soldats au nord, %d au sud." % [nord, sud]
+
+
+## Deux embranchements successifs : la seconde bifurcation (carrefour au nord) reçoit des jouets des deux côtés.
+func test_repartition_embranchements_successifs() -> String:
+	var plateau: Plateau = DEPART.creer_plateau()
+	if not Extension.appliquer(plateau, CARREFOUR, Vector2i(4, -6), 0):
+		return "Le carrefour devrait se poser au nord du plateau de départ."
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	seed(314)
+	for i: int in 200:
+		sim.ajouter(SOLDAT, Vector2(4, 0) * SwarmSim.MAILLE)
+	randomize()
+	for i: int in 600:
+		sim.avancer(PAS)
+	var ouest: int = 0
+	var est: int = 0
+	for position: Vector2 in sim.positions(SwarmSim.ALLIE):
+		if position.y < -5.0 * SwarmSim.MAILLE:
+			if position.x < 7.0:
+				ouest += 1
+			elif position.x > 9.0:
+				est += 1
+	var total: int = ouest + est
+	if total < 50 or ouest < total / 4 or est < total / 4:
+		return "Seconde bifurcation déséquilibrée : %d à l'ouest, %d à l'est." % [ouest, est]
+	return ""
 
 
 ## Détecte le plus proche à travers plusieurs cellules et ignore un ennemi au-delà de six mètres.

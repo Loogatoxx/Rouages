@@ -4,10 +4,18 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
 ## État (mis à jour le 2026-11-26)
-- Étapes 0 à 4 faites (T04 relue et indexée, **pas encore commitée** : proposer le commit à Carlos) : plateau et énergie, caméra et pose, DA greybox, nuées (300 contre 300 à 60 FPS), ateliers, vagues,
-  PV de l'horloge, victoire, défaite et Rejouer. 27 tests verts. Dernière fiche : `taches/T04_ateliers_vagues.md`.
-- Provisoire, à remplacer à l'étape 5 : palette de pièces illimitées (`game/ui/palette_debug.*`), plateau de départ codé dans
-  `game/board/plateau_noeud.gd`, phase de départ CONSTRUCTION dans `game/core/run.gd`, 3 vagues seulement.
+- Étapes 0 à 4 commitées (`d24f33b`). **Étape 5 testée par Carlos et commitée** (« c'est très bien ») :
+  draft d'un lot parmi 3 (`Run.choisir_lot`), réserve (`Run.reserve`), plateau et réserve de départ dans `data/depart.tres`,
+  pioche et 10 vagues dans `data/regles.tres`, extensions de terrain (`data/extensions/`, +1 entrée obligatoire, bonus à la pose),
+  remontage des jouets en CONSTRUCTION, répartition des jouets aux embranchements. 40 tests verts.
+  Fiches : `taches/T05a_draft_reserve.md`, `T05b_extensions.md`, `T05c_vagues_equilibrage.md`.
+- **Banc d'équilibrage** (avant de toucher une vague) :
+  `/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://scripts/banc_equilibrage.gd -- 1,1,2,2,3,3,4,4,5,5 1 0`
+  (profil = ateliers avant chaque vague, graine, vague de pose d'un sentier ; 2 s par run). Toujours comparer sur 3 graines ou plus.
+- **Retour de Carlos (à traiter en premier à l'étape 6)** : on voit mal les soldats, blanc sur blanc (couleur des jouets vs chemin crème).
+- Pistes pour l'étape 6 (playtest) : la difficulté repose sur des profils au placement parfait ; un vrai joueur est plutôt un cran
+  en dessous. Les fuites arrivent par paquets (rupture brutale) : si c'est frustrant, jouer sur `pv_horloge` ou adoucir V7-V8.
+  Les jouets « campent » sur les entrées ; vérifier que c'est lisible. Les extensions : mesurer si on les prend (bonus assez tentant ?).
 
 ## Procédure d'une étape (Claude = chef de chantier léger)
 1. Lire la fiche de l'étape précédente et les fichiers qu'on va toucher (pas tout le dépôt).
@@ -28,6 +36,7 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
   payant) n'est volontairement **pas** autorisé : il demande confirmation à Carlos. Ne jamais modifier soi-même ces autorisations.
   Les générateurs de l'addon Blender sont « off » : Carlos devra activer Hyper3D dans l'addon avant l'étape 7.
 - **2 échecs de suite sur le même point** → stop et message à Carlos (règle anti-boucle).
+- Le shell est **zsh** : `set -- $var` n'y découpe pas les mots (piège rencontré avec le banc) ; écrire les boucles en `bash`.
 - Les références `.gd` utilisent `class_name` + `preload` ; les tests sont des `RefCounted` avec des méthodes `test_*()` qui
   renvoient `""` si OK.
 

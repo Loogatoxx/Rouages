@@ -16,7 +16,7 @@ signal vague_commencee(numero: int)
 signal vague_terminee(numero: int)
 ## L'horloge centrale perd des points de vie.
 signal horloge_touchee(pv_restants: int)
-## Le joueur a choisi une tuile pendant le draft (`id` = nom du fichier .tres dans data/tuiles/).
+## Le joueur sélectionne un objet de sa réserve (`id` = `objet.id` : tuile ou extension ; `&""` = désélection).
 signal tuile_choisie(id: StringName)
 ## Fin de run.
 signal run_terminee(victoire: bool)

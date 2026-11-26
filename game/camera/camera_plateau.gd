@@ -16,7 +16,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	var mouvement: Vector2 = Input.get_vector("camera_gauche", "camera_droite", "camera_haut", "camera_bas")
 	_cible += Vector3(mouvement.x, 0, mouvement.y) * _cadre * 0.55 * delta
-	_cible = _cible.clamp(Vector3(-9, 0, -9), Vector3(9, 0, 9))
+	_cible = _cible.clamp(Vector3(-24, 0, -24), Vector3(24, 0, 24))
 	_appliquer_vue()
 
 

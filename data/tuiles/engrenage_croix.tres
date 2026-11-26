@@ -6,6 +6,7 @@
 script = ExtResource("1")
 id = &"engrenage_croix"
 nom = "Engrenage en croix"
+description = "Partage le mouvement entre ses quatre côtés."
 type = 1
 ports = 15
 transmet = true

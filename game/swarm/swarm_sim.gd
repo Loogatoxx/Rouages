@@ -27,6 +27,7 @@ class Nuee:
 	var angles := PackedFloat32Array()
 	var vies := PackedFloat32Array()
 	var recharges := PackedFloat32Array()
+	var choix := PackedInt64Array()
 	var modeles: Array[UniteDef] = []
 	var suivants := PackedVector2Array()
 	var grille: Dictionary[Vector2i, Cellule] = {}
@@ -40,17 +41,20 @@ class Nuee:
 		angles[i] = angles[fin]
 		vies[i] = vies[fin]
 		recharges[i] = recharges[fin]
+		choix[i] = choix[fin]
 		modeles[i] = modeles[fin]
 		lieux.resize(fin)
 		angles.resize(fin)
 		vies.resize(fin)
 		recharges.resize(fin)
+		choix.resize(fin)
 		modeles.pop_back()
 
 
 var _camps: Array[Nuee] = [Nuee.new(), Nuee.new()]
 var _distances: Dictionary = {}
 var _objectifs: Array[Dictionary] = [{}, {}]
+var _branches: Dictionary[Vector2i, PackedVector2Array] = {}
 
 
 ## Recalcule les cartes et les prochains centres à viser, sans déplacer les unités.
@@ -59,19 +63,28 @@ func configurer(plateau: Plateau) -> void:
 	var sources: Dictionary = ChampFlux.vers_chemin(plateau, _distances)
 	for objectifs: Dictionary in _objectifs:
 		objectifs.clear()
+	_branches.clear()
 	for case: Vector2i in sources:
 		var source: Vector2i = sources[case]
-		for camp: int in [ALLIE, ENNEMI]:
-			var cible: Vector2i = source
-			if case == source:
-				var distance: int = _distances[case]
-				for direction: Vector2i in ChampFlux.VOISINS:
-					var voisin: Vector2i = case + direction
-					var suivante: int = _distances.get(voisin, -1)
-					if suivante >= 0 and (suivante > distance if camp == ALLIE else suivante < distance):
-						cible = voisin
-						break
-			_objectifs[camp][case] = Vector2(cible) * MAILLE
+		_objectifs[ALLIE][case] = Vector2(source) * MAILLE
+		_objectifs[ENNEMI][case] = Vector2(source) * MAILLE
+		if case != source:
+			continue
+		var branches := PackedVector2Array()
+		var retour: Vector2i = case
+		var distance: int = _distances[case]
+		for direction: Vector2i in ChampFlux.VOISINS:
+			var voisin: Vector2i = case + direction
+			var suivante: int = _distances.get(voisin, -1)
+			if suivante > distance:
+				branches.append(Vector2(voisin) * MAILLE)
+			elif suivante >= 0 and suivante < distance and retour == case:
+				retour = voisin
+		_objectifs[ENNEMI][case] = Vector2(retour) * MAILLE
+		if branches.size() == 1:
+			_objectifs[ALLIE][case] = branches[0]
+		elif branches.size() > 1:
+			_branches[case] = branches
 
 
 ## Ajoute une unité prête à frapper tant qu'il reste une place dans son camp.
@@ -83,6 +96,7 @@ func ajouter(def: UniteDef, position: Vector2) -> bool:
 	nuee.angles.append(0.0)
 	nuee.vies.append(def.pv)
 	nuee.recharges.append(0.0)
+	nuee.choix.append(randi() if def.camp == ALLIE else 0)
 	nuee.modeles.append(def)
 	nuee.rayon_max = maxf(nuee.rayon_max, def.rayon)
 	nuee.portee_max = maxf(nuee.portee_max, def.portee)
@@ -217,14 +231,23 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 		nuee.recharges[i] = maxf(0.0, recharge - dt)
 		return
 	nuee.recharges[i] = maxf(0.0, recharge - dt)
-	var destination: Vector2 = adverse.lieux[cible] if cible >= 0 and meilleur < POURSUITE * POURSUITE else _objectif_flux(camp, lieu)
+	var destination: Vector2
+	if cible >= 0 and meilleur < POURSUITE * POURSUITE:
+		destination = adverse.lieux[cible]
+	else:
+		destination = _objectif_flux(camp, lieu, nuee.choix[i])
 	if destination != lieu:
 		nuee.suivants[i] = lieu.move_toward(destination, modele.vitesse * dt)
 		nuee.angles[i] = (destination - lieu).angle()
 
 
-func _objectif_flux(camp: int, lieu: Vector2) -> Vector2:
+func _objectif_flux(camp: int, lieu: Vector2, choix: int) -> Vector2:
 	var case := Vector2i((lieu / MAILLE).round())
+	if camp == ALLIE and _branches.has(case):
+		var branches: PackedVector2Array = _branches[case]
+		# Le hachage mêle le choix et la case : deux embranchements successifs restent indépendants
+		# (avec un simple `choix % 2`, tous les jouets partis au nord prendraient la même branche ensuite).
+		return branches[posmod(hash(Vector3i(choix & 0x7FFFFFFF, case.x, case.y)), branches.size())]
 	var objectifs: Dictionary = _objectifs[camp]
 	if objectifs.has(case):
 		return objectifs[case]
