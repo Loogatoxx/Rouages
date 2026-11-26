@@ -28,3 +28,5 @@ signal ennemi_casse(position: Vector2)
 signal pause_demandee
 ## Un retour court à montrer au joueur (action refusée, astuce) : `texte` est une clé de traduction déjà formatée.
 signal message_joueur(texte: String)
+## Le joueur a repris une pièce posée (`def`) depuis la case `case` : elle retourne dans la réserve (PT-31).
+signal piece_reprise(case: Vector2i, def: Resource)
