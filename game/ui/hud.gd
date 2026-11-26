@@ -7,6 +7,8 @@ const PieceDef = preload("res://game/board/piece_def.gd")
 const Reperes = preload("res://game/ui/reperes.gd")
 const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
+const ICONE_RESSORT: Texture2D = preload("res://assets/ui/icones/ressort.png")
+const ICONE_PV: Texture2D = preload("res://assets/ui/icones/horloge_pv.png")
 const VITESSE_NORMALE: Texture2D = preload("res://assets/ui/icones/vitesse_x1.png")
 const VITESSE_DOUBLE: Texture2D = preload("res://assets/ui/icones/vitesse_x2.png")
 const MEDAILLONS: Array[Texture2D] = [
@@ -59,6 +61,13 @@ func _ready() -> void:
 	Events.message_joueur.connect(func(texte: String) -> void: _annoncer(texte, -1))
 	_creer_boutique()
 	_caler_prix(%PrixReparation)
+	var ressort := TextureRect.new()
+	ressort.texture = ICONE_RESSORT
+	ressort.custom_minimum_size = Vector2(24, 24)
+	ressort.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ressort.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	%PrixReparation.get_parent().add_child(ressort)
+	%PrixReparation.get_parent().move_child(ressort, %PrixReparation.get_index())
 	_actualiser_prix()
 	_solde = Run.ressorts
 	_actualiser_phase(Run.phase)
@@ -181,17 +190,47 @@ func _afficher_vitesse() -> void:
 	%Vitesse.accessibility_name = tr("Changer la vitesse (Espace)") + " · " + tr("x%d") % int(Run.vitesse)
 
 
+# Boutique en tuiles (playtest 1 : « icônes au premier plan, texte au survol ») : vignette de la pièce, quantité et prix
+# avec l'icône ressort ; nom et effet passent dans l'infobulle.
 func _creer_boutique() -> void:
 	for i: int in Run.regles.boutique.size():
-		var ligne := HBoxContainer.new()
+		var lot: Lot = Run.regles.boutique[i]
 		var bouton := Button.new()
-		bouton.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bouton.custom_minimum_size = Vector2(112, 124)
+		var colonne := VBoxContainer.new()
+		colonne.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, 8)
+		colonne.alignment = BoxContainer.ALIGNMENT_CENTER
+		colonne.add_theme_constant_override(&"separation", 0)
+		colonne.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		bouton.add_child(colonne)
+		var vignette := TextureRect.new()
+		vignette.texture = Interface.vignette_de(lot.objet)
+		vignette.custom_minimum_size = Vector2(78, 78)
+		vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		vignette.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		colonne.add_child(vignette)
+		var bas := HBoxContainer.new()
+		bas.alignment = BoxContainer.ALIGNMENT_CENTER
+		bas.add_theme_constant_override(&"separation", 2)
+		bas.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		colonne.add_child(bas)
+		var quantite := Label.new()
+		quantite.theme_type_variation = &"Nombre"
+		quantite.add_theme_font_size_override(&"font_size", 17)
+		quantite.text = "×%d " % lot.quantite
+		bas.add_child(quantite)
+		var ressort := TextureRect.new()
+		ressort.texture = ICONE_RESSORT
+		ressort.custom_minimum_size = Vector2(20, 20)
+		ressort.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		ressort.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		bas.add_child(ressort)
 		var prix := Label.new()
-		prix.theme_type_variation = &"Badge"
-		_caler_prix(prix)
-		ligne.add_child(bouton)
-		ligne.add_child(prix)
-		%Achats.add_child(ligne)
+		prix.theme_type_variation = &"Nombre"
+		prix.add_theme_font_size_override(&"font_size", 17)
+		bas.add_child(prix)
+		%Achats.add_child(bouton)
 		_prix_ventes.append(prix)
 		Interface.preparer_bouton(bouton)
 		bouton.pressed.connect(Run.acheter.bind(i))
@@ -210,10 +249,14 @@ func _caler_prix(prix: Label) -> void:
 func _actualiser_prix() -> void:
 	for i: int in _ventes.size():
 		var lot: Lot = Run.regles.boutique[i]
-		_ventes[i].text = tr("%s ×%d") % [tr(lot.objet.get("nom")), lot.quantite]
 		_prix_ventes[i].text = str(lot.prix)
 		_ventes[i].accessibility_name = tr("%s ×%d — %d") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
-	%Reparer.text = tr("Réparer l’horloge (+%d PV)") % Run.regles.pv_reparation
+	# Réparer : cœur + gain de PV sur le bouton, libellé complet au survol.
+	%Reparer.icon = ICONE_PV
+	%Reparer.expand_icon = true
+	%Reparer.add_theme_constant_override(&"icon_max_width", 30)
+	%Reparer.text = "+%d" % Run.regles.pv_reparation
+	%Reparer.tooltip_text = tr("Réparer l’horloge (+%d PV)") % Run.regles.pv_reparation
 	%PrixReparation.text = str(Run.regles.prix_reparation)
 	%Reparer.accessibility_name = tr("Réparer l’horloge (+%d PV) — %d") % [Run.regles.pv_reparation, Run.regles.prix_reparation]
 
@@ -261,7 +304,10 @@ func _actualiser_solde(total: int) -> void:
 		var lot: Lot = Run.regles.boutique[i]
 		var verrouille: bool = lot.vague_min > Run.vague_actuelle + 1
 		_ventes[i].disabled = verrouille or total < lot.prix
-		_ventes[i].tooltip_text = (tr("Disponible à la vague %d") % lot.vague_min
+		# Tuile trop chère ou verrouillée : grisée (audit UI : coûts inabordables lisibles d'un coup d'œil).
+		_ventes[i].modulate = Color(1, 1, 1, 0.55) if _ventes[i].disabled else Color.WHITE
+		var entete: String = tr("%s ×%d — %d ressorts") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
+		_ventes[i].tooltip_text = entete + "\n" + (tr("Disponible à la vague %d") % lot.vague_min
 				if verrouille else tr(lot.objet.get("description")))
 
 
@@ -339,6 +385,14 @@ class Carte extends Button:
 		else:
 			badge.text = "×%d" % lot.quantite
 		insigne.add_child(badge)
+		# Vignette de la pièce à droite de l'insigne : on reconnaît le lot avant de lire.
+		var vignette := TextureRect.new()
+		vignette.texture = Interface.vignette_de(lot.objet)
+		vignette.custom_minimum_size = Vector2(64, 64)
+		vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		vignette.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		vignette.size_flags_horizontal = Control.SIZE_EXPAND | Control.SIZE_SHRINK_END
+		insigne.add_child(vignette)
 		nom.theme_type_variation = &"CarteNom"
 		nom.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		nom.custom_minimum_size.x = 206

@@ -149,8 +149,9 @@ theme_type_variation = &"TitreMenu"
 horizontal_alignment = 1
 text = "Boutique"
 
-[node name="Achats" type="VBoxContainer" parent="Colonne/Boutique/Lignes"]
+[node name="Achats" type="GridContainer" parent="Colonne/Boutique/Lignes"]
 unique_name_in_owner = true
+columns = 3
 
 [node name="Reparation" type="HBoxContainer" parent="Colonne/Boutique/Lignes"]
 

@@ -164,3 +164,11 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   remis à zéro au lancement). Signal `piece_reprise` → `Production.atelier_repris` : un atelier déjà remonté puis déplacé
   ne l'est pas une 2e fois dans la même pause. → Le placement compte, une erreur se rattrape, et déplacer n'est pas une
   astuce pour gagner des jouets.
+
+## Après playtest 1 — lot 4 (boutique et réserve en icônes)
+- **Vignettes** : `scripts/generer_vignettes.gd` rend chaque pièce et extension du kit 3D en 128 px (vue 3/4, fond
+  transparent, dents de laiton des ports ajoutées) dans `assets/ui/vignettes/<id>.png` ; `Interface.vignette_de(objet)`.
+  À relancer après tout changement du kit. → Cohérent avec le plateau, sans dessin ni crédit.
+- **Boutique** : grille de tuiles (vignette, ×quantité, prix + icône ressort), tuile inabordable grisée, nom et effet au
+  survol ; réparer = cœur + gain. **Réserve** : vignette + ×N (vignette en enfant de taille fixe : l'icône native d'un
+  `Button` rétrécit avec les marges du thème). Cartes de tirage : vignette à côté de l'insigne.

@@ -244,3 +244,9 @@ static func caler_hauteur(texte: Label, largeur: float) -> void:
 			taille, -1, TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND)
 	var lignes: int = maxi(1, roundi(mesure.y / police.get_height(taille)))
 	texte.custom_minimum_size.y = mesure.y + (lignes - 1) * texte.get_theme_constant(&"line_spacing") + 6
+
+
+## Vignette d'une pièce ou d'une extension, rendue depuis le kit 3D (`scripts/generer_vignettes.gd`), ou null.
+static func vignette_de(objet: Resource) -> Texture2D:
+	var chemin: String = "res://assets/ui/vignettes/%s.png" % objet.get("id")
+	return load(chemin) as Texture2D if ResourceLoader.exists(chemin) else null
