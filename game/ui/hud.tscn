@@ -3,6 +3,14 @@
 [ext_resource type="Script" path="res://game/ui/hud.gd" id="script"]
 [ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/icones/horloge_pv.png" id="horloge_pv"]
+[ext_resource type="Texture2D" path="res://assets/ui/icones/ressort.png" id="ressort"]
+[ext_resource type="Texture2D" path="res://assets/ui/icones/vitesse_x1.png" id="vitesse_x1"]
+[ext_resource type="Texture2D" path="res://assets/ui/icones/pause.png" id="pause"]
+[ext_resource type="Texture2D" path="res://assets/ui/icones/coffre.png" id="coffre"]
+[ext_resource type="Texture2D" path="res://assets/ui/icones/engrenage_or.png" id="engrenage_or"]
+[ext_resource type="Texture2D" path="res://assets/ui/ruban.png" id="fanion"]
+
 [sub_resource type="Gradient" id="Pastels"]
 offsets = PackedFloat32Array(0, 0.33, 0.66, 1)
 colors = PackedColorArray(1, 0.69, 0.58, 1, 0.72, 0.86, 0.74, 1, 1, 0.85, 0.54, 1, 0.72, 0.84, 0.91, 1)
@@ -14,69 +22,122 @@ script = ExtResource("script")
 [node name="Colonne" type="VBoxContainer" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -374.0
-offset_top = 20.0
-offset_right = -20.0
+offset_left = -14.0
+offset_right = -14.0
+offset_top = 12.0
 grow_horizontal = 0
 theme = ExtResource("theme")
 mouse_filter = 2
 
-[node name="Tableau" type="PanelContainer" parent="Colonne"]
+[node name="Tableau" type="HBoxContainer" parent="Colonne"]
 unique_name_in_owner = true
+mouse_filter = 2
+theme_override_constants/separation = 4
 
-[node name="Lignes" type="VBoxContainer" parent="Colonne/Tableau"]
+[node name="VaguePlaque" type="PanelContainer" parent="Colonne/Tableau"]
+theme_type_variation = &"Plaque"
 
-[node name="Vague" type="Label" parent="Colonne/Tableau/Lignes"]
+[node name="Ligne" type="HBoxContainer" parent="Colonne/Tableau/VaguePlaque"]
+theme_override_constants/separation = 4
+
+[node name="Icone" type="TextureRect" parent="Colonne/Tableau/VaguePlaque/Ligne"]
+custom_minimum_size = Vector2(26, 26)
+texture = ExtResource("fanion")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Vague" type="Label" parent="Colonne/Tableau/VaguePlaque/Ligne"]
 unique_name_in_owner = true
-theme_type_variation = &"SousTitre"
-text = ""
+theme_type_variation = &"Nombre"
 
-[node name="PV" type="Label" parent="Colonne/Tableau/Lignes"]
+[node name="PVPlaque" type="PanelContainer" parent="Colonne/Tableau"]
+theme_type_variation = &"Plaque"
+
+[node name="Ligne" type="HBoxContainer" parent="Colonne/Tableau/PVPlaque"]
+theme_override_constants/separation = 4
+
+[node name="Icone" type="TextureRect" parent="Colonne/Tableau/PVPlaque/Ligne"]
+custom_minimum_size = Vector2(26, 26)
+texture = ExtResource("horloge_pv")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="PV" type="Label" parent="Colonne/Tableau/PVPlaque/Ligne"]
 unique_name_in_owner = true
-text = ""
+theme_type_variation = &"Nombre"
 
-[node name="Ressorts" type="Label" parent="Colonne/Tableau/Lignes"]
+[node name="RessortsPlaque" type="PanelContainer" parent="Colonne/Tableau"]
+theme_type_variation = &"Plaque"
+
+[node name="Ligne" type="HBoxContainer" parent="Colonne/Tableau/RessortsPlaque"]
+theme_override_constants/separation = 4
+
+[node name="Icone" type="TextureRect" parent="Colonne/Tableau/RessortsPlaque/Ligne"]
+custom_minimum_size = Vector2(26, 26)
+texture = ExtResource("ressort")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Ressorts" type="Label" parent="Colonne/Tableau/RessortsPlaque/Ligne"]
 unique_name_in_owner = true
-text = ""
+theme_type_variation = &"Nombre"
 
-[node name="Commandes" type="HBoxContainer" parent="Colonne/Tableau/Lignes"]
-
-[node name="Vitesse" type="Button" parent="Colonne/Tableau/Lignes/Commandes"]
+[node name="Vitesse" type="Button" parent="Colonne/Tableau"]
 unique_name_in_owner = true
-text = "x1"
+custom_minimum_size = Vector2(46, 42)
+icon = ExtResource("vitesse_x1")
+icon_alignment = 1
+theme_type_variation = &"Commande"
 tooltip_text = "Changer la vitesse (Espace)"
-size_flags_horizontal = 3
+accessibility_name = "Changer la vitesse (Espace)"
 
-[node name="Pause" type="Button" parent="Colonne/Tableau/Lignes/Commandes"]
+[node name="Pause" type="Button" parent="Colonne/Tableau"]
 unique_name_in_owner = true
-text = "Pause"
+custom_minimum_size = Vector2(46, 42)
+icon = ExtResource("pause")
+icon_alignment = 1
+theme_type_variation = &"Commande"
 tooltip_text = "Mettre en pause (P)"
-size_flags_horizontal = 3
-
-[node name="Lancer" type="Button" parent="Colonne/Tableau/Lignes"]
-unique_name_in_owner = true
-text = "Lancer la vague"
+accessibility_name = "Mettre en pause (P)"
 
 [node name="Boutique" type="PanelContainer" parent="Colonne"]
 unique_name_in_owner = true
+size_flags_horizontal = 8
 visible = false
 
 [node name="Lignes" type="VBoxContainer" parent="Colonne/Boutique"]
 
 [node name="TitreBoutique" type="Label" parent="Colonne/Boutique/Lignes"]
 unique_name_in_owner = true
-theme_type_variation = &"SousTitre"
+theme_type_variation = &"TitreMenu"
+horizontal_alignment = 1
 text = "Boutique"
 
 [node name="Achats" type="VBoxContainer" parent="Colonne/Boutique/Lignes"]
 unique_name_in_owner = true
 
-[node name="Reparer" type="Button" parent="Colonne/Boutique/Lignes"]
+[node name="Reparation" type="HBoxContainer" parent="Colonne/Boutique/Lignes"]
+
+[node name="Reparer" type="Button" parent="Colonne/Boutique/Lignes/Reparation"]
+size_flags_horizontal = 3
 unique_name_in_owner = true
 text = "Réparer l’horloge"
 
-[node name="Draft" type="CenterContainer" parent="."]
-anchor_right = 1.0
+[node name="PrixReparation" type="Label" parent="Colonne/Boutique/Lignes/Reparation"]
+unique_name_in_owner = true
+theme_type_variation = &"Badge"
+
+[node name="Lancer" type="Button" parent="Colonne/Boutique/Lignes"]
+unique_name_in_owner = true
+theme_type_variation = &"Action"
+text = "Lancer la vague"
+
+[node name="Draft" type="MarginContainer" parent="."]
+anchor_left = 0.06
+anchor_right = 0.94
 anchor_bottom = 1.0
 theme = ExtResource("theme")
 mouse_filter = 2
@@ -84,20 +145,57 @@ visible = false
 
 [node name="PanneauDraft" type="PanelContainer" parent="Draft"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(450, 0)
+size_flags_vertical = 4
 
 [node name="Colonne" type="VBoxContainer" parent="Draft/PanneauDraft"]
 
-[node name="TitreDraft" type="Label" parent="Draft/PanneauDraft/Colonne"]
-unique_name_in_owner = true
-theme_type_variation = &"SousTitre"
+[node name="Ruban" type="PanelContainer" parent="Draft/PanneauDraft/Colonne"]
+theme_type_variation = &"Banniere"
+size_flags_horizontal = 4
 
-[node name="Lots" type="VBoxContainer" parent="Draft/PanneauDraft/Colonne"]
-unique_name_in_owner = true
+[node name="Entete" type="HBoxContainer" parent="Draft/PanneauDraft/Colonne/Ruban"]
+alignment = 1
 
-[node name="Relancer" type="Button" parent="Draft/PanneauDraft/Colonne"]
+[node name="Coffre" type="TextureRect" parent="Draft/PanneauDraft/Colonne/Ruban/Entete"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+texture = ExtResource("coffre")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="TitreDraft" type="Label" parent="Draft/PanneauDraft/Colonne/Ruban/Entete"]
+unique_name_in_owner = true
+theme_type_variation = &"TitreRuban"
+
+[node name="DefilementLots" type="ScrollContainer" parent="Draft/PanneauDraft/Colonne"]
+unique_name_in_owner = true
+horizontal_scroll_mode = 0
+follow_focus = true
+
+[node name="Bords" type="MarginContainer" parent="Draft/PanneauDraft/Colonne/DefilementLots"]
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 9
+theme_override_constants/margin_right = 9
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="Lots" type="HFlowContainer" parent="Draft/PanneauDraft/Colonne/DefilementLots/Bords"]
+unique_name_in_owner = true
+alignment = 1
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 18
+
+[node name="Relance" type="HBoxContainer" parent="Draft/PanneauDraft/Colonne"]
+alignment = 1
+
+[node name="Relancer" type="Button" parent="Draft/PanneauDraft/Colonne/Relance"]
 unique_name_in_owner = true
 text = "Relancer le tirage"
+
+[node name="PrixRelance" type="Label" parent="Draft/PanneauDraft/Colonne/Relance"]
+unique_name_in_owner = true
+theme_type_variation = &"Badge"
 
 [node name="Flash" type="ColorRect" parent="."]
 unique_name_in_owner = true
@@ -125,7 +223,7 @@ custom_minimum_size = Vector2(460, 0)
 
 [node name="Bilan" type="Label" parent="Fin/Centre/PanneauFin/Colonne"]
 unique_name_in_owner = true
-theme_type_variation = &"Titre"
+theme_type_variation = &"TitreMenu"
 horizontal_alignment = 1
 text = ""
 
@@ -133,6 +231,20 @@ text = ""
 unique_name_in_owner = true
 horizontal_alignment = 1
 text = ""
+
+[node name="Prime" type="HBoxContainer" parent="Fin/Centre/PanneauFin/Colonne"]
+alignment = 1
+
+[node name="Or" type="TextureRect" parent="Fin/Centre/PanneauFin/Colonne/Prime"]
+custom_minimum_size = Vector2(32, 32)
+texture = ExtResource("engrenage_or")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="PrimeOr" type="Label" parent="Fin/Centre/PanneauFin/Colonne/Prime"]
+unique_name_in_owner = true
+theme_type_variation = &"Petit"
 
 [node name="Rejouer" type="Button" parent="Fin/Centre/PanneauFin/Colonne"]
 unique_name_in_owner = true
@@ -163,20 +275,21 @@ scale_amount_max = 6.0
 color_initial_ramp = SubResource("Pastels")
 
 [node name="Haut" type="CenterContainer" parent="."]
-anchor_left = 0.25
-anchor_right = 0.75
-offset_top = 24.0
+anchor_left = 0.18
+anchor_right = 0.82
+offset_top = 72.0
 theme = ExtResource("theme")
 mouse_filter = 2
 
 [node name="Bandeau" type="PanelContainer" parent="Haut"]
+theme_type_variation = &"Banniere"
 unique_name_in_owner = true
 visible = false
 mouse_filter = 2
 
 [node name="Annonce" type="Label" parent="Haut/Bandeau"]
 unique_name_in_owner = true
-theme_type_variation = &"SousTitre"
+theme_type_variation = &"TitreRuban"
 text = ""
 mouse_filter = 2
 

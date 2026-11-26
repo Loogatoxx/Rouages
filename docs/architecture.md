@@ -102,3 +102,21 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   aucune fuite de V1 à V7 même pour un joueur moyen puis un mur en V8-V10 ; après, le joueur moyen subit ses premières
   fuites en V3-V5 et perd en V8, le placement parfait gagne de justesse. Icône du jeu et musique de vague (fondu enchaîné).
 
+
+## Étape 10 — contenu post-MVP (2026-11-26)
+- **Tourelles (loot rare)** : `PieceDef.Type.TOURELLE` + `rarete` (commune/rare/épique) et stats de tir. `Tourelles` (RefCounted,
+  `game/workshops/`) fait tirer les tourelles alimentées pendant les vagues via `SwarmSim.blesser_zone` (cible la plus proche,
+  zone optionnelle) ; les morts passent par le chemin habituel (`unite_morte` → butin). Obtenues seulement dans les **coffres** :
+  `Regles.vagues_coffre` (3, 6, 9) remplacent le draft par un tirage dans `Regles.coffre` (`Run.offre_coffre`).
+- **Boss** : `UniteDef.boss`, `VagueDef.boss` + `pv_boss_facteur`. Le directeur le lâche une fois à mi-vague ; la vague ne
+  finit qu'à sa mort. `SwarmSim.pv_boss()` alimente la barre du HUD. Grand Scarabée en V5 (PV ×0,5) et V10.
+- **Progression méta** : `Progression` (statique, `user://progression.cfg`) garde les engrenages d'or et les niveaux des
+  `AmeliorationDef` (`data/ameliorations/`). `Run.reinitialiser` calcule des valeurs effectives (`pv_max`, `choix_par_draft`,
+  `bonus_cadence`, rente, relance offerte) sans toucher `regles.tres`. Gains : 1/vague tenue + 5 si victoire. Le défi du jour
+  ignore bonus et gains (équité). Écran : `game/ui/etabli.tscn`.
+- **Options** : bus audio `Musique` / `Effets` (`default_bus_layout.tres`), volumes et plein écran dans `user://reglages.cfg`,
+  panneau `game/ui/options.tscn` partagé par le titre et la pause.
+- **DA v2** (étude `art_refs/etude_da_v2.md`) : kit `.glb` en volume `assets/final/kit_v2/` chargé par `Materiaux.scene_du_kit`
+  (repli sur les primitives si absent, utile en headless) ; vue inclinée en perspective par défaut (la vue de dessus reste sur
+  la touche caméra) ; table d'établi en bois sous la maquette ; kit UI `assets/ui/` (9-patch bois/laiton/papier/étiquette/ruban,
+  icônes, polices OFL Fraunces + Nunito).

@@ -35,6 +35,7 @@ func _ready() -> void:
 func _changer_phase(phase: int) -> void:
 	if _termine:
 		return
+	_placer_conseil(phase == Run.Phase.DRAFT)
 	if phase == Run.Phase.FIN:
 		%Panneau.hide()
 	elif phase == Run.Phase.DRAFT and Run.vague_actuelle == 0:
@@ -44,6 +45,25 @@ func _changer_phase(phase: int) -> void:
 		_atelier_pret = _contient_atelier(_source.alimentees.keys())
 	elif phase == Run.Phase.VAGUE and Run.vague_actuelle == 1:
 		_montrer(4)
+
+
+func _placer_conseil(tirage: bool) -> void:
+	var panneau: PanelContainer = %Panneau
+	var colonne: BoxContainer = $Panneau/Colonne
+	colonne.vertical = not tirage
+	if tirage:
+		panneau.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+		panneau.offset_left = 20
+		panneau.offset_right = -20
+		panneau.offset_bottom = -12
+		panneau.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	else:
+		panneau.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+		panneau.offset_left = 20
+		panneau.offset_right = 374
+		panneau.offset_top = 12
+		panneau.grow_vertical = Control.GROW_DIRECTION_END
+	panneau.reset_size.call_deferred()
 
 
 func _verifier_ateliers(alimentees: Array[Vector2i]) -> void:

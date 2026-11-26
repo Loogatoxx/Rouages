@@ -12,20 +12,25 @@ unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(354, 0)
 offset_left = 20.0
-offset_top = 20.0
+offset_top = 12.0
 offset_right = 374.0
 theme = ExtResource("theme")
+theme_type_variation = &"Fiche"
 
-[node name="Colonne" type="VBoxContainer" parent="Panneau"]
+[node name="Colonne" type="BoxContainer" parent="Panneau"]
+vertical = true
 
 [node name="Etape" type="Label" parent="Panneau/Colonne"]
 unique_name_in_owner = true
-theme_type_variation = &"Petit"
+theme_type_variation = &"Badge"
+size_flags_horizontal = 0
 text = "Tutoriel"
 
 [node name="Conseil" type="Label" parent="Panneau/Colonne"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(314, 0)
+size_flags_horizontal = 3
+theme_type_variation = &"CarteTexte"
 text = ""
 autowrap_mode = 3
 
@@ -39,3 +44,7 @@ text = "Compris"
 unique_name_in_owner = true
 text = "Passer le tutoriel"
 size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+theme_override_colors/font_hover_color = Color(0.38, 0.22, 0.12, 1)
+theme_override_colors/font_focus_color = Color(0.38, 0.22, 0.12, 1)
+theme_override_colors/font_pressed_color = Color(0.38, 0.22, 0.12, 1)

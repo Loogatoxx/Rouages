@@ -218,22 +218,9 @@ static func preparer_boutons(racine: Node) -> void:
 		preparer_bouton(bouton)
 
 
-## Donne au bouton son clic, son survol et son léger enfoncement.
+## Associe le clic sonore au bouton et laisse le thème décaler son contenu à la pression.
 static func preparer_bouton(bouton: BaseButton) -> void:
 	bouton.pressed.connect(Sons.jouer.bind(&"clic"))
-	bouton.mouse_entered.connect(_animer_bouton.bind(bouton, 1.04))
-	bouton.mouse_exited.connect(_animer_bouton.bind(bouton, 1.0))
-	bouton.button_down.connect(_animer_bouton.bind(bouton, 0.97))
-	bouton.button_up.connect(func() -> void:
-		_animer_bouton(bouton, 1.04 if bouton.is_hovered() else 1.0))
-
-
-static func _animer_bouton(bouton: BaseButton, facteur: float) -> void:
-	_arreter_animation(bouton)
-	bouton.pivot_offset = bouton.size / 2.0
-	var animation: Tween = bouton.create_tween()
-	bouton.set_meta(&"animation_interface", animation)
-	animation.tween_property(bouton, "scale", Vector2.ONE * (1.0 if bouton.disabled else facteur), 0.08)
 
 
 static func _arreter_animation(controle: Control) -> void:

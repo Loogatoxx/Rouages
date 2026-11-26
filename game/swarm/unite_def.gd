@@ -13,3 +13,5 @@ enum Camp { ALLIE, ENNEMI }
 @export var portee: float
 @export var vitesse: float
 @export var rayon: float
+## Un boss a sa barre de vie dédiée en haut de l'écran.
+@export var boss: bool = false

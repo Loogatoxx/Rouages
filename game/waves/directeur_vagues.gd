@@ -14,6 +14,8 @@ var _progression_renfort: int = 0
 var _entrees: Array[Vector2i] = []
 var _apparues: int = 0
 var _delai: float = 0.0
+var _boss: UniteDef
+var _boss_lache: bool = false
 
 
 ## Prépare les deux modèles avec les PV propres à la vague.
@@ -27,6 +29,11 @@ func commencer(vague: VagueDef, entrees: Array[Vector2i]) -> void:
 	_entrees = entrees.duplicate()
 	_apparues = 0
 	_delai = 0.0
+	_boss = null
+	_boss_lache = vague.boss == null
+	if vague.boss != null:
+		_boss = _modele_vague(vague.boss)
+		_boss.pv *= vague.pv_boss_facteur
 
 
 func _modele_vague(source: UniteDef) -> UniteDef:
@@ -37,7 +44,12 @@ func _modele_vague(source: UniteDef) -> UniteDef:
 
 ## Fait arriver le premier scarabée dès le lancement, puis les suivants à intervalles réguliers.
 func avancer(dt: float, sim: SwarmSim) -> void:
-	if _entrees.is_empty() or _apparues >= _total:
+	if _entrees.is_empty():
+		return
+	if not _boss_lache and _apparues * 2 >= _total:
+		var case_boss: Vector2i = _entrees[0]
+		_boss_lache = sim.ajouter(_boss, Vector2(case_boss) * GrilleMonde.TAILLE_CASE)
+	if _apparues >= _total:
 		return
 	_delai -= dt
 	while _delai <= 0.0 and _apparues < _total:
@@ -58,4 +70,4 @@ func avancer(dt: float, sim: SwarmSim) -> void:
 
 ## Indique que toute la vague est entrée et que le dernier ennemi a disparu.
 func est_terminee(sim: SwarmSim) -> bool:
-	return _vague != null and _apparues == _total and sim.nombre(SwarmSim.ENNEMI) == 0
+	return _vague != null and _apparues == _total and _boss_lache and sim.nombre(SwarmSim.ENNEMI) == 0

@@ -1,155 +1,253 @@
 [gd_resource type="Theme" format=3]
 
-[sub_resource type="SystemFont" id="Corps"]
-font_names = PackedStringArray("Avenir Next Rounded", "Nunito", "Segoe UI", "Trebuchet MS")
+[ext_resource type="Texture2D" path="res://assets/ui/panneau_bois.png" id="panneau_bois"]
+[ext_resource type="Texture2D" path="res://assets/ui/plaque_laiton_petite.png" id="plaque_laiton"]
+[ext_resource type="Texture2D" path="res://assets/ui/papier.png" id="papier"]
+[ext_resource type="Texture2D" path="res://assets/ui/etiquette.png" id="etiquette"]
+[ext_resource type="Texture2D" path="res://assets/ui/ruban.png" id="ruban"]
+[ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-Bold.ttf" id="Fraunces-Bold"]
+[ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-SemiBold.ttf" id="Fraunces-SemiBold"]
+[ext_resource type="FontFile" path="res://assets/ui/polices/Nunito-Regular.ttf" id="Nunito-Regular"]
+[ext_resource type="FontFile" path="res://assets/ui/polices/Nunito-SemiBold.ttf" id="Nunito-SemiBold"]
+[ext_resource type="FontFile" path="res://assets/ui/polices/Nunito-Bold.ttf" id="Nunito-Bold"]
 
-[sub_resource type="SystemFont" id="DemiGras"]
-font_names = PackedStringArray("Avenir Next Rounded", "Nunito", "Segoe UI", "Trebuchet MS")
-font_weight = 600
+[sub_resource type="StyleBoxTexture" id="Bois"]
+texture = ExtResource("panneau_bois")
+texture_margin_left = 44.0
+texture_margin_top = 44.0
+texture_margin_right = 44.0
+texture_margin_bottom = 44.0
+content_margin_left = 28.0
+content_margin_top = 26.0
+content_margin_right = 28.0
+content_margin_bottom = 28.0
 
-[sub_resource type="StyleBoxFlat" id="Bois"]
-content_margin_left = 20.0
-content_margin_top = 16.0
+[sub_resource type="StyleBoxTexture" id="Tiroir"]
+texture = ExtResource("panneau_bois")
+texture_margin_left = 44.0
+texture_margin_top = 44.0
+texture_margin_right = 44.0
+texture_margin_bottom = 44.0
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="Laiton"]
+texture = ExtResource("plaque_laiton")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 26.0
+content_margin_top = 8.0
+content_margin_right = 26.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id="Survol"]
+texture = ExtResource("plaque_laiton")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 26.0
+content_margin_top = 8.0
+content_margin_right = 26.0
+content_margin_bottom = 10.0
+modulate_color = Color(1.12, 1.09, 1.04, 1)
+
+[sub_resource type="StyleBoxTexture" id="Appuye"]
+texture = ExtResource("plaque_laiton")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 26.0
+content_margin_top = 10.0
+content_margin_right = 26.0
+content_margin_bottom = 8.0
+modulate_color = Color(0.88, 0.82, 0.72, 1)
+
+[sub_resource type="StyleBoxTexture" id="Patine"]
+texture = ExtResource("plaque_laiton")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 26.0
+content_margin_top = 8.0
+content_margin_right = 26.0
+content_margin_bottom = 10.0
+modulate_color = Color(0.64, 0.77, 0.98, 1)
+
+[sub_resource type="StyleBoxTexture" id="Compteur"]
+texture = ExtResource("plaque_laiton")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 18.0
+content_margin_left = 22.0
+content_margin_top = 4.0
+content_margin_right = 22.0
+content_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxTexture" id="Papier"]
+texture = ExtResource("papier")
+texture_margin_left = 32.0
+texture_margin_top = 32.0
+texture_margin_right = 32.0
+texture_margin_bottom = 32.0
+content_margin_left = 24.0
+content_margin_top = 22.0
+content_margin_right = 24.0
+content_margin_bottom = 24.0
+
+[sub_resource type="StyleBoxTexture" id="Etiquette"]
+texture = ExtResource("etiquette")
+texture_margin_left = 76.0
+texture_margin_top = 22.0
+texture_margin_right = 24.0
+texture_margin_bottom = 22.0
+content_margin_left = 76.0
+content_margin_top = 5.0
 content_margin_right = 20.0
+content_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxTexture" id="Ruban"]
+texture = ExtResource("ruban")
+texture_margin_left = 88.0
+texture_margin_top = 26.0
+texture_margin_right = 88.0
+texture_margin_bottom = 26.0
+content_margin_left = 76.0
+content_margin_top = 8.0
+content_margin_right = 76.0
 content_margin_bottom = 16.0
-bg_color = Color(0.25882, 0.18824, 0.12157, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.78824, 0.63529, 0.2902, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-shadow_color = Color(0.21, 0.12, 0.06, 0.23)
-shadow_size = 6
-shadow_offset = Vector2(0, 3)
-
-[sub_resource type="StyleBoxFlat" id="Laiton"]
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-bg_color = Color(0.78824, 0.63529, 0.2902, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.87059, 0.74118, 0.45098, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
-[sub_resource type="StyleBoxFlat" id="LaitonClair"]
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-bg_color = Color(0.87843, 0.73725, 0.38824, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.94902, 0.83922, 0.61176, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
-[sub_resource type="StyleBoxFlat" id="LaitonAppuye"]
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-bg_color = Color(0.73333, 0.56863, 0.25098, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.57255, 0.43529, 0.19608, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
-
-[sub_resource type="StyleBoxFlat" id="Grise"]
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 18.0
-content_margin_bottom = 8.0
-bg_color = Color(0.68627, 0.61176, 0.50196, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.73725, 0.66275, 0.54902, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
 
 [sub_resource type="StyleBoxFlat" id="Focus"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(1, 0.9098, 0.72941, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.9098, 0.72941, 1)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
 draw_center = false
+border_color = Color(1, 0.93, 0.70, 1)
+border_width_left = 2
+expand_margin_left = 2.0
+border_width_top = 2
+expand_margin_top = 2.0
+border_width_right = 2
+expand_margin_right = 2.0
+border_width_bottom = 2
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxEmpty" id="Vide"]
+
+[sub_resource type="StyleBoxFlat" id="Rainure"]
+bg_color = Color(0.38, 0.24, 0.13, 1)
+content_margin_left = 5.0
+content_margin_right = 5.0
+
+[sub_resource type="StyleBoxFlat" id="Coulisse"]
+bg_color = Color(0.80, 0.63, 0.32, 1)
+border_width_left = 1
+border_width_right = 1
+border_color = Color(0.52, 0.34, 0.15, 1)
 
 [resource]
-default_font = SubResource("Corps")
+default_font = ExtResource("Nunito-Regular")
 default_font_size = 18
 Panel/styles/panel = SubResource("Bois")
 PanelContainer/styles/panel = SubResource("Bois")
 PopupPanel/styles/panel = SubResource("Bois")
-TooltipPanel/styles/panel = SubResource("Bois")
-Label/colors/font_color = Color(1, 0.9098, 0.72941, 1)
-TooltipLabel/colors/font_color = Color(1, 0.9098, 0.72941, 1)
-TooltipLabel/font_sizes/font_size = 15
+TooltipPanel/styles/panel = SubResource("Papier")
+Fiche/base_type = &"PanelContainer"
+Fiche/styles/panel = SubResource("Papier")
+Plaque/base_type = &"PanelContainer"
+Plaque/styles/panel = SubResource("Compteur")
+Tiroir/base_type = &"PanelContainer"
+Tiroir/styles/panel = SubResource("Tiroir")
+Banniere/base_type = &"PanelContainer"
+Banniere/styles/panel = SubResource("Ruban")
 Button/styles/normal = SubResource("Laiton")
-Button/styles/hover = SubResource("LaitonClair")
-Button/styles/pressed = SubResource("LaitonAppuye")
-Button/styles/hover_pressed = SubResource("LaitonAppuye")
-Button/styles/disabled = SubResource("Grise")
+Button/styles/hover = SubResource("Survol")
+Button/styles/pressed = SubResource("Appuye")
+Button/styles/hover_pressed = SubResource("Appuye")
+Button/styles/disabled = SubResource("Patine")
 Button/styles/focus = SubResource("Focus")
-Button/colors/font_color = Color(0.21961, 0.15294, 0.09804, 1)
-Button/colors/font_hover_color = Color(0.21961, 0.15294, 0.09804, 1)
-Button/colors/font_pressed_color = Color(0.21961, 0.15294, 0.09804, 1)
-Button/colors/font_hover_pressed_color = Color(0.21961, 0.15294, 0.09804, 1)
-Button/colors/font_focus_color = Color(0.21961, 0.15294, 0.09804, 1)
-Button/colors/font_disabled_color = Color(0.31765, 0.26275, 0.20784, 1)
-LinkButton/colors/font_color = Color(0.94118, 0.80784, 0.52941, 1)
-LinkButton/colors/font_hover_color = Color(1, 0.9098, 0.72941, 1)
-LinkButton/colors/font_focus_color = Color(1, 0.9098, 0.72941, 1)
-LinkButton/colors/font_pressed_color = Color(1, 0.9098, 0.72941, 1)
-LinkButton/font_sizes/font_size = 15
-VBoxContainer/constants/separation = 10
-HBoxContainer/constants/separation = 12
-GridContainer/constants/h_separation = 12
-GridContainer/constants/v_separation = 8
+Button/constants/align_to_largest_stylebox = 0
+Button/fonts/font = ExtResource("Nunito-Bold")
+Button/font_sizes/font_size = 18
+Button/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+Button/colors/font_focus_color = Color(0.231373, 0.149020, 0.094118, 1)
+Button/colors/font_pressed_color = Color(0.231373, 0.149020, 0.094118, 1)
+Button/colors/font_hover_color = Color(0.231373, 0.149020, 0.094118, 1)
+Button/colors/font_hover_pressed_color = Color(0.231373, 0.149020, 0.094118, 1)
+Button/colors/font_disabled_color = Color(0.231373, 0.149020, 0.094118, 1)
+Commande/base_type = &"Button"
+Commande/constants/icon_max_width = 26
+Action/base_type = &"Button"
+Action/fonts/font = ExtResource("Fraunces-SemiBold")
+Action/font_sizes/font_size = 24
+Carte/base_type = &"Button"
+Carte/styles/normal = SubResource("Vide")
+Carte/styles/pressed = SubResource("Vide")
+Carte/styles/hover = SubResource("Vide")
+Carte/styles/hover_pressed = SubResource("Vide")
+Carte/styles/disabled = SubResource("Vide")
+LinkButton/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+LinkButton/colors/font_hover_color = Color(1, 0.952941, 0.839216, 1)
+LinkButton/colors/font_pressed_color = Color(1, 0.952941, 0.839216, 1)
+LinkButton/colors/font_focus_color = Color(1, 0.952941, 0.839216, 1)
+LinkButton/colors/font_disabled_color = Color(0.83, 0.77, 0.67, 1)
+LinkButton/styles/focus = SubResource("Focus")
+Label/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+TooltipLabel/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 Titre/base_type = &"Label"
-Titre/font_sizes/font_size = 48
-Titre/fonts/font = SubResource("DemiGras")
+Titre/fonts/font = ExtResource("Fraunces-Bold")
+Titre/font_sizes/font_size = 46
+Titre/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+Titre/styles/normal = SubResource("Ruban")
+TitreMenu/base_type = &"Label"
+TitreMenu/fonts/font = ExtResource("Fraunces-SemiBold")
+TitreMenu/font_sizes/font_size = 32
+TitreMenu/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+TitreMenu/styles/normal = SubResource("Ruban")
+TitreRuban/base_type = &"Label"
+TitreRuban/fonts/font = ExtResource("Fraunces-SemiBold")
+TitreRuban/font_sizes/font_size = 32
+TitreRuban/colors/font_color = Color(1, 0.952941, 0.839216, 1)
 SousTitre/base_type = &"Label"
-SousTitre/font_sizes/font_size = 22
-SousTitre/fonts/font = SubResource("DemiGras")
+SousTitre/fonts/font = ExtResource("Fraunces-SemiBold")
+SousTitre/font_sizes/font_size = 24
+SousTitre/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+Nombre/base_type = &"Label"
+Nombre/fonts/font = ExtResource("Fraunces-SemiBold")
+Nombre/font_sizes/font_size = 23
+Nombre/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+Badge/base_type = &"Label"
+Badge/fonts/font = ExtResource("Nunito-Bold")
+Badge/font_sizes/font_size = 18
+Badge/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+Badge/styles/normal = SubResource("Etiquette")
 CarteNom/base_type = &"Label"
-CarteNom/colors/font_color = Color(0.21961, 0.15294, 0.09804, 1)
-CarteNom/font_sizes/font_size = 20
-CarteNom/fonts/font = SubResource("DemiGras")
+CarteNom/fonts/font = ExtResource("Fraunces-SemiBold")
+CarteNom/font_sizes/font_size = 23
+CarteNom/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 CarteTexte/base_type = &"Label"
-CarteTexte/colors/font_color = Color(0.33, 0.24, 0.16, 1)
-CarteTexte/font_sizes/font_size = 15
+CarteTexte/fonts/font = ExtResource("Nunito-Regular")
+CarteTexte/font_sizes/font_size = 18
+CarteTexte/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+Description/base_type = &"Label"
+Description/fonts/font = ExtResource("Nunito-Regular")
+Description/font_sizes/font_size = 18
+Description/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+Description/styles/normal = SubResource("Papier")
 Petit/base_type = &"Label"
-Petit/font_sizes/font_size = 15
+Petit/fonts/font = ExtResource("Nunito-SemiBold")
+Petit/font_sizes/font_size = 18
+Petit/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+VBoxContainer/constants/separation = 8
+HBoxContainer/constants/separation = 8
+GridContainer/constants/h_separation = 8
+GridContainer/constants/v_separation = 6
+VScrollBar/styles/scroll = SubResource("Rainure")
+VScrollBar/styles/scroll_focus = SubResource("Rainure")
+VScrollBar/styles/grabber = SubResource("Coulisse")
+VScrollBar/styles/grabber_highlight = SubResource("Coulisse")
+VScrollBar/styles/grabber_pressed = SubResource("Coulisse")

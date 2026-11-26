@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" path="res://game/ui/options.tscn" id="options"]
 [ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/icones/engrenage_or.png" id="or"]
+
 [sub_resource type="Gradient" id="Miel"]
 colors = PackedColorArray(0.89, 0.69, 0.37, 1, 1, 0.94, 0.81, 1)
 
@@ -33,7 +35,25 @@ anchor_bottom = 1.0
 [node name="Ensemble" type="HBoxContainer" parent="Centre"]
 theme_override_constants/separation = 40
 
-[node name="Illustration" type="TextureRect" parent="Centre/Ensemble"]
+[node name="Vitrine" type="VBoxContainer" parent="Centre/Ensemble"]
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="Titre" type="Label" parent="Centre/Ensemble/Vitrine"]
+unique_name_in_owner = true
+theme_type_variation = &"Titre"
+text = "Rouages"
+horizontal_alignment = 1
+
+[node name="SousTitre" type="Label" parent="Centre/Ensemble/Vitrine"]
+unique_name_in_owner = true
+theme_type_variation = &"CarteTexte"
+text = "Défends l’horloge avec tes jouets à remontoir"
+custom_minimum_size = Vector2(395, 0)
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Illustration" type="TextureRect" parent="Centre/Ensemble/Vitrine"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 400)
 expand_mode = 1
@@ -47,33 +67,22 @@ custom_minimum_size = Vector2(460, 0)
 [node name="Colonne" type="VBoxContainer" parent="Centre/Ensemble/Panneau"]
 theme_override_constants/separation = 14
 
-[node name="Titre" type="Label" parent="Centre/Ensemble/Panneau/Colonne"]
-unique_name_in_owner = true
-theme_type_variation = &"Titre"
-text = "Rouages"
-
-[node name="SousTitre" type="Label" parent="Centre/Ensemble/Panneau/Colonne"]
-unique_name_in_owner = true
-theme_type_variation = &"SousTitre"
-text = "Défends l’horloge avec tes jouets à remontoir"
-custom_minimum_size = Vector2(410, 0)
-autowrap_mode = 3
-
-[node name="Jouer" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
-unique_name_in_owner = true
-text = "Jouer"
-custom_minimum_size = Vector2(0, 52)
-
 [node name="Plateau" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
 text = "Plateau : Prairie"
 
 [node name="DescriptionPlateau" type="Label" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
-theme_type_variation = &"Petit"
+theme_type_variation = &"Description"
 custom_minimum_size = Vector2(420, 0)
 horizontal_alignment = 1
 autowrap_mode = 3
+
+[node name="Jouer" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
+unique_name_in_owner = true
+text = "Jouer"
+theme_type_variation = &"Action"
+custom_minimum_size = Vector2(0, 52)
 
 [node name="Defi" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
@@ -86,19 +95,31 @@ unique_name_in_owner = true
 text = "Établi"
 size_flags_horizontal = 3
 
+[node name="Engrenage" type="TextureRect" parent="Centre/Ensemble/Panneau/Colonne/Atelier"]
+custom_minimum_size = Vector2(30, 30)
+texture = ExtResource("or")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
 [node name="Or" type="Label" parent="Centre/Ensemble/Panneau/Colonne/Atelier"]
 unique_name_in_owner = true
 theme_type_variation = &"Petit"
 
-[node name="Tutoriel" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
+[node name="Tutoriel" type="LinkButton" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
 text = "Revoir le tutoriel"
+size_flags_horizontal = 4
 
-[node name="Options" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
+[node name="Navigation" type="HBoxContainer" parent="Centre/Ensemble/Panneau/Colonne"]
+alignment = 1
+theme_override_constants/separation = 26
+
+[node name="Options" type="LinkButton" parent="Centre/Ensemble/Panneau/Colonne/Navigation"]
 unique_name_in_owner = true
 text = "Options"
 
-[node name="Quitter" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
+[node name="Quitter" type="LinkButton" parent="Centre/Ensemble/Panneau/Colonne/Navigation"]
 unique_name_in_owner = true
 text = "Quitter"
 

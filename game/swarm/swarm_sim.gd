@@ -141,6 +141,15 @@ func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) ->
 	return true
 
 
+## Renvoie (PV restants, PV max) du premier boss vivant, ou Vector2.ZERO s'il n'y en a pas.
+func pv_boss() -> Vector2:
+	var ennemis: Nuee = _camps[ENNEMI]
+	for i: int in ennemis.modeles.size():
+		if ennemis.modeles[i].boss:
+			return Vector2(maxf(0.0, ennemis.vies[i]), ennemis.modeles[i].pv)
+	return Vector2.ZERO
+
+
 ## Renvoie l'effectif vivant du camp.
 func nombre(camp: int) -> int:
 	return _camps[camp].lieux.size()

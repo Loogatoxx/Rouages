@@ -77,7 +77,8 @@ custom_minimum_size = Vector2(460, 0)
 theme_override_constants/separation = 14
 
 [node name="Titre" type="Label" parent="Voile/Centre/Panneau/Colonne"]
-theme_type_variation = &"Titre"
+theme_type_variation = &"TitreMenu"
+horizontal_alignment = 1
 text = "Options"
 
 [node name="LibelleMusique" type="Label" parent="Voile/Centre/Panneau/Colonne"]
@@ -144,3 +145,4 @@ focus_neighbor_top = NodePath("../ChoixLangue")
 focus_next = NodePath("../Musique")
 focus_neighbor_bottom = NodePath("../Musique")
 text = "Retour"
+size_flags_horizontal = 8

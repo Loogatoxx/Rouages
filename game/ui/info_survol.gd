@@ -12,6 +12,9 @@ var _selection: StringName = &""
 
 
 func _ready() -> void:
+	theme = preload("res://game/ui/theme_rouages.tres")
+	theme_type_variation = &"Fiche"
+	_texte.theme_type_variation = &"CarteTexte"
 	Events.tuile_choisie.connect(_choisir)
 
 

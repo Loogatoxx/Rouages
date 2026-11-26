@@ -181,6 +181,8 @@ func _forme_de_repli(id: StringName, camp: int) -> ArrayMesh:
 
 func _forme_du_kit(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
+	if def.boss:
+		nom = &"scarabee_cuirasse"  # même silhouette, agrandie par son rayon et assombrie
 	var scene: PackedScene = Materiaux.scene_du_kit(nom)
 	if scene == null:
 		return null
@@ -224,7 +226,8 @@ func _creer_lot(def: SwarmSim.UniteDef, camp: int) -> MultiMesh:
 			var origine: StandardMaterial3D = forme.surface_get_material(i) as StandardMaterial3D
 			var carapace := ShaderMaterial.new()
 			carapace.shader = _shader_carapace
-			carapace.set_shader_parameter("teinte", origine.albedo_color)
+			var teinte: Color = origine.albedo_color.darkened(0.35) if def.boss else origine.albedo_color
+			carapace.set_shader_parameter("teinte", teinte)
 			carapace.set_shader_parameter("creme", CREME)
 			carapace.set_shader_parameter("metal", origine.metallic)
 			carapace.set_shader_parameter("rugosite", origine.roughness)

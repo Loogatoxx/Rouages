@@ -6,6 +6,7 @@ const ChampFlux = preload("res://game/swarm/champ_flux.gd")
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const DirecteurVagues = preload("res://game/waves/directeur_vagues.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
+const UniteDef = preload("res://game/swarm/unite_def.gd")
 const Regles = preload("res://game/core/regles.gd")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
 const CUIRASSE = preload("res://data/unites/scarabee_cuirasse.tres")
@@ -141,4 +142,36 @@ func test_renforts_repartis_et_comptes() -> String:
 		sim.avancer(vague.intervalle)
 	if cuirasses != vague.nombre_renforts or not directeur.est_terminee(sim):
 		return "Le dernier ennemi disparu doit clore la vague avec le nombre prévu de cuirassés."
+	return ""
+
+
+func test_boss_a_mi_vague() -> String:
+	var boss: UniteDef = preload("res://data/unites/grand_scarabee.tres")
+	var vague := VagueDef.new()
+	vague.unite = SCARABEE
+	vague.nombre = 4
+	vague.intervalle = 1.0
+	vague.multiplicateur_pv = 2.0
+	vague.boss = boss
+	vague.pv_boss_facteur = 0.5
+	var sim: SwarmSim = SwarmSim.new()  # sans plateau : les unités restent immobiles
+	var directeur: DirecteurVagues = DirecteurVagues.new()
+	directeur.commencer(vague, [Vector2i(3, 0)])
+	directeur.avancer(0.0, sim)
+	directeur.avancer(1.0, sim)
+	if sim.pv_boss() != Vector2.ZERO:
+		return "Le boss ne doit pas apparaître avant la moitié de la vague."
+	directeur.avancer(1.0, sim)
+	directeur.avancer(1.0, sim)
+	directeur.avancer(1.0, sim)
+	var bosses: int = 0
+	for modele: UniteDef in sim.modeles(SwarmSim.ENNEMI):
+		if modele.boss:
+			bosses += 1
+	if bosses != 1:
+		return "Le boss doit apparaître exactement une fois (%d)." % bosses
+	if not is_equal_approx(sim.pv_boss().y, boss.pv * 2.0 * 0.5):
+		return "Les PV du boss doivent suivre le multiplicateur de la vague et son facteur."
+	if directeur.est_terminee(sim):
+		return "La vague ne peut pas finir tant que des ennemis vivent."
 	return ""

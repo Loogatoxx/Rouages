@@ -14,21 +14,27 @@ class Ligne extends HBoxContainer:
 	var description := Label.new()
 	var pastilles := Label.new()
 	var achat := Button.new()
+	var prix := Label.new()
 
 	func _init(def: AmeliorationDef) -> void:
 		definition = def
 		var textes := VBoxContainer.new()
 		textes.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		textes.add_theme_constant_override("separation", 0)
+		nom.theme_type_variation = &"CarteNom"
+		pastilles.theme_type_variation = &"CarteTexte"
 		nom.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		description.theme_type_variation = &"Petit"
+		description.theme_type_variation = &"CarteTexte"
 		textes.add_child(nom)
 		textes.add_child(description)
 		add_child(textes)
 		add_child(pastilles)
 		achat.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		add_child(achat)
+		prix.theme_type_variation = &"Badge"
+		prix.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		add_child(prix)
 
 	## Affiche le niveau acquis et le prix du prochain niveau dans la langue active.
 	func actualiser(solde: int) -> void:
@@ -37,7 +43,13 @@ class Ligne extends HBoxContainer:
 		nom.text = tr(definition.nom)
 		description.text = tr(definition.description)
 		pastilles.text = "●".repeat(niveau) + "○".repeat(definition.niveaux_max - niveau)
-		achat.text = tr("Niveau maximum") if complet else tr("Acheter — %d") % definition.prix[niveau]
+		achat.text = tr("Niveau maximum") if complet else tr("Acheter")
+		prix.visible = not complet
+		if not complet:
+			prix.text = str(definition.prix[niveau])
+			achat.accessibility_name = tr("Acheter — %d") % definition.prix[niveau]
+		else:
+			achat.accessibility_name = tr("Niveau maximum")
 		achat.disabled = complet or solde < definition.prix[niveau]
 
 

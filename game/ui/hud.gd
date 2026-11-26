@@ -6,13 +6,21 @@ const Lot = preload("res://game/core/lot.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
 const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
+const VITESSE_NORMALE: Texture2D = preload("res://assets/ui/icones/vitesse_x1.png")
+const VITESSE_DOUBLE: Texture2D = preload("res://assets/ui/icones/vitesse_x2.png")
+const MEDAILLONS: Array[Texture2D] = [
+	preload("res://assets/ui/icones/rarete_commune.png"),
+	preload("res://assets/ui/icones/rarete_rare.png"),
+	preload("res://assets/ui/icones/rarete_epique.png")
+]
+
 @onready var _pv: Label = %PV
 @onready var _ressorts: Label = %Ressorts
 @onready var _bandeau: PanelContainer = %Bandeau
 @onready var _flash: ColorRect = %Flash
 @onready var _gain: Label = %Gain
 var _ventes: Array[Button] = []
-var _noms_lots: Array[Label] = []
+var _prix_ventes: Array[Label] = []
 var _solde: int
 var _cle_annonce: String
 var _valeur_annonce: int
@@ -20,10 +28,17 @@ var _victoire: bool
 var _animation_bandeau: Tween
 var _animation_choc: Tween
 var _animation_gain: Tween
+## Barre de vie du boss, construite en code (haut-centre) : visible seulement quand un boss vit.
+var _barre_boss: ProgressBar
+var _cadre_boss: VBoxContainer
+var _animation_boss: Tween
+var _boss_visible: bool = false
 
 
 func _ready() -> void:
 	Interface.preparer_boutons(self)
+	get_viewport().size_changed.connect(_dimensionner_tirage)
+	%Lots.resized.connect(_ajuster_hauteur)
 	%Lancer.pressed.connect(Run.lancer_vague)
 	%Relancer.pressed.connect(Run.relancer_offre)
 	%Reparer.pressed.connect(Run.reparer_horloge)
@@ -42,6 +57,67 @@ func _ready() -> void:
 	_solde = Run.ressorts
 	_actualiser_phase(Run.phase)
 	Interface.apparaitre(%Tableau)
+	_creer_barre_boss()
+
+
+func _creer_barre_boss() -> void:
+	_cadre_boss = VBoxContainer.new()
+	_cadre_boss.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_cadre_boss.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_cadre_boss.offset_top = 14
+	_cadre_boss.alignment = BoxContainer.ALIGNMENT_CENTER
+	_cadre_boss.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_cadre_boss.modulate.a = 0.0
+	_cadre_boss.theme = preload("res://game/ui/theme_rouages.tres")
+	_cadre_boss.hide()
+	add_child(_cadre_boss)
+	var nom := Label.new()
+	nom.text = "Grand Scarabée"
+	nom.theme_type_variation = &"Titre"
+	nom.add_theme_font_size_override(&"font_size", 30)
+	nom.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_cadre_boss.add_child(nom)
+	_barre_boss = ProgressBar.new()
+	_barre_boss.custom_minimum_size = Vector2(520, 22)
+	_barre_boss.show_percentage = false
+	_barre_boss.max_value = 1.0
+	_barre_boss.step = 0.0
+	_barre_boss.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var fond := StyleBoxFlat.new()
+	fond.bg_color = Color("#5A3A22")
+	fond.border_color = Color("#D9AE54")
+	fond.set_border_width_all(3)
+	fond.set_corner_radius_all(6)
+	var plein := StyleBoxFlat.new()
+	plein.bg_color = Color("#D66355")
+	plein.set_corner_radius_all(4)
+	plein.set_expand_margin_all(-3)
+	_barre_boss.add_theme_stylebox_override(&"background", fond)
+	_barre_boss.add_theme_stylebox_override(&"fill", plein)
+	_cadre_boss.add_child(_barre_boss)
+
+
+func _process(_delta: float) -> void:
+	if _barre_boss == null:
+		return
+	var partie: Node = get_parent().get_node_or_null("Partie")
+	var pv: Vector2 = partie.sim.pv_boss() if partie != null else Vector2.ZERO
+	var vivant: bool = pv.y > 0.0
+	if vivant != _boss_visible:
+		_boss_visible = vivant
+		if _animation_boss:
+			_animation_boss.kill()
+		_animation_boss = create_tween()
+		if vivant:
+			_barre_boss.value = 1.0
+			_cadre_boss.show()
+			_animation_boss.tween_property(_cadre_boss, "modulate:a", 1.0, 0.3)
+		else:
+			_animation_boss.tween_property(_cadre_boss, "modulate:a", 0.0, 0.4)
+			_animation_boss.tween_callback(_cadre_boss.hide)
+	if vivant:
+		# Descente douce : on rattrape la vraie valeur sans à-coup.
+		_barre_boss.value = lerpf(_barre_boss.value, pv.x / pv.y, 0.2)
 
 
 func _notification(quoi: int) -> void:
@@ -66,13 +142,25 @@ func _input(evenement: InputEvent) -> void:
 
 func _basculer_vitesse() -> void:
 	Run.basculer_vitesse()
-	%Vitesse.text = tr("x%d") % int(Run.vitesse)
+	_afficher_vitesse()
+
+
+func _afficher_vitesse() -> void:
+	%Vitesse.icon = VITESSE_DOUBLE if Run.vitesse == 2 else VITESSE_NORMALE
+	%Vitesse.accessibility_name = tr("Changer la vitesse (Espace)") + " · " + tr("x%d") % int(Run.vitesse)
 
 
 func _creer_boutique() -> void:
 	for i: int in Run.regles.boutique.size():
+		var ligne := HBoxContainer.new()
 		var bouton := Button.new()
-		%Achats.add_child(bouton)
+		bouton.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var prix := Label.new()
+		prix.theme_type_variation = &"Badge"
+		ligne.add_child(bouton)
+		ligne.add_child(prix)
+		%Achats.add_child(ligne)
+		_prix_ventes.append(prix)
 		Interface.preparer_bouton(bouton)
 		bouton.pressed.connect(Run.acheter.bind(i))
 		_ventes.append(bouton)
@@ -81,8 +169,12 @@ func _creer_boutique() -> void:
 func _actualiser_prix() -> void:
 	for i: int in _ventes.size():
 		var lot: Lot = Run.regles.boutique[i]
-		_ventes[i].text = tr("%s ×%d — %d") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
-	%Reparer.text = tr("Réparer l’horloge (+%d PV) — %d") % [Run.regles.pv_reparation, Run.regles.prix_reparation]
+		_ventes[i].text = tr("%s ×%d") % [tr(lot.objet.get("nom")), lot.quantite]
+		_prix_ventes[i].text = str(lot.prix)
+		_ventes[i].accessibility_name = tr("%s ×%d — %d") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
+	%Reparer.text = tr("Réparer l’horloge (+%d PV)") % Run.regles.pv_reparation
+	%PrixReparation.text = str(Run.regles.prix_reparation)
+	%Reparer.accessibility_name = tr("Réparer l’horloge (+%d PV) — %d") % [Run.regles.pv_reparation, Run.regles.prix_reparation]
 
 
 func _actualiser_phase(phase: int) -> void:
@@ -104,17 +196,22 @@ func _actualiser_phase(phase: int) -> void:
 func _actualiser_compteurs(phase: int) -> void:
 	var numero: int = Run.vague_actuelle + int(phase in [Run.Phase.CONSTRUCTION, Run.Phase.DRAFT])
 	%Vague.text = tr("Vague %d / %d") % [numero, Run.nb_vagues]
-	%Vitesse.text = tr("x%d") % int(Run.vitesse)
+	_afficher_vitesse()
 
 
 func _actualiser_solde(total: int) -> void:
 	if total > _solde:
 		_faire_flotter_gain(total - _solde)
 	_solde = total
-	_ressorts.text = tr("Ressorts : %d") % total
-	_pv.text = tr("Horloge · %d / %d PV") % [Run.pv_horloge, Run.pv_max]
+	_ressorts.text = str(total)
+	_ressorts.tooltip_text = tr("Ressorts : %d") % total
+	_ressorts.accessibility_name = _ressorts.tooltip_text
+	_afficher_pv(Run.pv_horloge)
 	%Relancer.disabled = total < Run.prix_relance
-	%Relancer.text = tr("Relancer gratuitement") if Run.prix_relance == 0 else tr("Relancer le tirage — %d") % Run.prix_relance
+	%Relancer.text = tr("Relancer gratuitement") if Run.prix_relance == 0 else tr("Relancer le tirage")
+	%PrixRelance.visible = Run.prix_relance > 0
+	%PrixRelance.text = str(Run.prix_relance)
+	%Relancer.accessibility_name = tr("Relancer le tirage — %d") % Run.prix_relance if Run.prix_relance > 0 else tr("Relancer gratuitement")
 	%Reparer.disabled = total < Run.regles.prix_reparation or Run.pv_horloge >= Run.pv_max
 	for i: int in _ventes.size():
 		var lot: Lot = Run.regles.boutique[i]
@@ -125,71 +222,117 @@ func _actualiser_solde(total: int) -> void:
 
 
 func _afficher_lots() -> void:
-	_noms_lots.clear()
 	for ancien: Node in %Lots.get_children():
 		%Lots.remove_child(ancien)
 		ancien.queue_free()
 	for i: int in Run.offre.size():
-		var lot: Lot = Run.offre[i]
-		%Lots.add_child(_creer_carte(lot))
-		var bouton: Button = %Lots.get_child(-1)
-		Interface.preparer_bouton(bouton)
-		bouton.pressed.connect(Run.choisir_lot.bind(i))
-		if Run.offre_coffre:
-			var piece: PieceDef = lot.objet as PieceDef
-			_colorier_bordure(bouton, PieceDef.TEINTES_RARETE[piece.rarete])
+		var carte := Carte.new(Run.offre[i], i, Run.offre_coffre)
+		%Lots.add_child(carte)
+		carte.pressed.connect(Sons.jouer.bind(&"clic"))
+		carte.pressed.connect(Run.choisir_lot.bind(i))
 	_actualiser_noms_lots()
+	_dimensionner_tirage()
 
 
 func _actualiser_noms_lots() -> void:
 	%TitreDraft.text = tr("Coffre !") if Run.offre_coffre else tr("Choisis un lot")
-	for i: int in _noms_lots.size():
+	%Coffre.visible = Run.offre_coffre
+	for i: int in %Lots.get_child_count():
 		var lot: Lot = Run.offre[i]
+		var carte: Carte = %Lots.get_child(i)
+		carte.nom.text = tr(lot.objet.get("nom"))
+		carte.accessibility_name = tr("%s ×%d") % [carte.nom.text, lot.quantite]
 		if Run.offre_coffre:
 			var piece: PieceDef = lot.objet as PieceDef
-			_noms_lots[i].text = tr("%s · %s") % [tr(piece.nom), tr(NOMS_RARETE[piece.rarete])]
+			carte.accessibility_name = tr("%s · %s") % [carte.nom.text, tr(NOMS_RARETE[piece.rarete])]
+		carte.accessibility_description = tr(lot.objet.get("description"))
+
+
+func _dimensionner_tirage() -> void:
+	if not $Draft.visible:
+		return
+	var largeur: float = get_viewport().get_visible_rect().size.x
+	var retrait: float = maxf(0, (largeur * 0.88 - (Run.offre.size() * 270 + 100)) / 2)
+	$Draft.offset_left = retrait
+	$Draft.offset_right = -retrait
+	_ajuster_hauteur()
+
+
+func _ajuster_hauteur() -> void:
+	var hauteur: float = get_viewport().get_visible_rect().size.y
+	%DefilementLots.custom_minimum_size.y = minf(%Lots.size.y + 28, hauteur * 0.42)
+
+
+## Le bouton garde sa place dans la rangée pendant que sa fiche de papier bouge.
+class Carte extends Button:
+	var nom: Label = Label.new()
+	var _papier: PanelContainer = PanelContainer.new()
+	var _mouvement: Tween
+
+	func _init(lot: Lot, indice: int, coffre: bool) -> void:
+		theme_type_variation = &"Carte"
+		_papier.theme_type_variation = &"Fiche"
+		_papier.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
+		add_child(_papier)
+		var colonne := VBoxContainer.new()
+		_papier.add_child(colonne)
+		var insigne := HBoxContainer.new()
+		colonne.add_child(insigne)
+		var badge := Label.new()
+		badge.theme_type_variation = &"Badge"
+		if coffre:
+			var piece: PieceDef = lot.objet as PieceDef
+			var medaillon := TextureRect.new()
+			medaillon.texture = MEDAILLONS[piece.rarete]
+			medaillon.custom_minimum_size = Vector2(36, 36)
+			medaillon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			medaillon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			insigne.add_child(medaillon)
+			badge.text = NOMS_RARETE[piece.rarete]
 		else:
-			_noms_lots[i].text = tr("%s  ×%d") % [tr(lot.objet.get("nom")), lot.quantite]
+			badge.text = "×%d" % lot.quantite
+		insigne.add_child(badge)
+		nom.theme_type_variation = &"CarteNom"
+		nom.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		nom.custom_minimum_size.x = 206
+		colonne.add_child(nom)
+		var description := Label.new()
+		description.theme_type_variation = &"CarteTexte"
+		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		description.text = lot.objet.get("description")
+		colonne.add_child(description)
+		_papier.rotation_degrees = -1.5 if indice % 2 == 0 else 1.5
+		_papier.minimum_size_changed.connect(_dimensionner)
+		resized.connect(_ajuster_papier)
 
+	func _ready() -> void:
+		_dimensionner()
+		_papier.scale = Vector2.ONE * 1.06
+		var rebond: Tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		rebond.tween_property(_papier, "scale", Vector2.ONE, 0.28)
+		mouse_entered.connect(_soulever)
+		mouse_exited.connect(_soulever)
+		focus_entered.connect(_soulever)
+		focus_exited.connect(_soulever)
+		button_down.connect(_soulever)
+		button_up.connect(_soulever)
 
-func _colorier_bordure(bouton: Button, teinte: Color) -> void:
-	for etat: StringName in [&"normal", &"hover", &"pressed"]:
-		var bordure: StyleBoxFlat = bouton.get_theme_stylebox(etat).duplicate() as StyleBoxFlat
-		if bordure != null:
-			bordure.set_border_width_all(3)
-			bordure.border_color = teinte
-			bouton.add_theme_stylebox_override(etat, bordure)
+	func _dimensionner() -> void:
+		custom_minimum_size = _papier.get_combined_minimum_size()
+		_ajuster_papier()
 
+	func _ajuster_papier() -> void:
+		_papier.size = size
+		_papier.pivot_offset = size / 2
 
-## Carte de lot : nom en demi-gras (ce qu'on gagne) au-dessus d'une description plus petite (à quoi ça sert).
-## Pourquoi pas le texte du bouton : un seul style pour deux informations de poids différent noie le nom.
-func _creer_carte(lot: Lot) -> Button:
-	var bouton := Button.new()
-	bouton.custom_minimum_size = Vector2(420, 84)
-	var marges := MarginContainer.new()
-	marges.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	marges.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	for cote: String in ["left", "right"]:
-		marges.add_theme_constant_override("margin_" + cote, 18)
-	for cote: String in ["top", "bottom"]:
-		marges.add_theme_constant_override("margin_" + cote, 10)
-	var colonne := VBoxContainer.new()
-	colonne.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	colonne.alignment = BoxContainer.ALIGNMENT_CENTER
-	colonne.add_theme_constant_override("separation", 2)
-	var nom := Label.new()
-	nom.theme_type_variation = &"CarteNom"
-	_noms_lots.append(nom)
-	var texte := Label.new()
-	texte.theme_type_variation = &"CarteTexte"
-	texte.text = lot.objet.get("description")
-	texte.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	for etiquette: Label in [nom, texte]:
-		etiquette.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		colonne.add_child(etiquette)
-	marges.add_child(colonne)
-	bouton.add_child(marges)
-	return bouton
+	func _soulever() -> void:
+		if _mouvement:
+			_mouvement.kill()
+		var hauteur: float = -6.0 if is_hovered() or has_focus() else 0.0
+		if is_pressed():
+			hauteur += 2.0
+		_mouvement = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_mouvement.tween_property(_papier, "position:y", hauteur, 0.1)
 
 
 func _debut_vague(numero: int) -> void:
@@ -214,18 +357,21 @@ func _annoncer(cle: String, valeur: int) -> void:
 	_animation_bandeau.tween_callback(_bandeau.hide)
 
 
+func _afficher_pv(pv: int) -> void:
+	_pv.text = "%d / %d" % [pv, Run.pv_max]
+	_pv.tooltip_text = tr("Horloge · %d / %d PV") % [pv, Run.pv_max]
+	_pv.accessibility_name = _pv.tooltip_text
+
+
 func _recevoir_choc(pv: int) -> void:
-	_pv.text = tr("Horloge · %d / %d PV") % [pv, Run.pv_max]
+	_afficher_pv(pv)
 	if _animation_choc:
 		_animation_choc.kill()
 	_flash.color.a = 0.24
 	_animation_choc = create_tween()
 	_animation_choc.tween_property(_flash, "color:a", 0.0, 0.35)
-	# Le conteneur aligne le libellé à gauche, à l'origine de sa colonne.
-	_pv.position.x = -4.0
-	_animation_choc.parallel().tween_property(_pv, "position:x", 4.0, 0.07)
-	_animation_choc.parallel().tween_property(_pv, "position:x", -2.0, 0.07).set_delay(0.07)
-	_animation_choc.parallel().tween_property(_pv, "position:x", 0.0, 0.09).set_delay(0.14)
+	_pv.modulate = Color("#e88e70")
+	_animation_choc.parallel().tween_property(_pv, "modulate", Color.WHITE, 0.32)
 
 
 func _faire_flotter_gain(montant: int) -> void:
@@ -264,4 +410,4 @@ func _actualiser_bilan() -> void:
 	var tenues: int = Run.vague_actuelle if _victoire else maxi(0, Run.vague_actuelle - 1)
 	%Stats.text = tr("Vagues tenues : %d / %d\nScarabées cassés : %d\nRessorts gagnés : %d") % [
 		tenues, Run.nb_vagues, Run.ennemis_casses, Run.ressorts_gagnes]
-	%Stats.text += "\n" + tr("+%d engrenages d’or") % Run.engrenages_gagnes
+	%PrimeOr.text = tr("+%d engrenages d’or") % Run.engrenages_gagnes

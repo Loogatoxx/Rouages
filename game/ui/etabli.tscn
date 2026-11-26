@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://game/ui/etabli.gd" id="script"]
 [ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
 
+[ext_resource type="Texture2D" path="res://assets/ui/icones/engrenage_or.png" id="or"]
+
 [node name="Etabli" type="CanvasLayer"]
 layer = 3
 visible = false
@@ -23,18 +25,35 @@ theme = ExtResource("theme")
 [node name="Colonne" type="VBoxContainer" parent="Voile/Panneau"]
 
 [node name="Titre" type="Label" parent="Voile/Panneau/Colonne"]
-theme_type_variation = &"SousTitre"
+theme_type_variation = &"TitreMenu"
+horizontal_alignment = 1
+size_flags_horizontal = 4
 text = "Établi de l’inventeur"
 
-[node name="Solde" type="Label" parent="Voile/Panneau/Colonne"]
+[node name="Bourse" type="HBoxContainer" parent="Voile/Panneau/Colonne"]
+alignment = 2
+
+[node name="Engrenage" type="TextureRect" parent="Voile/Panneau/Colonne/Bourse"]
+custom_minimum_size = Vector2(30, 30)
+texture = ExtResource("or")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Solde" type="Label" parent="Voile/Panneau/Colonne/Bourse"]
+theme_type_variation = &"Badge"
 unique_name_in_owner = true
 
-[node name="Defilement" type="ScrollContainer" parent="Voile/Panneau/Colonne"]
+[node name="Registre" type="PanelContainer" parent="Voile/Panneau/Colonne"]
+theme_type_variation = &"Fiche"
+size_flags_vertical = 3
+
+[node name="Defilement" type="ScrollContainer" parent="Voile/Panneau/Colonne/Registre"]
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 follow_focus = true
 
-[node name="Lignes" type="VBoxContainer" parent="Voile/Panneau/Colonne/Defilement"]
+[node name="Lignes" type="VBoxContainer" parent="Voile/Panneau/Colonne/Registre/Defilement"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 

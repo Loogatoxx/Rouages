@@ -5,10 +5,10 @@
 
 [node name="ReserveUI" type="CenterContainer"]
 anchor_top = 1.0
-anchor_right = 1.0
+offset_left = 12.0
 anchor_bottom = 1.0
-offset_top = -20.0
-offset_bottom = -20.0
+offset_top = -12.0
+offset_bottom = -12.0
 grow_vertical = 0
 mouse_filter = 2
 theme = ExtResource("theme")
@@ -16,6 +16,7 @@ script = ExtResource("script")
 
 [node name="Panneau" type="PanelContainer" parent="."]
 unique_name_in_owner = true
+theme_type_variation = &"Tiroir"
 
 [node name="Pieces" type="GridContainer" parent="Panneau"]
 unique_name_in_owner = true
