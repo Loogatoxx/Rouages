@@ -54,19 +54,24 @@ func test_achat_en_boutique() -> String:
 func test_vague_min_boutique() -> String:
 	Run.reinitialiser()
 	Run.gagner(22)
-	if Run.acheter(4):
+	# Indice cherché par objet : ajouter un lot en boutique ne doit pas casser le test.
+	var indice: int = -1
+	for i: int in Run.regles.boutique.size():
+		if Run.regles.boutique[i].objet.get("id") == &"atelier_billes":
+			indice = i
+	if Run.acheter(indice):
 		return "La boutique doit être fermée pendant le draft."
 	for numero: int in [1, 2]:
 		Run.choisir_lot(0)
 		var solde: int = Run.ressorts
-		if Run.acheter(4) or Run.ressorts != solde:
+		if Run.acheter(indice) or Run.ressorts != solde:
 			return "L'atelier doit rester verrouillé avant la vague %d." % numero
 		Run.lancer_vague()
 		Run.terminer_vague()
 	Run.choisir_lot(0)
 	var stock: int = Run.reserve.quantite(&"atelier_billes")
 	var solde_avant: int = Run.ressorts
-	if not Run.acheter(4) or Run.ressorts != solde_avant - 22 or Run.reserve.quantite(&"atelier_billes") != stock + 1:
+	if not Run.acheter(indice) or Run.ressorts != solde_avant - 22 or Run.reserve.quantite(&"atelier_billes") != stock + 1:
 		return "L'atelier doit coûter 22 ressorts dès la préparation de la vague 3."
 	return ""
 

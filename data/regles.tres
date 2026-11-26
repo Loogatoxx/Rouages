@@ -103,6 +103,12 @@ objet = ExtResource("coude")
 quantite = 1
 prix = 3
 
+[sub_resource type="Resource" id="vente_t"]
+script = ExtResource("lot")
+objet = ExtResource("t")
+quantite = 1
+prix = 5
+
 [sub_resource type="Resource" id="lot_canon"]
 script = ExtResource("lot")
 objet = ExtResource("canon")
@@ -145,5 +151,5 @@ bonus_sans_degat = 5
 prix_relance = 5
 prix_reparation = 10
 pv_reparation = 5
-boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes")])
+boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("vente_t"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes")])
 vagues = Array[ExtResource("vague")]([ExtResource("vague_1"), ExtResource("vague_2"), ExtResource("vague_3"), ExtResource("vague_4"), ExtResource("vague_5"), ExtResource("vague_6"), ExtResource("vague_7"), ExtResource("vague_8"), ExtResource("vague_9"), ExtResource("vague_10")])
