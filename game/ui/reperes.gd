@@ -64,10 +64,14 @@ func _draw() -> void:
 		var bord: Variant = _au_bord(camera, GrilleMonde.vers_monde(case))
 		if bord == null:
 			continue
-		var angle: float = (bord - centre).angle()
-		draw_set_transform(bord, angle, Vector2.ONE)
-		draw_texture_rect(ICONE_ENTREE, Rect2(Vector2(-22, -22), Vector2(44, 44)), false)
-		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		# Panneau toujours droit (pivoté, son poteau semblait couché : audit UI), flèche de laiton vers l'entrée.
+		var direction: Vector2 = (bord - centre).normalized()
+		var pointe: Vector2 = bord + direction * 6.0
+		var cote: Vector2 = direction.orthogonal() * 9.0
+		var base: Vector2 = pointe - direction * 14.0
+		draw_colored_polygon(PackedVector2Array([pointe + direction * 2.0, base + cote * 1.25, base - cote * 1.25]), Color("#3B2618"))
+		draw_colored_polygon(PackedVector2Array([pointe, base + cote, base - cote]), Color("#D9AE54"))
+		draw_texture_rect(ICONE_ENTREE, Rect2(bord - direction * 30.0 - Vector2(22, 22), Vector2(44, 44)), false)
 	if Run.phase != Run.Phase.VAGUE or partie == null:
 		return
 	var comptes: PackedInt32Array = PackedInt32Array()

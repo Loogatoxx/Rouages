@@ -120,9 +120,9 @@ accessibility_name = "Ouvrir ou fermer la boutique (B)"
 
 [node name="Vitesse" type="Button" parent="Colonne/Tableau"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(46, 42)
+custom_minimum_size = Vector2(84, 42)
 icon = ExtResource("vitesse_x1")
-icon_alignment = 1
+icon_alignment = 0
 theme_type_variation = &"Commande"
 tooltip_text = "Changer la vitesse (Espace)"
 accessibility_name = "Changer la vitesse (Espace)"

@@ -176,6 +176,8 @@ func _basculer_vitesse() -> void:
 
 func _afficher_vitesse() -> void:
 	%Vitesse.icon = VITESSE_DOUBLE if Run.vitesse == 2 else VITESSE_NORMALE
+	# Le triangle seul se lisait « lecture / lancer » (audit UI) : on écrit la vitesse à côté.
+	%Vitesse.text = "×%d" % int(Run.vitesse)
 	%Vitesse.accessibility_name = tr("Changer la vitesse (Espace)") + " · " + tr("x%d") % int(Run.vitesse)
 
 
@@ -235,7 +237,9 @@ func _actualiser_phase(phase: int) -> void:
 
 func _actualiser_compteurs(phase: int) -> void:
 	var numero: int = Run.vague_actuelle + int(phase in [Run.Phase.CONSTRUCTION, Run.Phase.DRAFT])
-	%Vague.text = tr("Vague %d / %d") % [numero, Run.nb_vagues]
+	# L'icône dit « vague », le nombre suffit ; le mot passe dans l'infobulle (audit UI : icônes d'abord).
+	%Vague.text = "%d / %d" % [numero, Run.nb_vagues]
+	%Vague.get_parent().get_parent().tooltip_text = tr("Vague %d / %d") % [numero, Run.nb_vagues]
 	_afficher_vitesse()
 
 

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/plaque_laiton_petite.png" id="plaque_laiton"]
 [ext_resource type="Texture2D" path="res://assets/ui/papier.png" id="papier"]
 [ext_resource type="Texture2D" path="res://assets/ui/pastille.png" id="pastille"]
-[ext_resource type="Texture2D" path="res://assets/ui/ruban.png" id="ruban"]
+[ext_resource type="Texture2D" path="res://assets/ui/ruban_petit.png" id="ruban"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-Bold.ttf" id="Fraunces-Bold"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-SemiBold.ttf" id="Fraunces-SemiBold"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Nunito-Regular.ttf" id="Nunito-Regular"]
@@ -115,14 +115,14 @@ content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxTexture" id="Ruban"]
 texture = ExtResource("ruban")
-texture_margin_left = 88.0
-texture_margin_top = 26.0
-texture_margin_right = 88.0
-texture_margin_bottom = 26.0
-content_margin_left = 76.0
-content_margin_top = 8.0
-content_margin_right = 76.0
-content_margin_bottom = 16.0
+texture_margin_left = 44.0
+texture_margin_top = 13.0
+texture_margin_right = 44.0
+texture_margin_bottom = 13.0
+content_margin_left = 54.0
+content_margin_top = 10.0
+content_margin_right = 54.0
+content_margin_bottom = 10.0
 
 [sub_resource type="StyleBoxFlat" id="Focus"]
 draw_center = false
@@ -196,8 +196,13 @@ LinkButton/colors/font_pressed_color = Color(1, 0.952941, 0.839216, 1)
 LinkButton/colors/font_focus_color = Color(1, 0.952941, 0.839216, 1)
 LinkButton/colors/font_disabled_color = Color(0.83, 0.77, 0.67, 1)
 LinkButton/styles/focus = SubResource("Focus")
+LinkButton/colors/font_outline_color = Color(0.231373, 0.14902, 0.0941176, 0.9)
+LinkButton/constants/outline_size = 6
 Label/colors/font_color = Color(1, 0.952941, 0.839216, 1)
+Label/colors/font_outline_color = Color(0.231373, 0.14902, 0.0941176, 0.9)
+Label/constants/outline_size = 6
 TooltipLabel/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
+TooltipLabel/constants/outline_size = 0
 Titre/base_type = &"Label"
 Titre/fonts/font = ExtResource("Fraunces-Bold")
 Titre/font_sizes/font_size = 46
@@ -217,23 +222,28 @@ SousTitre/fonts/font = ExtResource("Fraunces-SemiBold")
 SousTitre/font_sizes/font_size = 24
 SousTitre/colors/font_color = Color(1, 0.952941, 0.839216, 1)
 Nombre/base_type = &"Label"
-Nombre/fonts/font = ExtResource("Fraunces-SemiBold")
-Nombre/font_sizes/font_size = 23
+Nombre/constants/outline_size = 0
+Nombre/fonts/font = ExtResource("Nunito-Bold")
+Nombre/font_sizes/font_size = 22
 Nombre/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 Badge/base_type = &"Label"
+Badge/constants/outline_size = 0
 Badge/fonts/font = ExtResource("Nunito-Bold")
 Badge/font_sizes/font_size = 18
 Badge/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 Badge/styles/normal = SubResource("Pastille")
 CarteNom/base_type = &"Label"
+CarteNom/constants/outline_size = 0
 CarteNom/fonts/font = ExtResource("Fraunces-SemiBold")
 CarteNom/font_sizes/font_size = 23
 CarteNom/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 CarteTexte/base_type = &"Label"
+CarteTexte/constants/outline_size = 0
 CarteTexte/fonts/font = ExtResource("Nunito-Regular")
 CarteTexte/font_sizes/font_size = 18
 CarteTexte/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 Description/base_type = &"Label"
+Description/constants/outline_size = 0
 Description/fonts/font = ExtResource("Nunito-Regular")
 Description/font_sizes/font_size = 18
 Description/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)

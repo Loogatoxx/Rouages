@@ -23,19 +23,20 @@ func _ready() -> void:
 	elif ResourceLoader.exists(APERCU):
 		%Illustration.texture = load(APERCU)
 	preparer_boutons(self)
+	# Le titre et la vitrine se cachent aussi : sinon le ruban « Rouages » restait visible derrière l'écran ouvert (audit UI).
 	%BoutonEtabli.pressed.connect(func() -> void:
-		%Panneau.hide()
+		$Centre.hide()
 		%Etabli.ouvrir())
 	%Etabli.ferme.connect(func() -> void:
 		_afficher_or()
-		%Panneau.show()
+		$Centre.show()
 		%BoutonEtabli.grab_focus())
 	_afficher_or()
 	%Options.pressed.connect(func() -> void:
-		%Panneau.hide()
+		$Centre.hide()
 		%Reglages.ouvrir())
 	%Reglages.ferme.connect(func() -> void:
-		%Panneau.show()
+		$Centre.show()
 		%Options.grab_focus())
 	%Jouer.pressed.connect(_jouer)
 	%Plateau.pressed.connect(_plateau_suivant)
