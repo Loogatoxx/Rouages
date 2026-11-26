@@ -15,8 +15,7 @@ var _rotation: int = 0
 var _fantome: Node3D
 var _teinte := StandardMaterial3D.new()
 var _case: Vector2i
-var _case_verifiee: Vector2i
-var _rotation_verifiee: int = -1
+var _rotations_valides: Dictionary[Vector2i, int] = {}
 
 
 func _ready() -> void:
@@ -26,11 +25,16 @@ func _ready() -> void:
 	_teinte.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	Events.tuile_choisie.connect(_choisir)
 	Events.phase_changee.connect(_changer_phase)
+	Events.plateau_modifie.connect(_actualiser_marqueurs)
 	Run.reserve.modifiee.connect(_verifier_stock)
 
 
+func _pose_autorisee(phase: int) -> bool:
+	return phase == Run.Phase.CONSTRUCTION or phase == Run.Phase.VAGUE
+
+
 func _changer_phase(phase: int) -> void:
-	if phase != Run.Phase.CONSTRUCTION:
+	if not _pose_autorisee(phase):
 		Events.tuile_choisie.emit(&"")
 
 
@@ -45,10 +49,10 @@ func _choisir(id: StringName) -> void:
 		_fantome.queue_free()
 		_fantome = null
 	_rotation = 0
-	_rotation_verifiee = -1
 	_choix = null
-	if not id.is_empty() and Run.phase == Run.Phase.CONSTRUCTION:
+	if not id.is_empty() and _pose_autorisee(Run.phase):
 		_choix = Run.reserve.trouver(id)
+	_actualiser_marqueurs()
 	if _choix is ExtensionDef:
 		_fantome = _visuel.creer_extension(_choix, 0, _teinte)
 	elif _choix is PieceDef:
@@ -56,6 +60,46 @@ func _choisir(id: StringName) -> void:
 	if _fantome != null:
 		add_child(_fantome)
 		_fantome.hide()
+
+
+func _actualiser_marqueurs() -> void:
+	if not _choix is ExtensionDef and _rotations_valides.is_empty():
+		return
+	_rotations_valides.clear()
+	var cases: Array[Vector2i] = []
+	if _choix is ExtensionDef:
+		var plateau: Extension.Plateau = _source.plateau
+		var candidats: Dictionary[Vector2i, bool] = {}
+		for sol: Vector2i in plateau.coords_sols():
+			if plateau.a_sol(sol + Vector2i.UP) and plateau.a_sol(sol + Vector2i.DOWN) \
+					and plateau.a_sol(sol + Vector2i.LEFT) and plateau.a_sol(sol + Vector2i.RIGHT):
+				continue
+			for x: int in range(-2, 3):
+				for y: int in range(-2, 3):
+					var centre: Vector2i = sol + Vector2i(x, y)
+					if not plateau.a_sol(centre):
+						candidats[centre] = true
+		for centre: Vector2i in candidats:
+			var masque: int = 0
+			for tour: int in 4:
+				if Extension.est_valide(plateau, _choix, centre, tour):
+					masque |= 1 << tour
+			if masque != 0:
+				_rotations_valides[centre] = masque
+				cases.append(centre)
+	_visuel.afficher_marqueurs(cases)
+
+
+func _orienter_extension() -> bool:
+	var masque: int = _rotations_valides.get(_case, 0)
+	if masque == 0:
+		return false
+	if not (masque & (1 << _rotation)):
+		for tour: int in 4:
+			if masque & (1 << tour):
+				_rotation = tour
+				break
+	return true
 
 
 func _survoler() -> bool:
@@ -77,15 +121,11 @@ func _survoler() -> bool:
 func _process(_delta: float) -> void:
 	if _fantome == null:
 		return
-	_fantome.visible = Run.phase == Run.Phase.CONSTRUCTION and _survoler()
+	_fantome.visible = _pose_autorisee(Run.phase) and _survoler()
 	if _fantome.visible:
 		var libre: bool
 		if _choix is ExtensionDef:
-			if _case == _case_verifiee and _rotation == _rotation_verifiee:
-				return
-			libre = Extension.est_valide(_source.plateau, _choix, _case, _rotation)
-			_case_verifiee = _case
-			_rotation_verifiee = _rotation
+			libre = _orienter_extension()
 		else:
 			libre = (_source.plateau.sol_de(_case) == _source.Plateau.Sol.HERBE
 					and _source.plateau.piece_de(_case) == null)
@@ -95,15 +135,24 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if Run.phase != Run.Phase.CONSTRUCTION:
-		return
 	if event.is_action_pressed("annuler"):
-		Events.tuile_choisie.emit(&"")
-	elif event.is_action_pressed("tourner_tuile"):
+		if _choix != null:
+			Events.tuile_choisie.emit(&"")
+			get_viewport().set_input_as_handled()
+		else:
+			Events.pause_demandee.emit()
+		return
+	if not _pose_autorisee(Run.phase):
+		return
+	if event.is_action_pressed("tourner_tuile"):
 		if _choix != null:
 			_rotation = (_rotation + 1) % 4
-		elif _survoler():
-			_source.plateau.tourner(_case)
+			if _choix is ExtensionDef and _survoler() and _rotations_valides.has(_case):
+				while not (_rotations_valides[_case] & (1 << _rotation)):
+					_rotation = (_rotation + 1) % 4
+			Sons.jouer(&"rotation")
+		elif _survoler() and Run.tourner_piece(_source.plateau, _case):
+			Sons.jouer(&"rotation")
 	elif event.is_action_pressed("poser_tuile") and _choix != null and _survoler():
 		var id: StringName = _choix.get("id")
 		if Run.reserve.quantite(id) == 0:
@@ -111,9 +160,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _choix is ExtensionDef:
 			# Le retrait du dernier exemplaire peut effacer la sélection par signal.
 			var extension: ExtensionDef = _choix
-			if Extension.appliquer(_source.plateau, extension, _case, _rotation):
-				_rotation_verifiee = -1
+			if _orienter_extension() and Extension.appliquer(_source.plateau, extension, _case, _rotation):
 				Run.reserve.retirer(id)
 				Run.reserve.ajouter_lots(extension.bonus)
+				Run.poser_extension(extension.ressorts, extension.revenu)
+				Sons.jouer(&"pose", 0.05)
 		elif _choix is PieceDef and _source.plateau.poser(_case, _choix, _rotation):
 			Run.reserve.retirer(id)
+			Sons.jouer(&"pose", 0.05)

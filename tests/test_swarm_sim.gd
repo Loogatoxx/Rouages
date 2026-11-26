@@ -6,6 +6,7 @@ const Plateau = preload("res://game/board/plateau.gd")
 const UniteDef = preload("res://game/swarm/unite_def.gd")
 const HORLOGE = preload("res://data/tuiles/horloge.tres")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
+const LANCE_BILLE = preload("res://data/unites/lance_bille.tres")
 const SOLDAT = preload("res://data/unites/soldat_remontoir.tres")
 const DEPART = preload("res://data/depart.tres")
 const Extension = preload("res://game/board/extension.gd")
@@ -45,8 +46,9 @@ func test_arrivee() -> String:
 func test_duel() -> String:
 	for essai: int in 2:
 		var sim := SwarmSim.new()
-		var morts: Array[int] = []
-		sim.unite_morte.connect(func(camp: int, _p: Vector2) -> void: morts.append(camp))
+		var morts: Array = []
+		sim.unite_morte.connect(func(camp: int, position: Vector2, def: UniteDef) -> void:
+			morts.append([camp, position, def]))
 		sim.ajouter(SCARABEE, Vector2(0.5, 0))
 		sim.ajouter(SOLDAT, Vector2.ZERO)
 		for i: int in 150:
@@ -54,8 +56,35 @@ func test_duel() -> String:
 		if not morts.is_empty():
 			return "Trois coups de soldat ne doivent pas tuer le scarabée."
 		sim.avancer(PAS)
-		if morts != [SwarmSim.ENNEMI] or sim.nombre(SwarmSim.ALLIE) != 1 or sim.nombre(SwarmSim.ENNEMI) != 0:
+		if morts != [[SwarmSim.ENNEMI, Vector2(0.5, 0), SCARABEE]]:
+			return "Le signal de mort doit identifier le scarabée et sa position."
+		if sim.nombre(SwarmSim.ALLIE) != 1 or sim.nombre(SwarmSim.ENNEMI) != 0:
 			return "Le quatrième coup de soldat doit terminer le duel."
+	return ""
+
+
+## Vérifie les extrémités et le nombre de tirs, y compris sur un pas couvrant deux frappes.
+func test_signal_tir() -> String:
+	for modele: UniteDef in [LANCE_BILLE, SOLDAT]:
+		var sim := SwarmSim.new()
+		var tirs: Array[Vector2] = []
+		sim.tir.connect(func(depart: Vector2, arrivee: Vector2) -> void:
+			tirs.append(depart)
+			tirs.append(arrivee))
+		var cible := Vector2(modele.portee * 0.9, 0.0)
+		sim.ajouter(modele, Vector2.ZERO)
+		sim.ajouter(SCARABEE, cible)
+		sim.avancer(PAS)
+		sim.avancer(PAS)
+		if modele == SOLDAT:
+			if not tirs.is_empty() or sim.touches(SwarmSim.ENNEMI)[0] <= 0.0:
+				return "Le soldat doit toucher au contact sans émettre de tir."
+		else:
+			if tirs != [Vector2.ZERO, cible]:
+				return "Un seul tir aux coordonnées de la frappe était attendu pendant la recharge."
+			sim.avancer(2.0 / modele.cadence)
+			if tirs.size() != 6:
+				return "Les deux frappes du grand pas doivent émettre deux tirs."
 	return ""
 
 
@@ -126,7 +155,7 @@ func test_allie_hors_chemin() -> String:
 	return "" if absf(passage.y) < 1.0 and fin.x > passage.x + 4.0 and absf(fin.y) < 0.2 else "Trajet inattendu : %s puis %s." % [passage, fin]
 
 
-## Vérifie sur trois secondes que les deux fronts attirent chacun une part de la troupe.
+## Vérifie que les deux fronts attirent chacun une part de la troupe.
 func test_repartition_embranchement() -> String:
 	var sim := SwarmSim.new()
 	sim.configurer(DEPART.creer_plateau())
@@ -134,7 +163,8 @@ func test_repartition_embranchement() -> String:
 	for i: int in 100:
 		sim.ajouter(SOLDAT, Vector2(4, 0) * SwarmSim.MAILLE)
 	randomize()
-	for i: int in 180:
+	# Le rayon de 0,3 m allonge la sortie du groupe initialement superposé.
+	for i: int in 360:
 		sim.avancer(PAS)
 	var nord: int = 0
 	var sud: int = 0

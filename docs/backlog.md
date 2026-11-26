@@ -9,6 +9,16 @@
 - **Loot & rareté** complets : plusieurs niveaux, impact stratégique, usages multiples.
 - **Arbre de compétences méta** entre les runs.
 
+## Multijoueur (idée de Carlos, quand la base solo sera solide)
+- **Coopératif** : plusieurs joueurs défendent la même horloge, chacun sa réserve et ses ateliers.
+- **1 contre 1** : chaque joueur a son plateau ; les ennemis cassés chez soi renvoient des renforts chez l'adversaire.
+- Prérequis techniques : simulation déterministe (graine partagée, déjà amorcée par le défi du jour), séparation logique/visuel
+  (déjà en place), réseau Godot (`MultiplayerAPI`/ENet) ; à cadrer avant tout code.
+
+## Retours du testeur externe (2026-11-26) à garder
+- Mode « défi du jour » pour faire revenir les joueurs (fait en T09a) ; plus de cartes et d'ennemis ; prix visé ~5 €.
+- Changer une pièce posée pourrait demander un objet rare (aujourd'hui : rotation payante en ressorts).
+
 ## Préparation Steam
 - Support manette complet (l'InputMap est déjà prête).
 - Remappage des touches, menu d'options (résolution, volume).

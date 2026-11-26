@@ -8,11 +8,14 @@ const DirecteurVagues = preload("res://game/waves/directeur_vagues.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
 const Regles = preload("res://game/core/regles.gd")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
+const CUIRASSE = preload("res://data/unites/scarabee_cuirasse.tres")
+const FOURMI = preload("res://data/unites/fourmi.tres")
+const RENFORTS := [0, 0, 12, 6, 5, 10, 10, 12, 18, 20]  # rééquilibré au banc après la garde des jouets (T09a)
 const DONNEES_REGLES = preload("res://data/regles.tres")
-## Courbe de difficulté (équilibrée au banc, voir taches/T05c_vagues_equilibrage.md) : [nombre, intervalle, × PV].
+## Courbe de difficulté (équilibrée au banc ; dernière passe : T09a, ennemis visibles grâce à la garde) : [nombre, intervalle, × PV].
 const COURBE := [
-	[14, 1.25, 1.0], [36, 0.5, 1.0], [54, 0.37, 1.1], [80, 0.3, 1.2], [123, 0.26, 1.35],
-	[140, 0.25, 1.5], [150, 0.25, 1.7], [160, 0.25, 1.85], [190, 0.23, 2.05], [229, 0.21, 2.4],
+	[14, 1.25, 1.0], [36, 0.5, 1.1], [54, 0.37, 1.15], [80, 0.3, 1.4], [123, 0.26, 1.4],
+	[140, 0.25, 1.7], [150, 0.25, 1.8], [160, 0.25, 2.0], [190, 0.23, 2.25], [229, 0.21, 2.4],
 ]
 
 
@@ -39,6 +42,9 @@ func test_ressources() -> String:
 		var vague: VagueDef = regles.vagues[i]
 		if vague == null or vague.unite != SCARABEE or vague.nombre != COURBE[i][0]:
 			return "Unité ou effectif incorrect pour la vague %d." % (i + 1)
+		var renfort: SwarmSim.UniteDef = FOURMI if i == 2 else CUIRASSE
+		if vague.nombre_renforts != RENFORTS[i] or (RENFORTS[i] > 0 and vague.renfort != renfort):
+			return "Renforts incorrects pour la vague %d." % (i + 1)
 		if (not is_equal_approx(vague.intervalle, COURBE[i][1])
 				or not is_equal_approx(vague.multiplicateur_pv, COURBE[i][2])):
 			return "Intervalle ou vitalité incorrect pour la vague %d." % (i + 1)
@@ -104,4 +110,35 @@ func test_multiplicateur_pv() -> String:
 		return "La simulation doit recevoir les PV définis pour cette vague."
 	if sim.unite_recue == SCARABEE or SCARABEE.pv != pv_source:
 		return "Le multiplicateur a modifié la ressource scarabee.tres."
+	return ""
+
+
+## Vide la simulation entre deux arrivées pour vérifier la répartition et le comptage des renforts.
+func test_renforts_repartis_et_comptes() -> String:
+	var directeur: DirecteurVagues = DirecteurVagues.new()
+	var sim: SimulationTemoin = SimulationTemoin.new()
+	var vague: VagueDef = DONNEES_REGLES.vagues[3]
+	var total: int = vague.nombre + vague.nombre_renforts
+	var cuirasses: int = 0
+	var plateau: Plateau = Plateau.new()
+	plateau.ajouter_sol(Vector2i.ZERO, Plateau.Sol.HERBE)
+	plateau.poser(Vector2i.ZERO, preload("res://data/tuiles/horloge.tres"))
+	sim.configurer(plateau)
+	directeur.commencer(vague, [Vector2i.ZERO])
+	for i: int in total:
+		if directeur.est_terminee(sim):
+			return "La vague est terminée alors qu'il reste des unités à faire apparaître."
+		directeur.avancer(0.0 if i == 0 else vague.intervalle, sim)
+		if sim.nombre(SwarmSim.ENNEMI) != 1 or directeur.est_terminee(sim):
+			return "La vague doit compter une apparition et attendre son arrivée à l'horloge."
+		if sim.unite_recue.id == CUIRASSE.id:
+			cuirasses += 1
+			if not is_equal_approx(sim.unite_recue.pv, CUIRASSE.pv * vague.multiplicateur_pv):
+				return "Le multiplicateur de PV doit aussi s'appliquer au cuirassé."
+		var proportion_attendue: float = float(i + 1) * vague.nombre_renforts / total
+		if absf(cuirasses - proportion_attendue) >= 1.0:
+			return "Les cuirassés sont regroupés au lieu d'être répartis dans la vague."
+		sim.avancer(vague.intervalle)
+	if cuirasses != vague.nombre_renforts or not directeur.est_terminee(sim):
+		return "Le dernier ennemi disparu doit clore la vague avec le nombre prévu de cuirassés."
 	return ""

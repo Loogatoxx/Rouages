@@ -5,3 +5,4 @@ class_name Lot extends Resource
 @export var quantite: int = 1
 @export var poids: float = 1.0
 @export var vague_min: int = 1
+@export var prix: int = 0

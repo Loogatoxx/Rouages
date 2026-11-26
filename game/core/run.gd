@@ -1,8 +1,10 @@
 extends Node
 ## Conserve les PV de l'horloge et publie les transitions de la partie.
 
+const Plateau = preload("res://game/board/plateau.gd")
 const Regles = preload("res://game/core/regles.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
+const UniteDef = preload("res://game/swarm/unite_def.gd")
 
 const DepartDef = preload("res://game/core/depart_def.gd")
 const Reserve = preload("res://game/core/reserve.gd")
@@ -12,7 +14,9 @@ const Draft = preload("res://game/draft/draft.gd")
 enum Phase { DRAFT, CONSTRUCTION, VAGUE, FIN }
 
 var regles: Regles = preload("res://data/regles.tres")
-var depart: DepartDef = preload("res://data/depart.tres")
+var depart: DepartDef = regles.departs[0]
+var defi_du_jour: bool = false
+var _graine_defi: int
 var reserve: Reserve = Reserve.new()
 var offre: Array[Lot] = []
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
@@ -25,10 +29,97 @@ var nb_vagues: int:
 var pv_horloge: int = regles.pv_horloge
 var phase: Phase = Phase.DRAFT
 var vague_actuelle: int = 0
+var ressorts: int = regles.ressorts_depart
+var ennemis_casses: int = 0
+var ressorts_gagnes: int = 0
+var derniere_recompense: int = 0
+var vitesse: float = 1.0
+## Somme des rentes des extensions posées, versée à chaque fin de vague.
+var revenu_extensions: int = 0
+var _pv_debut_vague: int
 
 
 func _ready() -> void:
 	reinitialiser()
+
+
+## Crédite les ressorts reçus et les compte dans les gains de la partie.
+func gagner(n: int) -> void:
+	if n < 0:
+		return
+	ressorts += n
+	ressorts_gagnes += n
+	Events.ressorts_changes.emit(ressorts)
+
+
+## Prélève le prix si le solde permet de le payer en entier.
+func depenser(n: int) -> bool:
+	if n < 0 or ressorts < n:
+		return false
+	ressorts -= n
+	Events.ressorts_changes.emit(ressorts)
+	return true
+
+
+## Tourne une pièce posée et prélève le prix si la rotation a abouti.
+func tourner_piece(plateau: Plateau, case: Vector2i) -> bool:
+	var prix: int = regles.prix_rotation
+	if prix < 0 or ressorts < prix or not plateau.tourner(case):
+		return false
+	return depenser(prix)
+
+
+## Achète un lot disponible pour la prochaine vague et le range dans la réserve.
+func acheter(i: int) -> bool:
+	if phase != Phase.CONSTRUCTION or i < 0 or i >= regles.boutique.size():
+		return false
+	var lot: Lot = regles.boutique[i]
+	if lot.vague_min > vague_actuelle + 1 or not depenser(lot.prix):
+		return false
+	reserve.ajouter(lot.objet, lot.quantite)
+	return true
+
+
+func _tirer_offre() -> void:
+	offre = Draft.tirer(regles.pioche, regles.choix_par_draft, vague_actuelle + 1, rng)
+
+
+## Paie un nouveau tirage et présente les lots dans la même phase de draft.
+func relancer_offre() -> bool:
+	if phase != Phase.DRAFT or not depenser(regles.prix_relance):
+		return false
+	_tirer_offre()
+	Events.phase_changee.emit(Phase.DRAFT)
+	return true
+
+
+## Répare l'horloge en construction et publie le solde une fois les PV restaurés.
+func reparer_horloge() -> bool:
+	if phase != Phase.CONSTRUCTION or pv_horloge >= regles.pv_horloge:
+		return false
+	var prix: int = regles.prix_reparation
+	if prix < 0 or ressorts < prix:
+		return false
+	pv_horloge = mini(pv_horloge + regles.pv_reparation, regles.pv_horloge)
+	return depenser(prix)
+
+
+## Applique les gains d'une extension posée : ressorts immédiats et rente de fin de vague.
+func poser_extension(ressorts_pose: int, revenu: int) -> void:
+	revenu_extensions += maxi(0, revenu)
+	gagner(ressorts_pose)
+
+
+## Comptabilise un ennemi cassé et verse le butin de son modèle.
+func casser_ennemi(def: UniteDef, position: Vector2) -> void:
+	ennemis_casses += 1
+	gagner(def.butin)
+	Events.ennemi_casse.emit(position)
+
+
+## Bascule entre le rythme normal et le rythme accéléré de la simulation.
+func basculer_vitesse() -> void:
+	vitesse = regles.multiplicateur_acceleration if vitesse == 1.0 else 1.0
 
 
 ## Ajoute le lot choisi à la réserve et ouvre la construction.
@@ -53,6 +144,7 @@ func lancer_vague() -> void:
 	if phase != Phase.CONSTRUCTION or vague_actuelle >= nb_vagues:
 		return
 	vague_actuelle += 1
+	_pv_debut_vague = pv_horloge
 	changer_phase(Phase.VAGUE)
 	Events.vague_commencee.emit(vague_actuelle)
 
@@ -72,21 +164,59 @@ func subir_degats(d: float) -> void:
 func terminer_vague() -> void:
 	if phase != Phase.VAGUE:
 		return
+	derniere_recompense = regles.recompense_vague + regles.recompense_par_vague * (vague_actuelle - 1)
+	derniere_recompense += revenu_extensions
+	if pv_horloge == _pv_debut_vague:
+		derniere_recompense += regles.bonus_sans_degat
+	gagner(derniere_recompense)
 	Events.vague_terminee.emit(vague_actuelle)
 	if vague_actuelle == nb_vagues:
 		changer_phase(Phase.FIN)
 		Events.run_terminee.emit(true)
 	else:
-		offre = Draft.tirer(regles.pioche, regles.choix_par_draft, vague_actuelle + 1, rng)
+		_tirer_offre()
 		changer_phase(Phase.DRAFT)
+
+
+## Sélectionne le plateau de la prochaine partie libre.
+func choisir_depart(i: int) -> void:
+	if i >= 0 and i < regles.departs.size():
+		depart = regles.departs[i]
+		defi_du_jour = false
+
+
+## Renvoie la graine commune aux parties jouées pour cette date.
+func graine_du_jour(date: String) -> int:
+	return hash(date)
+
+
+## Sélectionne le plateau et mémorise la graine du défi pour le prochain départ.
+func preparer_defi(date: String) -> void:
+	_graine_defi = graine_du_jour(date)
+	depart = regles.departs[posmod(_graine_defi, regles.departs.size())]
+	defi_du_jour = true
 
 
 ## Restaure l'horloge et la réserve, puis propose les lots de la première vague.
 func reinitialiser() -> void:
+	if defi_du_jour:
+		rng.seed = _graine_defi
+		seed(_graine_defi)
+	else:
+		rng.randomize()
+		randomize()
 	vague_actuelle = 0
 	pv_horloge = regles.pv_horloge
+	_pv_debut_vague = pv_horloge
+	ressorts = regles.ressorts_depart
+	ennemis_casses = 0
+	ressorts_gagnes = 0
+	derniere_recompense = 0
+	vitesse = 1.0
+	revenu_extensions = 0
 	reserve.vider()
 	reserve.ajouter_lots(depart.reserve)
-	offre = Draft.tirer(regles.pioche, regles.choix_par_draft, 1, rng)
+	_tirer_offre()
 	phase = Phase.DRAFT
+	Events.ressorts_changes.emit(ressorts)
 	Events.phase_changee.emit(phase)

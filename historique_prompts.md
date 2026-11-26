@@ -65,3 +65,26 @@
 - **Prompt** : correction « blanc sur blanc » validée (« tout est bon continue ») ; ressenti : « je perds vague 4 », pas d'ennui, extensions = « je double juste », tuto/argent pour plus tard.
 - **Réponse** : T06a (Codex) : teintes « peinture de jouet » + chapeau brun, test de contraste WCAG (43 tests). Banc sur 3 graines : un joueur un cran sous le parfait mourait en V3-V4 ; V2-V4 adoucies (44→36, 70→54, 97→80) et `pv_horloge` 20→30. Retours extensions/tuto/argent notés au backlog.
 - **Objectif** : un début de run accessible sans toucher la fin de run.
+
+## 2026-11-26 — Étape 7 : horloge 3D
+- **Prompt** : « commit étape 6, tu peux faire la B » ; puis génération Hyper3D faite à la main par Carlos (l'API exige le plan supérieur).
+- **Réponse** : commit `4609167`. T07a : 3 visuels d'horloge (Antigravity), sons en échec (délai du bridge, 2 fois). T07b : bridge en délai dépassé à chaque appel Hyper3D ; Carlos a généré et exporté le modèle lui-même (1 crédit, 43 restants). Modèle vérifié (13 378 triangles, 1,6 × 3 m, origine à la base) et branché dans `plateau_visuel.gd` avec repli greybox.
+- **Objectif** : la pièce maîtresse à l'échelle en jeu, sans dépenser plus d'un crédit.
+
+## 2026-11-26 — Rush autonome vers un jeu complet (étapes 7 fin, 7b, 8)
+- **Prompt** (transmis par la session principale, au nom de Carlos) : « en autonomie, en mode rush » : finir l'étape 7 (sons), ajouter tout ce qui manque pour un tower defense jouable et agréable (menus, pause, fin, tutoriel, monnaie, extensions plus tentantes, retours visuels/sonores, vitesse x2, survol, 2e ennemi, 2e atelier), puis builds Mac + Windows, sans validation à chaque étape.
+- **Réponse** : sons synthétisés localement (`scripts/generer_sons.py`, Python + ffmpeg, 0 service payant) et autoload `Sons` ; fiches T08a (ressorts, boutique, cuirassé, lance-billes, extensions, vitesse), T08b (menus, boutique, tutoriel, survol, retours visuels), T08c (visuels des nouvelles unités, éclats, secousse) confiées à Codex.
+- **Objectif** : une run complète du menu titre à l'écran de fin, livrée en `.zip` Mac et Windows.
+- **Suite** : T08b relu malgré l'arrêt de Codex (Mac en veille) ; passe visuelle vérifiée par captures (exposition, SSAO, joints, damier, vitrine 3D du menu, bulle du tutoriel, écran de fin). Économie recalibrée (butin 1/scarabée = ~1 300 ressorts par run, ramené à une prime de vague + rente des extensions). 52 tests verts.
+- **Prompt** : « Oui, télécharge » (modèles d'export Godot).
+- **Réponse** : modèles 4.7.2 installés (Mac + Windows seulement), ETC2/ASTC activé, textures du .glb réintégrées à l'export. `builds/Rouages_mac.zip` (71 Mo) testé : il se lance et affiche l'horloge ; `builds/Rouages_windows.zip` (48 Mo) exporté, à tester sur le PC.
+- **Objectif** : livrer deux `.zip` jouables.
+- **Prompt** : « pour le disque si tu trouve que y a pas assez de place met sur mon lexar sinon continue ».
+- **Réponse** : place suffisante (~7 Go), rien déplacé. Finitions : toit rouge et clé de remontoir sur l'atelier de soldats, ombre de l'horloge nette au lieu d'un nuage granuleux, cartes de draft avec nom en demi-gras et description plus petite. Builds réexportés, Mac retesté. 52 tests verts.
+- **Objectif** : un rendu « première version publique ».
+
+## 2026-11-26 — Retours d'un testeur externe (étape 9)
+- **Prompt** : « continue et voici une review de mon pote » (questionnaire en portugais) ; puis « travaille en autonomie pendant 2 heures » et « ajoute aussi qu'avec une bonne base on ouvrira un multi et un 1x1 ».
+- **Réponse** : tri des retours (ennemis à peine vus et trop faibles, jouets empilés, temps morts en vague, rotation gratuite qui supprime la réflexion, pose d'extension peu claire, pas de traduction, envie de contenu et d'un défi du jour). T09a (Codex) : garde des jouets à 55 % du chemin, anti-empilement, pose pendant les vagues, rotation payante, marqueurs d'extension, 3 plateaux, défi du jour, fourmi mécanique. T09b (Codex) : traduction FR/EN/PT. T09c (Codex) : sensations d'impact. Claude : rééquilibrage au banc (3 graines, 2 profils), chemins de Fourche en coude, menu (choix du plateau, défi du jour avec record), icône rendue depuis le modèle 3D, musique de vague en fondu enchaîné, multijoueur noté au backlog. Builds réexportés, Mac retesté.
+- **Objectif** : que le testeur ait envie de relancer une partie (il donnait 7/10).
+

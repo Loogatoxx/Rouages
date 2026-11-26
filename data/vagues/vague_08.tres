@@ -2,10 +2,13 @@
 
 [ext_resource type="Script" path="res://game/waves/vague_def.gd" id="vague"]
 [ext_resource type="Resource" path="res://data/unites/scarabee.tres" id="scarabee"]
+[ext_resource type="Resource" path="res://data/unites/scarabee_cuirasse.tres" id="cuirasse"]
 
 [resource]
 script = ExtResource("vague")
 unite = ExtResource("scarabee")
+renfort = ExtResource("cuirasse")
+nombre_renforts = 12
 nombre = 160
 intervalle = 0.25
-multiplicateur_pv = 1.85
+multiplicateur_pv = 2.0

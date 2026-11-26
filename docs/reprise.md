@@ -3,20 +3,31 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-26)
-- **Étape 6 validée** (« ça reste fun ») : jouets en teintes « peinture de jouet » + chapeau, V2-V4 adoucies, `pv_horloge` 30, aperçu de pose bleu. Étape 7 lancée (T07a : visuel de l'horloge + sons, Antigravity).
-- Étapes 0 à 4 commitées (`d24f33b`). **Étape 5 testée par Carlos et commitée** (« c'est très bien ») :
-  draft d'un lot parmi 3 (`Run.choisir_lot`), réserve (`Run.reserve`), plateau et réserve de départ dans `data/depart.tres`,
-  pioche et 10 vagues dans `data/regles.tres`, extensions de terrain (`data/extensions/`, +1 entrée obligatoire, bonus à la pose),
-  remontage des jouets en CONSTRUCTION, répartition des jouets aux embranchements. 40 tests verts.
-  Fiches : `taches/T05a_draft_reserve.md`, `T05b_extensions.md`, `T05c_vagues_equilibrage.md`.
+## État (mis à jour le 2026-11-26, rush autonome)
+- **Étapes 7 et 7b faites, non commitées** (indexées) : horloge 3D, sons procéduraux (`scripts/generer_sons.py`, autoload `Sons`),
+  ressorts + boutique + relance + réparation, rente des extensions, scarabée cuirassé, atelier de lance-billes, menu titre
+  (scène principale, vitrine 3D de l'horloge), pause (Échap/P), fin avec stats, tutoriel en 5 bulles (`user://reglages.cfg`),
+  infos de survol, vitesse x2 (Espace bascule), passe visuelle (exposition, SSAO, joints de dalles, damier). 52 tests verts.
+  Fiches : `taches/T08a_economie_variete.md`, `T08b_interface_menus.md`, `T08c_visuels_unites_effets.md`.
+- **Étape 8** : modèles d'export 4.7.2 installés (Mac + Windows seulement, pour la place disque). Exporter :
+  `Godot --headless --path . --export-release "macOS" builds/Rouages_mac.zip` puis `"Windows" builds/Rouages_windows/Rouages.exe`
+  et zipper le dossier. Mac testé (Movie Maker : `--write-movie f.png --fixed-fps 30 --quit-after 90`) ; Windows à tester sur le PC.
+  Pièges : le Mac exige `import_etc2_astc=true` ; les `horloge_texture_*.png` sont extraits du .glb par l'import et **doivent**
+  partir dans les builds (ignorés par git seulement). Le build release refuse un chemin de scène en argument.
+- **Captures de vérification** : script jetable `--script capturer.gd` (charger une scène dans `root`, attendre, puis
+  `root.get_texture().get_image().save_png()`) en mode fenêtré, pas headless.
 - **Banc d'équilibrage** (avant de toucher une vague) :
   `/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://scripts/banc_equilibrage.gd -- 1,1,2,2,3,3,4,4,5,5 1 0`
-  (profil = ateliers avant chaque vague, graine, vague de pose d'un sentier ; 2 s par run). Toujours comparer sur 3 graines ou plus.
-- **Retour de Carlos (à traiter en premier à l'étape 6)** : on voit mal les soldats, blanc sur blanc (couleur des jouets vs chemin crème).
-- Pistes pour l'étape 6 (playtest) : la difficulté repose sur des profils au placement parfait ; un vrai joueur est plutôt un cran
-  en dessous. Les fuites arrivent par paquets (rupture brutale) : si c'est frustrant, jouer sur `pv_horloge` ou adoucir V7-V8.
-  Les jouets « campent » sur les entrées ; vérifier que c'est lisible. Les extensions : mesurer si on les prend (bonus assez tentant ?).
+  (profil = ateliers avant chaque vague, graine, vague de pose d'un sentier). Toujours 3 graines ou plus. Le banc ne simule
+  ni la boutique ni les lance-billes : un vrai joueur a plus d'outils que lui.
+- Finitions faites : toit rouge + clé sur l'atelier de soldats, ombres nettes (`shadow_blur` 0,8), cartes de draft à deux niveaux.
+- Place disque faible (~7 Go) : si besoin, Carlos autorise à déplacer les gros fichiers sur son disque externe Lexar.
+
+- **Étape 9 (retours d'un testeur portugais)** : T09a (garde des jouets, pose en vague, rotation payante, marqueurs
+  d'extension, plateaux Prairie/Méandres/Fourche, défi du jour, fourmi), T09b (traduction FR/EN/PT : clé = texte français,
+  `traductions/textes.csv`, ajouter toute nouvelle chaîne au CSV et l'afficher via `tr()`), T09c (billes en vol, flash des
+  ennemis touchés, rebond des ateliers). Claude : rééquilibrage au banc, menu (plateau, défi du jour + record), icône
+  (`assets/icone.png`), musique de vague. Idée de Carlos au backlog : multijoueur coop et 1 contre 1.
 
 ## Procédure d'une étape (Claude = chef de chantier léger)
 1. Lire la fiche de l'étape précédente et les fichiers qu'on va toucher (pas tout le dépôt).

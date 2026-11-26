@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PieceDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/piece_def.gd" id="1"]
+[ext_resource type="Resource" path="res://data/unites/lance_bille.tres" id="bille"]
+
+[resource]
+script = ExtResource("1")
+id = &"atelier_billes"
+nom = "Atelier de lance-billes"
+description = "Remonte des lance-billes qui tirent de loin, idéals contre les scarabées cuirassés."
+type = 2
+ports = 4
+transmet = false
+unite_produite = ExtResource("bille")
+cadence_production = 0.3

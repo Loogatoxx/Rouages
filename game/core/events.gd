@@ -20,3 +20,9 @@ signal horloge_touchee(pv_restants: int)
 signal tuile_choisie(id: StringName)
 ## Fin de run.
 signal run_terminee(victoire: bool)
+## Le stock de ressorts (monnaie de la run) a changé : `total` = nouveau solde.
+signal ressorts_changes(total: int)
+## Un ennemi vient d'être cassé à `position` (plan du plateau, mètres) : retour visuel et sonore.
+signal ennemi_casse(position: Vector2)
+## Le joueur demande la pause (Échap sans pièce sélectionnée, ou touche P).
+signal pause_demandee

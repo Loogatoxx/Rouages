@@ -1,6 +1,8 @@
 class_name Production extends RefCounted
 ## Suit la progression de chaque atelier et place ses jouets à la sortie du port.
 
+signal jouet_produit(case: Vector2i)
+
 const Plateau = preload("res://game/board/plateau.gd")
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const Regles = preload("res://game/core/regles.gd")
@@ -31,6 +33,7 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 			for i: int in mini(prets, places):
 				if not sim.ajouter(atelier.unite_produite, sortie):
 					break
+				jouet_produit.emit(case)
 
 
 func _sortie(case: Vector2i, ports: int) -> Vector2:

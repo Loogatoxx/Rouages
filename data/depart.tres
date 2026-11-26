@@ -26,6 +26,8 @@ poids = 1.0
 
 [resource]
 script = ExtResource("depart")
+nom = "Prairie"
+description = "Deux entrées longent le bord est et partagent la route vers l’horloge."
 terrain = Rect2i(-4, -4, 9, 9)
 chemins = Array[Vector2i]([Vector2i(4, -4), Vector2i(4, -3), Vector2i(4, -2), Vector2i(4, -1), Vector2i(4, 0), Vector2i(4, 1), Vector2i(4, 2), Vector2i(4, 3), Vector2i(4, 4), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0)])
 horloge = Vector2i(0, 0)

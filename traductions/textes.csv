@@ -1,0 +1,100 @@
+keys,fr,en,pt
+Rouages,Rouages,Rouages,Rouages
+Défends l’horloge avec tes jouets à remontoir,Défends l’horloge avec tes jouets à remontoir,Defend the clock with your wind-up toys,Defende o relógio com os teus brinquedos de corda
+Jouer,Jouer,Play,Jogar
+Revoir le tutoriel,Revoir le tutoriel,Replay tutorial,Rever o tutorial
+Tutoriel activé pour la prochaine partie,Tutoriel activé pour la prochaine partie,Tutorial enabled for the next game,Tutorial ativado para a próxima partida
+Langue : Français,Langue : Français,Language: English,Idioma: Português
+Musique,Musique,Music,Música
+Effets,Effets,Sound effects,Efeitos sonoros
+Musique : oui,Musique : oui,Music: on,Música: sim
+Musique : non,Musique : non,Music: off,Música: não
+Effets : oui,Effets : oui,Sound effects: on,Efeitos sonoros: sim
+Effets : non,Effets : non,Sound effects: off,Efeitos sonoros: não
+Quitter,Quitter,Quit,Sair
+Pause,Pause,Pause,Pausa
+Reprendre,Reprendre,Resume,Continuar
+Recommencer la run,Recommencer la run,Restart game,Recomeçar a partida
+Menu titre,Menu titre,Title screen,Ecrã inicial
+Rejouer,Rejouer,Play again,Jogar de novo
+Choisis un lot,Choisis un lot,Choose a bundle,Escolhe um conjunto
+Relancer le tirage,Relancer le tirage,Reroll,Voltar a sortear
+Relancer le tirage — %d,Relancer le tirage — %d,Reroll — %d,Voltar a sortear — %d
+Boutique,Boutique,Shop,Loja
+Réparer l’horloge,Réparer l’horloge,Repair the clock,Reparar o relógio
+Réparer l’horloge (+%d PV) — %d,Réparer l’horloge (+%d PV) — %d,Repair the clock (+%d HP) — %d,Reparar o relógio (+%d PV) — %d
+Disponible à la vague %d,Disponible à la vague %d,Available from wave %d,Disponível a partir da vaga %d
+Lancer la vague,Lancer la vague,Start wave,Iniciar a vaga
+Changer la vitesse (Espace),Changer la vitesse (Espace),Change speed (Space),Alterar a velocidade (Espaço)
+Mettre en pause (P),Mettre en pause (P),Pause (P),Fazer pausa (P)
+x1,x1,x1,x1
+x%d,x%d,x%d,x%d
++%d,+%d,+%d,+%d
+%s ×%d,%s ×%d,%s ×%d,%s ×%d
+%s  ×%d,%s  ×%d,%s  ×%d,%s  ×%d
+%s ×%d — %d,%s ×%d — %d,%s ×%d — %d,%s ×%d — %d
+"%s
+%s","%s
+%s","%s
+%s","%s
+%s"
+Ressorts : %d,Ressorts : %d,Springs: %d,Molas: %d
+Horloge · %d / %d PV,Horloge · %d / %d PV,Clock · %d / %d HP,Relógio · %d / %d PV
+Vague %d / %d,Vague %d / %d,Wave %d / %d,Vaga %d / %d
+Vague %d,Vague %d,Wave %d,Vaga %d
+Vague tenue ! +%d ressorts,Vague tenue ! +%d ressorts,Wave cleared! +%d springs,Vaga superada! +%d molas
+Victoire !,Victoire !,Victory!,Vitória!
+L’horloge s’est arrêtée…,L’horloge s’est arrêtée…,The clock has stopped…,O relógio parou…
+"Vagues tenues : %d / %d
+Scarabées cassés : %d
+Ressorts gagnés : %d","Vagues tenues : %d / %d
+Scarabées cassés : %d
+Ressorts gagnés : %d","Waves cleared: %d / %d
+Beetles smashed: %d
+Springs earned: %d","Vagas superadas: %d / %d
+Escaravelhos desfeitos: %d
+Molas ganhas: %d"
+Chemin des scarabées,Chemin des scarabées,Beetle path,Caminho dos escaravelhos
+Alimenté,Alimenté,Powered,Com energia
+Pas alimenté : relie-le à l’horloge,Pas alimenté : relie-le à l’horloge,No power: connect it to the clock,Sem energia: liga a oficina ao relógio
+Tutoriel,Tutoriel,Tutorial,Tutorial
+Tutoriel   ·   %d / %d,Tutoriel   ·   %d / %d,Tutorial   ·   %d / %d,Tutorial   ·   %d / %d
+Compris,Compris,Got it,Percebi
+Passer le tutoriel,Passer le tutoriel,Skip tutorial,Saltar o tutorial
+Choisis un lot pour ajouter ses pièces à ta réserve.,Choisis un lot pour ajouter ses pièces à ta réserve.,Choose a bundle to add its pieces to your reserve.,Escolhe um conjunto para juntar as peças à tua reserva.
+"Clique sur une pièce de la réserve, puis sur une case pour la poser. R ou le clic droit la fait tourner. Relie un atelier à l’horloge par des engrenages.","Clique sur une pièce de la réserve, puis sur une case pour la poser. R ou le clic droit la fait tourner. Relie un atelier à l’horloge par des engrenages.","Click a piece in your reserve, then a square to place it. Press R or right-click to rotate it. Use gears to connect a workshop to the clock.",Clica numa peça da reserva e depois numa casa para a colocar. Usa R ou o botão direito do rato para a rodar. Liga uma oficina ao relógio com engrenagens.
+Ton atelier remonte des soldats ! Lance la vague.,Ton atelier remonte des soldats ! Lance la vague.,Your workshop is winding up soldiers! Start the wave.,A tua oficina já dá corda aos soldados! Inicia a vaga.
+"Les scarabées suivent le chemin. Appuie sur Espace pour passer en x2, ou sur Échap pour faire une pause.","Les scarabées suivent le chemin. Appuie sur Espace pour passer en x2, ou sur Échap pour faire une pause.",Beetles follow the path. Press Space for double speed or Esc to pause.,Os escaravelhos seguem o caminho. Carrega na barra de espaço para duplicar a velocidade ou em Esc para fazer uma pausa.
+"Tu as gagné des ressorts ! Après le tirage, dépense-les à la boutique pour acheter des pièces ou réparer l’horloge.","Tu as gagné des ressorts ! Après le tirage, dépense-les à la boutique pour acheter des pièces ou réparer l’horloge.","You earned springs! After the draw, spend them in the shop on pieces or clock repairs.","Ganhaste molas! Depois do sorteio, usa-as na loja para comprar peças ou reparar o relógio."
+Horloge,Horloge,Clock,Relógio
+Son tic-tac donne vie aux ateliers reliés.,Son tic-tac donne vie aux ateliers reliés.,Its ticking brings connected workshops to life.,O seu tiquetaque dá vida às oficinas ligadas.
+Engrenage droit,Engrenage droit,Straight gear,Engrenagem reta
+Transmet le mouvement en ligne droite.,Transmet le mouvement en ligne droite.,Transfers motion in a straight line.,Transmite o movimento em linha reta.
+Engrenage coudé,Engrenage coudé,Corner gear,Engrenagem em cotovelo
+Fait prendre un quart de tour au chemin de l’énergie.,Fait prendre un quart de tour au chemin de l’énergie.,Turns the flow of power by 90 degrees.,Desvia o fluxo de energia um quarto de volta.
+Engrenage en T,Engrenage en T,T-junction gear,Engrenagem em T
+Relie trois côtés pour alimenter une branche de plus.,Relie trois côtés pour alimenter une branche de plus.,Connects three sides to power an extra branch.,Liga três lados para levar energia a mais um ramal.
+Engrenage en croix,Engrenage en croix,Four-way gear,Engrenagem em cruz
+Partage le mouvement entre ses quatre côtés.,Partage le mouvement entre ses quatre côtés.,Transfers motion in all four directions.,Distribui o movimento pelos quatro lados.
+Atelier de soldats,Atelier de soldats,Soldier workshop,Oficina de soldados
+Remonte de petits soldats quand ses rouages reçoivent l’énergie de l’horloge.,Remonte de petits soldats quand ses rouages reçoivent l’énergie de l’horloge.,Winds up toy soldiers when the clock powers its gears.,Dá corda a soldadinhos quando as engrenagens recebem energia do relógio.
+Atelier de lance-billes,Atelier de lance-billes,Marble shooter workshop,Oficina de lança-berlindes
+"Remonte des lance-billes qui tirent de loin, idéals contre les scarabées cuirassés.","Remonte des lance-billes qui tirent de loin, idéals contre les scarabées cuirassés.","Winds up long-range marble shooters, ideal against armoured beetles.","Dá corda a lança-berlindes de longo alcance, ideais contra escaravelhos blindados."
+Sentier,Sentier,Trail,Trilho
+"À la pose : +1 entrée de scarabées, 1 atelier de soldats, 2 engrenages droits et 15 ressorts. Puis +3 ressorts à chaque fin de vague.","À la pose : +1 entrée de scarabées, 1 atelier de soldats, 2 engrenages droits et 15 ressorts. Puis +3 ressorts à chaque fin de vague.","Adds 1 beetle entrance and grants 1 soldier workshop, 2 straight gears and 15 springs. Earn 3 extra springs after each wave.","Abre 1 entrada para escaravelhos e dá-te 1 oficina de soldados, 2 engrenagens retas e 15 molas. Ganhas mais 3 molas no fim de cada vaga."
+Carrefour,Carrefour,Crossroads,Cruzamento
+"À la pose : +1 entrée de scarabées, 1 atelier de lance-billes, 2 engrenages droits et 25 ressorts. Puis +5 ressorts à chaque fin de vague.","À la pose : +1 entrée de scarabées, 1 atelier de lance-billes, 2 engrenages droits et 25 ressorts. Puis +5 ressorts à chaque fin de vague.","Adds 1 beetle entrance and grants 1 marble shooter workshop, 2 straight gears and 25 springs. Earn 5 extra springs after each wave.","Abre 1 entrada para escaravelhos e dá-te 1 oficina de lança-berlindes, 2 engrenagens retas e 25 molas. Ganhas mais 5 molas no fim de cada vaga."
+Lance-bille,Lance-bille,Marble shooter,Lança-berlindes
+Fourmi mécanique,Fourmi mécanique,Clockwork ant,Formiga mecânica
+Scarabée,Scarabée,Beetle,Escaravelho
+Scarabée cuirassé,Scarabée cuirassé,Armoured beetle,Escaravelho blindado
+Prairie,Prairie,Meadow,Prado
+Deux entrées longent le bord est et partagent la route vers l’horloge.,Deux entrées longent le bord est et partagent la route vers l’horloge.,Two entrances on the eastern edge share a path to the clock.,Duas entradas no lado leste partilham o caminho até ao relógio.
+Méandres,Méandres,Meanders,Meandros
+Un long chemin en S descend du bord nord jusqu’à l’horloge.,Un long chemin en S descend du bord nord jusqu’à l’horloge.,A long S-shaped path winds down from the northern edge to the clock.,Um longo caminho em S desce do limite norte até ao relógio.
+Fourche,Fourche,Fork,Bifurcação
+Deux chemins en coude arrivent du nord et du sud. Un atelier supplémentaire est en réserve.,Deux chemins en coude arrivent du nord et du sud. Un atelier supplémentaire est en réserve.,Two paths bend in from the north and south. You have an extra workshop in reserve.,Dois caminhos em cotovelo chegam de norte e de sul. Tens mais uma oficina na reserva.
+Défi du jour,Défi du jour,Daily challenge,Desafio diário
+Plateau : %s,Plateau : %s,Board: %s,Tabuleiro: %s
+Défi du jour — record : %d / %d,Défi du jour — record : %d / %d,Daily challenge — best: %d / %d,Desafio diário — recorde: %d / %d
+Soldat à remontoir,Soldat à remontoir,Wind-up soldier,Soldado de corda

@@ -1,8 +1,9 @@
 class_name SwarmSim extends RefCounted
 ## Simule deux nuées sur le plan du plateau, avec un état compact par camp.
 
+signal tir(depart: Vector2, arrivee: Vector2)
 signal ennemi_arrive(degats: float)
-signal unite_morte(camp: int, position: Vector2)
+signal unite_morte(camp: int, position: Vector2, def: UniteDef)
 
 const Plateau = preload("res://game/board/plateau.gd")
 const ChampFlux = preload("res://game/swarm/champ_flux.gd")
@@ -26,6 +27,7 @@ class Nuee:
 	var lieux := PackedVector2Array()
 	var angles := PackedFloat32Array()
 	var vies := PackedFloat32Array()
+	var touches := PackedFloat32Array()
 	var recharges := PackedFloat32Array()
 	var choix := PackedInt64Array()
 	var modeles: Array[UniteDef] = []
@@ -40,17 +42,22 @@ class Nuee:
 		lieux[i] = lieux[fin]
 		angles[i] = angles[fin]
 		vies[i] = vies[fin]
+		touches[i] = touches[fin]
 		recharges[i] = recharges[fin]
 		choix[i] = choix[fin]
 		modeles[i] = modeles[fin]
 		lieux.resize(fin)
 		angles.resize(fin)
 		vies.resize(fin)
+		touches.resize(fin)
 		recharges.resize(fin)
 		choix.resize(fin)
 		modeles.pop_back()
 
 
+## Fraction du chemin que les alliés peuvent parcourir sans cible.
+var garde_ratio: float = 1.0
+var _distance_max: int = 0
 var _camps: Array[Nuee] = [Nuee.new(), Nuee.new()]
 var _distances: Dictionary = {}
 var _objectifs: Array[Dictionary] = [{}, {}]
@@ -58,7 +65,9 @@ var _branches: Dictionary[Vector2i, PackedVector2Array] = {}
 
 
 ## Recalcule les cartes et les prochains centres à viser, sans déplacer les unités.
-func configurer(plateau: Plateau) -> void:
+func configurer(plateau: Plateau, ratio: float = 1.0) -> void:
+	garde_ratio = ratio
+	_distance_max = 0
 	_distances = ChampFlux.calculer(plateau)
 	var sources: Dictionary = ChampFlux.vers_chemin(plateau, _distances)
 	for objectifs: Dictionary in _objectifs:
@@ -73,6 +82,7 @@ func configurer(plateau: Plateau) -> void:
 		var branches := PackedVector2Array()
 		var retour: Vector2i = case
 		var distance: int = _distances[case]
+		_distance_max = maxi(_distance_max, distance)
 		for direction: Vector2i in ChampFlux.VOISINS:
 			var voisin: Vector2i = case + direction
 			var suivante: int = _distances.get(voisin, -1)
@@ -95,6 +105,7 @@ func ajouter(def: UniteDef, position: Vector2) -> bool:
 	nuee.lieux.append(position)
 	nuee.angles.append(0.0)
 	nuee.vies.append(def.pv)
+	nuee.touches.append(0.0)
 	nuee.recharges.append(0.0)
 	nuee.choix.append(randi() if def.camp == ALLIE else 0)
 	nuee.modeles.append(def)
@@ -113,9 +124,19 @@ func positions(camp: int) -> PackedVector2Array:
 	return _camps[camp].lieux
 
 
+## Renvoie la durée restante du flash de chaque unité du camp.
+func touches(camp: int) -> PackedFloat32Array:
+	return _camps[camp].touches
+
+
 ## Renvoie les angles de marche depuis l'axe X vers l'axe Z.
 func caps(camp: int) -> PackedFloat32Array:
 	return _camps[camp].angles
+
+
+## Renvoie les modèles en lecture seule par convention, dans le même ordre que les positions.
+func modeles(camp: int) -> Array[UniteDef]:
+	return _camps[camp].modeles
 
 
 ## Résout les décisions sur un même instantané, puis applique déplacements et retraits.
@@ -126,7 +147,7 @@ func avancer(dt: float) -> void:
 	for i: int in range(ennemis.lieux.size() - 1, -1, -1):
 		_verifier_arrivee(ennemis, i)
 	for nuee: Nuee in _camps:
-		_indexer(nuee)
+		_indexer(nuee, dt)
 	for camp: int in [ALLIE, ENNEMI]:
 		var nuee: Nuee = _camps[camp]
 		var adverse: Nuee = _camps[1 - camp]
@@ -147,7 +168,7 @@ func avancer(dt: float) -> void:
 		for i: int in range(nuee.lieux.size() - 1, -1, -1):
 			var lieu: Vector2 = nuee.lieux[i]
 			if nuee.vies[i] <= 0.0:
-				unite_morte.emit(camp, lieu)
+				unite_morte.emit(camp, lieu, nuee.modeles[i])
 				nuee._retirer(i)
 			elif camp == ENNEMI:
 				_verifier_arrivee(nuee, i)
@@ -162,11 +183,13 @@ func _verifier_arrivee(ennemis: Nuee, i: int) -> void:
 		ennemi_arrive.emit(degats)
 
 
-func _indexer(nuee: Nuee) -> void:
+func _indexer(nuee: Nuee, dt: float) -> void:
 	nuee.grille.clear()
 	nuee.influence.clear()
 	nuee.suivants = nuee.lieux.duplicate()
 	for i: int in nuee.lieux.size():
+		if nuee.touches[i] > 0.0:
+			nuee.touches[i] = maxf(0.0, nuee.touches[i] - dt)
 		var lieu: Vector2 = nuee.lieux[i]
 		var case := Vector2i((lieu / MAILLE).floor())
 		var cellule: Cellule = nuee.grille.get(case)
@@ -227,6 +250,10 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 			if recharge < dt - 0.000001 or recharge <= 0.0:
 				var coups: int = maxi(1, ceili((dt - recharge - 0.000001) / periode))
 				adverse.vies[cible] -= modele.degats * coups
+				adverse.touches[cible] = 0.12
+				if camp == ALLIE and modele.portee > 1.0:
+					for coup: int in coups:
+						tir.emit(lieu, adversaires[cible])
 				recharge += periode * coups
 		nuee.recharges[i] = maxf(0.0, recharge - dt)
 		return
@@ -243,6 +270,8 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 
 func _objectif_flux(camp: int, lieu: Vector2, choix: int) -> Vector2:
 	var case := Vector2i((lieu / MAILLE).round())
+	if camp == ALLIE and _distances.get(case, -1) > garde_ratio * _distance_max:
+		return lieu
 	if camp == ALLIE and _branches.has(case):
 		var branches: PackedVector2Array = _branches[case]
 		# Le hachage mêle le choix et la case : deux embranchements successifs restent indépendants

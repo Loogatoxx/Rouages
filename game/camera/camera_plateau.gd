@@ -1,19 +1,24 @@
 extends Camera3D
 ## Cadre le plateau autour d'une cible mobile et interpole entre ses deux vues.
 
+const DUREE_SECOUSSE := 0.25
+
+var _secousse: float = 0.0
 var _cible := Vector3.ZERO
-var _cadre: float = 25.0
+var _cadre: float = 21.0
 var _inclinee: bool = false
 var _melange: float = 0.0
 var _transition: Tween
 
 
 func _ready() -> void:
+	Events.horloge_touchee.connect(_sur_horloge_touchee)
 	near = 0.5
 	_appliquer_vue()
 
 
 func _process(delta: float) -> void:
+	_secousse = maxf(0.0, _secousse - delta)
 	var mouvement: Vector2 = Input.get_vector("camera_gauche", "camera_droite", "camera_haut", "camera_bas")
 	_cible += Vector3(mouvement.x, 0, mouvement.y) * _cadre * 0.55 * delta
 	_cible = _cible.clamp(Vector3(-24, 0, -24), Vector3(24, 0, 24))
@@ -33,6 +38,14 @@ func _appliquer_vue() -> void:
 		distance = _cadre / (2 * tan(deg_to_rad(fov) / 2))
 	position = _cible + Vector3(0, sin(angle), cos(angle)) * distance
 	rotation.x = -angle
+	if _secousse > 0.0:
+		var reste: float = _secousse / DUREE_SECOUSSE
+		var phase: float = (1.0 - reste) * TAU * 2.0
+		position += basis * Vector3(sin(phase), 0.35 * sin(phase * 1.5), 0) * 0.15 * reste
+
+
+func _sur_horloge_touchee(_pv_restants: int) -> void:
+	_secousse = DUREE_SECOUSSE
 
 
 func _unhandled_input(event: InputEvent) -> void:

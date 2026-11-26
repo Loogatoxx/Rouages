@@ -2,13 +2,13 @@
 
 [ext_resource type="Script" path="res://game/board/extension_def.gd" id="extension"]
 [ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
-[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_billes.tres" id="atelier"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
 
 [sub_resource type="Resource" id="bonus_atelier"]
 script = ExtResource("lot")
 objet = ExtResource("atelier")
-quantite = 2
+quantite = 1
 
 [sub_resource type="Resource" id="bonus_droit"]
 script = ExtResource("lot")
@@ -19,7 +19,9 @@ quantite = 2
 script = ExtResource("extension")
 id = &"extension_carrefour"
 nom = "Carrefour"
-description = "À la pose, +1 entrée de scarabées, 2 ateliers de soldats et 2 engrenages droits."
+description = "À la pose : +1 entrée de scarabées, 1 atelier de lance-billes, 2 engrenages droits et 25 ressorts. Puis +5 ressorts à chaque fin de vague."
+ressorts = 25
+revenu = 5
 taille = 3
 chemins = Array[Vector2i]([Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)])
 bonus = Array[ExtResource("lot")]([SubResource("bonus_atelier"), SubResource("bonus_droit")])

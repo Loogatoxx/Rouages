@@ -1,0 +1,155 @@
+[gd_resource type="Theme" format=3]
+
+[sub_resource type="SystemFont" id="Corps"]
+font_names = PackedStringArray("Avenir Next Rounded", "Nunito", "Segoe UI", "Trebuchet MS")
+
+[sub_resource type="SystemFont" id="DemiGras"]
+font_names = PackedStringArray("Avenir Next Rounded", "Nunito", "Segoe UI", "Trebuchet MS")
+font_weight = 600
+
+[sub_resource type="StyleBoxFlat" id="Bois"]
+content_margin_left = 20.0
+content_margin_top = 16.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0.25882, 0.18824, 0.12157, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78824, 0.63529, 0.2902, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+shadow_color = Color(0.21, 0.12, 0.06, 0.23)
+shadow_size = 6
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="Laiton"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.78824, 0.63529, 0.2902, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.87059, 0.74118, 0.45098, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="StyleBoxFlat" id="LaitonClair"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.87843, 0.73725, 0.38824, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.94902, 0.83922, 0.61176, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="StyleBoxFlat" id="LaitonAppuye"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.73333, 0.56863, 0.25098, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.57255, 0.43529, 0.19608, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="StyleBoxFlat" id="Grise"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.68627, 0.61176, 0.50196, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.73725, 0.66275, 0.54902, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[sub_resource type="StyleBoxFlat" id="Focus"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 0.9098, 0.72941, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.9098, 0.72941, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+draw_center = false
+
+[resource]
+default_font = SubResource("Corps")
+default_font_size = 18
+Panel/styles/panel = SubResource("Bois")
+PanelContainer/styles/panel = SubResource("Bois")
+PopupPanel/styles/panel = SubResource("Bois")
+TooltipPanel/styles/panel = SubResource("Bois")
+Label/colors/font_color = Color(1, 0.9098, 0.72941, 1)
+TooltipLabel/colors/font_color = Color(1, 0.9098, 0.72941, 1)
+TooltipLabel/font_sizes/font_size = 15
+Button/styles/normal = SubResource("Laiton")
+Button/styles/hover = SubResource("LaitonClair")
+Button/styles/pressed = SubResource("LaitonAppuye")
+Button/styles/hover_pressed = SubResource("LaitonAppuye")
+Button/styles/disabled = SubResource("Grise")
+Button/styles/focus = SubResource("Focus")
+Button/colors/font_color = Color(0.21961, 0.15294, 0.09804, 1)
+Button/colors/font_hover_color = Color(0.21961, 0.15294, 0.09804, 1)
+Button/colors/font_pressed_color = Color(0.21961, 0.15294, 0.09804, 1)
+Button/colors/font_hover_pressed_color = Color(0.21961, 0.15294, 0.09804, 1)
+Button/colors/font_focus_color = Color(0.21961, 0.15294, 0.09804, 1)
+Button/colors/font_disabled_color = Color(0.31765, 0.26275, 0.20784, 1)
+LinkButton/colors/font_color = Color(0.94118, 0.80784, 0.52941, 1)
+LinkButton/colors/font_hover_color = Color(1, 0.9098, 0.72941, 1)
+LinkButton/colors/font_focus_color = Color(1, 0.9098, 0.72941, 1)
+LinkButton/colors/font_pressed_color = Color(1, 0.9098, 0.72941, 1)
+LinkButton/font_sizes/font_size = 15
+VBoxContainer/constants/separation = 10
+HBoxContainer/constants/separation = 12
+GridContainer/constants/h_separation = 12
+GridContainer/constants/v_separation = 8
+Titre/base_type = &"Label"
+Titre/font_sizes/font_size = 48
+Titre/fonts/font = SubResource("DemiGras")
+SousTitre/base_type = &"Label"
+SousTitre/font_sizes/font_size = 22
+SousTitre/fonts/font = SubResource("DemiGras")
+CarteNom/base_type = &"Label"
+CarteNom/colors/font_color = Color(0.21961, 0.15294, 0.09804, 1)
+CarteNom/font_sizes/font_size = 20
+CarteNom/fonts/font = SubResource("DemiGras")
+CarteTexte/base_type = &"Label"
+CarteTexte/colors/font_color = Color(0.33, 0.24, 0.16, 1)
+CarteTexte/font_sizes/font_size = 15
+Petit/base_type = &"Label"
+Petit/font_sizes/font_size = 15

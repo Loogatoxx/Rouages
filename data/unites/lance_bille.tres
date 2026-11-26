@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="UniteDef" format=3]
+
+[ext_resource type="Script" path="res://game/swarm/unite_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"lance_bille"
+nom = "Lance-bille"
+camp = 0
+pv = 8.0
+degats = 7.0
+cadence = 0.7
+portee = 2.4
+vitesse = 2.0
+rayon = 0.3

@@ -5,5 +5,7 @@ const UniteDef = preload("res://game/swarm/unite_def.gd")
 
 @export var unite: UniteDef
 @export var nombre: int
+@export var renfort: UniteDef
+@export var nombre_renforts: int = 0
 @export var intervalle: float
 @export var multiplicateur_pv: float

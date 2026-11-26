@@ -67,7 +67,7 @@ func _initialize() -> void:
 		if i + 1 == vague_extension and not Extension.appliquer(plateau, SENTIER, Vector2i(6, 2), 1):
 			push_error("Extension refusée : le banc ne correspond plus au plateau de départ.")
 		var alimentees: Dictionary = Energie.calculer(plateau)
-		sim.configurer(plateau)
+		sim.configurer(plateau, regles.garde_ratio)
 		var entrees: Array[Vector2i] = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau))
 		var t: float = 0.0
 		while t < remontage:

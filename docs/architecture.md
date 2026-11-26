@@ -24,6 +24,40 @@
   → Pas de spirale de défaite (une vague ratée ne vide plus l'armée de la suivante), et un retour visuel immédiat à la pose.
 - **Répartition aux embranchements** : chaque jouet tire une branche au hasard à sa naissance. → Chaque front reçoit sa part.
 
+## Économie : les ressorts (`Run.ressorts`)
+- **Gains** : prime de fin de vague `recompense_vague + recompense_par_vague × (n − 1)`, + `bonus_sans_degat` si l'horloge
+  n'a rien perdu, + la **rente des extensions** posées (`ExtensionDef.revenu`), + le butin des ennemis (`UniteDef.butin` :
+  0 pour le scarabée, 2 pour le cuirassé). Pose d'une extension : `ExtensionDef.ressorts` tout de suite.
+  → Pourquoi si peu de butin : avec 1 par scarabée, une run rapportait ~1 300 ressorts (≈ 80 ateliers) ; la prime de vague
+  garde l'économie lisible (~300 ressorts par run) et récompense le jeu propre.
+- **Dépenses** (`regles.tres`) : boutique en CONSTRUCTION (`Run.acheter`, lots avec `prix` et `vague_min`), relance du
+  tirage en DRAFT (`Run.relancer_offre`), réparation de l'horloge (`Run.reparer_horloge`).
+- **Vitesse** : `Run.vitesse` (×1 / ×2, `Run.basculer_vitesse`) multiplie le pas de `Partie` ; Espace bascule.
+
+## Garde, pose en vague, plateaux, défi du jour (T09a, retours d'un testeur externe)
+- **Garde des jouets** (`Regles.garde_ratio` 0,55) : sans cible, un jouet n'avance pas au-delà de 55 % du chemin depuis
+  l'horloge. → Avant, ils campaient sur les entrées et cassaient les ennemis à leur apparition : le testeur « voyait à peine
+  un ennemi » et la partie semblait trop facile. Le banc applique la même garde.
+- **Pose pendant les vagues** (moins de temps morts) ; **rotation d'une pièce posée payante** (`prix_rotation` 2) pour que
+  le placement initial compte ; marqueurs bleus des positions valides d'une extension, rotation choisie automatiquement.
+- **Plateaux** (`Regles.departs`) : Prairie, Méandres (long S), Fourche (deux chemins en coude). `Run.choisir_depart(i)`.
+- **Défi du jour** : `Run.preparer_defi(date)` → plateau et graine déduits de la date (même partie pour tout le monde ce jour-là).
+- **Fourmi mécanique** : ennemi rapide et fragile (renfort de la V3).
+
+## Unités et ateliers
+| Unité | Camp | Rôle |
+|---|---|---|
+| Soldat à remontoir | allié | corps à corps, produit par l'atelier de soldats |
+| Lance-bille | allié | tir à 2,4 m, fragile ; atelier de lance-billes (pioche dès la V3, boutique) |
+| Scarabée | ennemi | nuée de base |
+| Fourmi mécanique | ennemi | rapide (3,6 m/s), 5 PV, en nuée ; renfort de la V3 |
+| Scarabée cuirassé | ennemi | lent, 45 PV, 5 dégâts à l'horloge ; renforts répartis dans la vague dès la V4 (`VagueDef.renfort`) |
+
+## Audio (`Sons`, autoload)
+Sons synthétisés par `scripts/generer_sons.py` (Python + ffmpeg, rien de payant). `Sons` écoute `Events` (horloge touchée,
+vague, fin de run, ennemi cassé) ; pose, rotation, clic et sortie de jouet s'appellent par `Sons.jouer(&"nom")`.
+Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cfg` (partagé avec le tutoriel).
+
 ## Arborescence
 | Dossier | Contenu | Qui |
 |---|---|---|
@@ -42,11 +76,13 @@
 
 ## Signaux (`game/core/events.gd`)
 `plateau_modifie` · `energie_recalculee(alimentees)` · `phase_changee(phase)` · `vague_commencee(n)` ·
-`vague_terminee(n)` · `horloge_touchee(pv)` · `tuile_choisie(id)` · `run_terminee(victoire)`
+`vague_terminee(n)` · `horloge_touchee(pv)` · `tuile_choisie(id)` · `run_terminee(victoire)` ·
+`ressorts_changes(total)` · `ennemi_casse(position)` · `pause_demandee` (Échap sans pièce sélectionnée)
 
 ## Entrées (InputMap)
 `poser_tuile` (clic gauche) · `tourner_tuile` (R / clic droit) · `annuler` (Échap) · `basculer_camera` (Tab) ·
-`camera_gauche/droite/haut/bas` (Q·D·Z·S en AZERTY : touches physiques) · `camera_zoom_avant/arriere` (molette) · `accelerer` (Espace).
+`camera_gauche/droite/haut/bas` (Q·D·Z·S en AZERTY : touches physiques) · `camera_zoom_avant/arriere` (molette) · `accelerer` (Espace, bascule ×1/×2) · `pause` (P ; Échap aussi, voir
+`pause_demandee`).
 
 ## Journal des décisions
 - 2026-11-23 : Godot 4.7.2, Forward+, GDScript, PC d'abord (itch.io puis Steam). Mini-lanceur de tests maison (zéro addon).
@@ -55,3 +91,14 @@
   de départ et les bonus d'extension. Équilibrage mesuré au banc (`scripts/banc_equilibrage.gd`) plutôt que deviné : un atelier à
   plein stock encaisse environ 30 PV de scarabée par seconde ; le débit d'une vague vaut `10 × multiplicateur / intervalle`.
   Le banc a fait ajouter la répartition aux embranchements et le remontage (voir « Boucle de run »).
+- 2026-11-26 : rush jouabilité (T08a-c). Monnaie « ressorts », boutique, 2e ennemi (cuirassé) et 2e atelier (lance-billes),
+  rente des extensions (retour « je double juste »), sons procéduraux, menu titre / pause / tutoriel. `Reserve.ids()` trie
+  désormais par texte : `sort()` sur des `StringName` suit leur identifiant interne et l'ordre changeait à l'ajout de données.
+- 2026-11-26 : étape 8. `export_presets.cfg` (macOS universel signé ad hoc, Windows x86_64 avec pck embarqué = un seul .exe).
+  Compression de textures ETC2/ASTC activée (exigée pour le Mac universel). Les textures extraites du .glb restent hors git
+  (regénérées à l'import) mais sont incluses dans les builds.
+- 2026-11-26 : retours d'un testeur externe (T09a-b) : garde des jouets, pose en vague, rotation payante, 3 plateaux, défi du
+  jour, fourmi, traduction FR/EN/PT (clé = texte français, CSV `traductions/textes.csv`). Rééquilibrage au banc : avant,
+  aucune fuite de V1 à V7 même pour un joueur moyen puis un mur en V8-V10 ; après, le joueur moyen subit ses premières
+  fuites en V3-V5 et perd en V8, le placement parfait gagne de justesse. Icône du jeu et musique de vague (fondu enchaîné).
+

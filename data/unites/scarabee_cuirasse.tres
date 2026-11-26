@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UniteDef" format=3]
+
+[ext_resource type="Script" path="res://game/swarm/unite_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"scarabee_cuirasse"
+nom = "Scarabée cuirassé"
+camp = 1
+pv = 45.0
+degats = 5.0
+cadence = 0.8
+portee = 0.7
+vitesse = 1.2
+rayon = 0.4
+butin = 2

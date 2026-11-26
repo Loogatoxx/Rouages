@@ -12,6 +12,11 @@
 [ext_resource type="PackedScene" path="res://game/ui/hud.tscn" id="hud"]
 [ext_resource type="PackedScene" path="res://assets/ambiance/ambiance.tscn" id="ambiance"]
 
+[ext_resource type="PackedScene" path="res://game/ui/tutoriel.tscn" id="tutoriel"]
+[ext_resource type="PackedScene" path="res://game/ui/menu_pause.tscn" id="pause"]
+[ext_resource type="Script" path="res://game/ui/info_survol.gd" id="survol"]
+[ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
+
 [sub_resource type="BoxMesh" id="table"]
 size = Vector3(56, 0.4, 56)
 
@@ -48,3 +53,21 @@ script = ExtResource("partie")
 script = ExtResource("nuee")
 
 [node name="HUD" parent="." instance=ExtResource("hud")]
+
+[node name="InfoSurvol" type="PanelContainer" parent="HUD"]
+process_mode = 3
+visible = false
+custom_minimum_size = Vector2(300, 0)
+mouse_filter = 2
+theme = ExtResource("theme")
+script = ExtResource("survol")
+plateau_noeud = NodePath("../../PlateauNoeud")
+
+[node name="Texte" type="Label" parent="HUD/InfoSurvol"]
+mouse_filter = 2
+theme_type_variation = &"Petit"
+autowrap_mode = 3
+
+[node name="Tutoriel" parent="." instance=ExtResource("tutoriel")]
+
+[node name="MenuPause" parent="." instance=ExtResource("pause")]

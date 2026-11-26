@@ -2,10 +2,11 @@ class_name Materiaux extends RefCounted
 ## Partage les matériaux du plateau et des nuées.
 
 const COULEURS := {
-	"herbe": "#A9C98B", "pierre_creme": "#EFE3C8", "bois_plateau": "#B9773E",
+	"herbe": "#A9C98B", "herbe_sombre": "#A0C283", "pierre_creme": "#EFE3C8", "bois_plateau": "#B9773E",
 	"bois_clair": "#E2BE8C", "laiton": "#D4A84B", "pastel_bleu": "#9EC3E6",
 	"pastel_rose": "#F2B5C4", "pastel_vert": "#B8E0B0", "pastel_jaune": "#F5DC8A",
 	"jouet_rouge": "#C8553D", "jouet_bleu": "#3D6FA8", "jouet_vert": "#4F8A5B",
+	"jouet_menthe": "#6FB59A", "menthe_soutenue": "#467F6B", "cuivre": "#B0643A",
 	"jouet_prune": "#8A5A9E", "chapeau": "#4A3426",
 }
 

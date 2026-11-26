@@ -1,89 +1,191 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://game/ui/hud.gd" id="hud"]
+[ext_resource type="Script" path="res://game/ui/hud.gd" id="script"]
+[ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
 
-[sub_resource type="StyleBoxFlat" id="bois"]
-content_margin_left = 18.0
-content_margin_top = 12.0
-content_margin_right = 18.0
-content_margin_bottom = 12.0
-bg_color = Color(0.26, 0.19, 0.13, 0.96)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_left = 10
-corner_radius_bottom_right = 10
+[sub_resource type="Gradient" id="Pastels"]
+offsets = PackedFloat32Array(0, 0.33, 0.66, 1)
+colors = PackedColorArray(1, 0.69, 0.58, 1, 0.72, 0.86, 0.74, 1, 1, 0.85, 0.54, 1, 0.72, 0.84, 0.91, 1)
 
 [node name="HUD" type="CanvasLayer"]
 layer = 5
-script = ExtResource("hud")
+script = ExtResource("script")
 
-[node name="Tableau" type="PanelContainer" parent="."]
+[node name="Colonne" type="VBoxContainer" parent="."]
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -236.0
-offset_top = 16.0
-offset_right = -16.0
-theme_override_styles/panel = SubResource("bois")
+offset_left = -374.0
+offset_top = 20.0
+offset_right = -20.0
+grow_horizontal = 0
+theme = ExtResource("theme")
+mouse_filter = 2
 
-[node name="Colonne" type="VBoxContainer" parent="Tableau"]
-theme_override_constants/separation = 8
-
-[node name="PV" type="Label" parent="Tableau/Colonne"]
-unique_name_in_owner = true
-theme_override_colors/font_color = Color(1, 0.91, 0.73, 1)
-theme_override_font_sizes/font_size = 19
-
-[node name="Vague" type="Label" parent="Tableau/Colonne"]
+[node name="Tableau" type="PanelContainer" parent="Colonne"]
 unique_name_in_owner = true
 
-[node name="Lancer" type="Button" parent="Tableau/Colonne"]
+[node name="Lignes" type="VBoxContainer" parent="Colonne/Tableau"]
+
+[node name="Vague" type="Label" parent="Colonne/Tableau/Lignes"]
+unique_name_in_owner = true
+theme_type_variation = &"SousTitre"
+text = ""
+
+[node name="PV" type="Label" parent="Colonne/Tableau/Lignes"]
+unique_name_in_owner = true
+text = ""
+
+[node name="Ressorts" type="Label" parent="Colonne/Tableau/Lignes"]
+unique_name_in_owner = true
+text = ""
+
+[node name="Commandes" type="HBoxContainer" parent="Colonne/Tableau/Lignes"]
+
+[node name="Vitesse" type="Button" parent="Colonne/Tableau/Lignes/Commandes"]
+unique_name_in_owner = true
+text = "x1"
+tooltip_text = "Changer la vitesse (Espace)"
+size_flags_horizontal = 3
+
+[node name="Pause" type="Button" parent="Colonne/Tableau/Lignes/Commandes"]
+unique_name_in_owner = true
+text = "Pause"
+tooltip_text = "Mettre en pause (P)"
+size_flags_horizontal = 3
+
+[node name="Lancer" type="Button" parent="Colonne/Tableau/Lignes"]
 unique_name_in_owner = true
 text = "Lancer la vague"
 
-[node name="Draft" type="CenterContainer" parent="."]
+[node name="Boutique" type="PanelContainer" parent="Colonne"]
+unique_name_in_owner = true
 visible = false
+
+[node name="Lignes" type="VBoxContainer" parent="Colonne/Boutique"]
+
+[node name="TitreBoutique" type="Label" parent="Colonne/Boutique/Lignes"]
+unique_name_in_owner = true
+theme_type_variation = &"SousTitre"
+text = "Boutique"
+
+[node name="Achats" type="VBoxContainer" parent="Colonne/Boutique/Lignes"]
+unique_name_in_owner = true
+
+[node name="Reparer" type="Button" parent="Colonne/Boutique/Lignes"]
+unique_name_in_owner = true
+text = "Réparer l’horloge"
+
+[node name="Draft" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("theme")
+mouse_filter = 2
+visible = false
+
+[node name="PanneauDraft" type="PanelContainer" parent="Draft"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(450, 0)
+
+[node name="Colonne" type="VBoxContainer" parent="Draft/PanneauDraft"]
+
+[node name="TitreDraft" type="Label" parent="Draft/PanneauDraft/Colonne"]
+unique_name_in_owner = true
+theme_type_variation = &"SousTitre"
+text = "Choisis un lot"
+
+[node name="Lots" type="VBoxContainer" parent="Draft/PanneauDraft/Colonne"]
+unique_name_in_owner = true
+
+[node name="Relancer" type="Button" parent="Draft/PanneauDraft/Colonne"]
+unique_name_in_owner = true
+text = "Relancer le tirage"
+
+[node name="Flash" type="ColorRect" parent="."]
+unique_name_in_owner = true
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-
-[node name="Panneau" type="PanelContainer" parent="Draft"]
-theme_override_styles/panel = SubResource("bois")
-
-[node name="Colonne" type="VBoxContainer" parent="Draft/Panneau"]
-theme_override_constants/separation = 10
-
-[node name="Titre" type="Label" parent="Draft/Panneau/Colonne"]
-text = "Choisis un lot"
-horizontal_alignment = 1
-theme_override_colors/font_color = Color(1, 0.91, 0.73, 1)
-theme_override_font_sizes/font_size = 24
-
-[node name="Lots" type="VBoxContainer" parent="Draft/Panneau/Colonne"]
-unique_name_in_owner = true
-theme_override_constants/separation = 6
+color = Color(1, 0.61176, 0.52157, 0)
 
 [node name="Fin" type="ColorRect" parent="."]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.16, 0.12, 0.08, 0.4)
+theme = ExtResource("theme")
+visible = false
+color = Color(1, 0.9, 0.74, 0.5)
 
 [node name="Centre" type="CenterContainer" parent="Fin"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="Panneau" type="PanelContainer" parent="Fin/Centre"]
-theme_override_styles/panel = SubResource("bois")
+[node name="PanneauFin" type="PanelContainer" parent="Fin/Centre"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(460, 0)
 
-[node name="Colonne" type="VBoxContainer" parent="Fin/Centre/Panneau"]
-theme_override_constants/separation = 12
+[node name="Colonne" type="VBoxContainer" parent="Fin/Centre/PanneauFin"]
 
-[node name="Bilan" type="Label" parent="Fin/Centre/Panneau/Colonne"]
+[node name="Bilan" type="Label" parent="Fin/Centre/PanneauFin/Colonne"]
+unique_name_in_owner = true
+theme_type_variation = &"Titre"
+horizontal_alignment = 1
+text = ""
+
+[node name="Stats" type="Label" parent="Fin/Centre/PanneauFin/Colonne"]
 unique_name_in_owner = true
 horizontal_alignment = 1
-theme_override_colors/font_color = Color(1, 0.91, 0.73, 1)
-theme_override_font_sizes/font_size = 28
+text = ""
 
-[node name="Rejouer" type="Button" parent="Fin/Centre/Panneau/Colonne"]
+[node name="Rejouer" type="Button" parent="Fin/Centre/PanneauFin/Colonne"]
 unique_name_in_owner = true
 text = "Rejouer"
+
+[node name="MenuTitre" type="Button" parent="Fin/Centre/PanneauFin/Colonne"]
+unique_name_in_owner = true
+text = "Menu titre"
+
+[node name="Confettis" type="CPUParticles2D" parent="Fin"]
+unique_name_in_owner = true
+emitting = false
+amount = 160
+lifetime = 3.8
+one_shot = true
+explosiveness = 0.7
+emission_shape = 3
+emission_rect_extents = Vector2(780, 18)
+direction = Vector2(0, 1)
+spread = 60.0
+gravity = Vector2(0, 170)
+initial_velocity_min = 60.0
+initial_velocity_max = 170.0
+angular_velocity_min = -220.0
+angular_velocity_max = 220.0
+scale_amount_min = 3.0
+scale_amount_max = 6.0
+color_initial_ramp = SubResource("Pastels")
+
+[node name="Haut" type="CenterContainer" parent="."]
+anchor_left = 0.25
+anchor_right = 0.75
+offset_top = 24.0
+theme = ExtResource("theme")
+mouse_filter = 2
+
+[node name="Bandeau" type="PanelContainer" parent="Haut"]
+unique_name_in_owner = true
+visible = false
+mouse_filter = 2
+
+[node name="Annonce" type="Label" parent="Haut/Bandeau"]
+unique_name_in_owner = true
+theme_type_variation = &"SousTitre"
+text = ""
+mouse_filter = 2
+
+[node name="Gain" type="Label" parent="."]
+unique_name_in_owner = true
+theme = ExtResource("theme")
+theme_type_variation = &"SousTitre"
+mouse_filter = 2
+visible = false
+theme_override_constants/outline_size = 4
+theme_override_colors/font_outline_color = Color(0.26, 0.19, 0.12, 1)

@@ -4,6 +4,8 @@ class_name UniteDef extends Resource
 enum Camp { ALLIE, ENNEMI }
 
 @export var id: StringName
+@export var nom: String
+@export var butin: int = 0
 @export var camp: Camp
 @export var pv: float
 @export var degats: float

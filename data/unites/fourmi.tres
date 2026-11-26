@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="UniteDef" format=3]
+
+[ext_resource type="Script" path="res://game/swarm/unite_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"fourmi"
+nom = "Fourmi mécanique"
+camp = 1
+pv = 5.0
+degats = 1.0
+cadence = 1.5
+portee = 0.5
+vitesse = 3.6
+rayon = 0.18
+butin = 0

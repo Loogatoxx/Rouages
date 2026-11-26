@@ -1,8 +1,13 @@
 [gd_resource type="Resource" script_class="Regles" format=3]
 
 [ext_resource type="Script" path="res://game/core/regles.gd" id="regles"]
+[ext_resource type="Script" path="res://game/core/depart_def.gd" id="depart"]
+[ext_resource type="Resource" path="res://data/depart.tres" id="prairie"]
+[ext_resource type="Resource" path="res://data/departs/meandres.tres" id="meandres"]
+[ext_resource type="Resource" path="res://data/departs/fourche.tres" id="fourche"]
 [ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
 [ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_billes.tres" id="billes"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="coude"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_t.tres" id="t"]
@@ -26,6 +31,15 @@ script = ExtResource("lot")
 objet = ExtResource("atelier")
 quantite = 1
 poids = 3.0
+prix = 15
+
+[sub_resource type="Resource" id="lot_billes"]
+script = ExtResource("lot")
+objet = ExtResource("billes")
+quantite = 1
+poids = 2.0
+vague_min = 3
+prix = 22
 
 [sub_resource type="Resource" id="lot_droit"]
 script = ExtResource("lot")
@@ -50,6 +64,7 @@ script = ExtResource("lot")
 objet = ExtResource("croix")
 quantite = 1
 poids = 1.0
+prix = 6
 
 [sub_resource type="Resource" id="lot_sentier"]
 script = ExtResource("lot")
@@ -65,11 +80,34 @@ quantite = 1
 poids = 1.0
 vague_min = 3
 
+[sub_resource type="Resource" id="vente_droit"]
+script = ExtResource("lot")
+objet = ExtResource("droit")
+quantite = 2
+prix = 4
+
+[sub_resource type="Resource" id="vente_coude"]
+script = ExtResource("lot")
+objet = ExtResource("coude")
+quantite = 1
+prix = 3
+
 [resource]
 script = ExtResource("regles")
+departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("meandres"), ExtResource("fourche")])
+garde_ratio = 0.55
+prix_rotation = 2
 pv_horloge = 30
 plafond_allies_par_atelier = 15
 multiplicateur_acceleration = 2.0
 choix_par_draft = 3
-pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour")])
+pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes")])
+ressorts_depart = 0
+recompense_vague = 6
+recompense_par_vague = 2
+bonus_sans_degat = 5
+prix_relance = 5
+prix_reparation = 10
+pv_reparation = 5
+boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes")])
 vagues = Array[ExtResource("vague")]([ExtResource("vague_1"), ExtResource("vague_2"), ExtResource("vague_3"), ExtResource("vague_4"), ExtResource("vague_5"), ExtResource("vague_6"), ExtResource("vague_7"), ExtResource("vague_8"), ExtResource("vague_9"), ExtResource("vague_10")])

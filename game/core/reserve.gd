@@ -52,7 +52,9 @@ func trouver(id: StringName) -> Resource:
 ## Liste les identifiants en stock dans un ordre stable pour l'affichage.
 func ids() -> Array[StringName]:
 	var resultat: Array[StringName] = _quantites.keys()
-	resultat.sort()
+	# Tri par texte : `sort()` sur des StringName compare leurs identifiants internes (ordre instable
+	# quand de nouveaux noms apparaissent), pas l'ordre alphabétique.
+	resultat.sort_custom(func(a: StringName, b: StringName) -> bool: return String(a) < String(b))
 	return resultat
 
 

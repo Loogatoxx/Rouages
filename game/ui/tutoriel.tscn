@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/ui/tutoriel.gd" id="script"]
+[ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
+
+[node name="Tutoriel" type="CanvasLayer"]
+layer = 8
+script = ExtResource("script")
+
+[node name="Panneau" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(354, 0)
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 374.0
+theme = ExtResource("theme")
+
+[node name="Colonne" type="VBoxContainer" parent="Panneau"]
+
+[node name="Etape" type="Label" parent="Panneau/Colonne"]
+unique_name_in_owner = true
+theme_type_variation = &"Petit"
+text = "Tutoriel"
+
+[node name="Conseil" type="Label" parent="Panneau/Colonne"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(314, 0)
+text = ""
+autowrap_mode = 3
+
+[node name="Actions" type="HBoxContainer" parent="Panneau/Colonne"]
+
+[node name="Compris" type="Button" parent="Panneau/Colonne/Actions"]
+unique_name_in_owner = true
+text = "Compris"
+
+[node name="Passer" type="LinkButton" parent="Panneau/Colonne/Actions"]
+unique_name_in_owner = true
+text = "Passer le tutoriel"
+size_flags_vertical = 4

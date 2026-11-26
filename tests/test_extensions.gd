@@ -98,8 +98,10 @@ func test_donnees_et_pioche() -> String:
 		var bonus: Dictionary = {}
 		for lot: Lot in def.bonus:
 			bonus[lot.objet.id] = lot.quantite
-		var attendus: Dictionary = {&"atelier_soldats": 1 if sentier else 2, &"engrenage_droit": 2}
-		if bonus != attendus:
+		var attendus: Dictionary = {&"atelier_soldats": 1, &"engrenage_droit": 2} if sentier \
+				else {&"atelier_billes": 1, &"engrenage_droit": 2}
+		# Le bonus en ressorts rend l'extension tentante (retour playtest « je double juste »).
+		if bonus != attendus or def.ressorts != (15 if sentier else 25):
 			return "Bonus incorrect pour %s." % def.nom
 		var occurrences: int = 0
 		for lot: Lot in REGLES.pioche:

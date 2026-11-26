@@ -5,6 +5,8 @@
 [resource]
 script = ExtResource("1")
 id = &"scarabee"
+nom = "Scarabée"
+butin = 0
 camp = 1
 pv = 10.0
 degats = 2.0

@@ -5,6 +5,8 @@ const Plateau = preload("res://game/board/plateau.gd")
 const Lot = preload("res://game/core/lot.gd")
 const HORLOGE = preload("res://data/tuiles/horloge.tres")
 
+@export var nom: String
+@export var description: String
 @export var terrain: Rect2i
 @export var chemins: Array[Vector2i] = []
 @export var horloge: Vector2i
