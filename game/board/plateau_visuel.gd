@@ -20,7 +20,9 @@ var _ateliers: Dictionary[Vector2i, Node3D] = {}
 var _rebonds_ateliers: Dictionary[Vector2i, Tween] = {}
 var _rotors: Array[Node3D] = []
 var _pieces: Node3D
+## Sol affiché par case (vrai = chemin) et dalle correspondante : une case d'herbe pavée par un raccord est reconstruite.
 var _cases_construites: Dictionary[Vector2i, bool] = {}
+var _dalles: Dictionary[Vector2i, Node3D] = {}
 var _bords: Dictionary[Vector3i, Node3D] = {}
 var _poteaux: Dictionary[Vector2i, MeshInstance3D] = {}
 var _horloge: Node3D
@@ -87,11 +89,17 @@ func _actualiser() -> void:
 		add_child(_sol)
 	var nouvelles: Array[Vector2i] = []
 	for c: Vector2i in _source.plateau.coords_sols():
-		if _cases_construites.has(c):
-			continue
 		var chemin: bool = _source.plateau.sol_de(c) == _source.Plateau.Sol.CHEMIN
-		_creer_sol(_sol, c, chemin)
-		_cases_construites[c] = true
+		if _cases_construites.has(c):
+			if _cases_construites[c] == chemin:
+				continue
+			if is_instance_valid(_dalles.get(c)):
+				_dalles[c].queue_free()
+			_dalles[c] = _creer_sol(_sol, c, chemin)
+			_cases_construites[c] = chemin
+			continue
+		_dalles[c] = _creer_sol(_sol, c, chemin)
+		_cases_construites[c] = chemin
 		nouvelles.append(c)
 	for c: Vector2i in nouvelles:
 		_actualiser_bords(c)
@@ -191,9 +199,12 @@ func afficher_marqueurs(cases: Array[Vector2i]) -> void:
 
 
 ## Construit un aperçu orienté dont la teinte se superpose à l'herbe et au chemin.
-func creer_extension(def: ExtensionDef, rotation: int, teinte: Material) -> Node3D:
+## `raccord` : cases pavées en plus pour rejoindre la route, relatives au centre de l'extension.
+func creer_extension(def: ExtensionDef, rotation: int, teinte: Material, raccord: Array[Vector2i] = []) -> Node3D:
 	var racine := Node3D.new()
 	var sols: Dictionary = Extension.cases(def, Vector2i.ZERO, rotation)
+	for case: Vector2i in raccord:
+		sols[case] = _source.Plateau.Sol.CHEMIN
 	for case: Vector2i in sols:
 		var dalle: Node3D = _creer_sol(racine, case, sols[case] == _source.Plateau.Sol.CHEMIN)
 		dalle.scale *= Vector3(0.97, 1, 0.97)
@@ -229,10 +240,21 @@ func _reconstruire() -> void:
 			_ateliers[c] = racine
 		if piece.type == PieceDef.Type.HORLOGE:
 			_horloge = racine
+			if racine.get_child_count() > 0:
+				racine.get_child(0).rotation.y = -_cote_porte(c) * PI / 2.0
 		if piece.type == PieceDef.Type.ENGRENAGE and _source.alimentees.has(c):
 			var rotor := racine.find_child("Rotor", true, false) as Node3D
 			if rotor != null:
 				_rotors.append(rotor)
+
+
+# Le modèle de l'horloge a sa porte (cadran + arche) vers le nord (-Z). On la tourne vers la case de chemin qui la touche
+# (premier côté trouvé dans l'ordre N, E, S, O) : la route mène toujours à la porte (playtest 1).
+func _cote_porte(case: Vector2i) -> int:
+	for i: int in VOISINS.size():
+		if _source.plateau.sol_de(case + VOISINS[i]) == _source.Plateau.Sol.CHEMIN:
+			return i
+	return 0
 
 
 ## Anime la sortie d’un jouet si son atelier est au repos.

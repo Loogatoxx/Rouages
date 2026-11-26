@@ -26,3 +26,5 @@ signal ressorts_changes(total: int)
 signal ennemi_casse(position: Vector2)
 ## Le joueur demande la pause (Échap sans pièce sélectionnée, ou touche P).
 signal pause_demandee
+## Un retour court à montrer au joueur (action refusée, astuce) : `texte` est une clé de traduction déjà formatée.
+signal message_joueur(texte: String)

@@ -112,3 +112,42 @@ func test_donnees_et_pioche() -> String:
 		if occurrences != 1:
 			return "%s doit figurer une fois dans la pioche." % def.nom
 	return ""
+
+
+## Playtest 1 : un sentier contre un bord sans route se raccorde seul à la route, sans longer l'horloge.
+func test_sentier_sans_route_adjacente() -> String:
+	var plateau: Plateau = DEPART.creer_plateau()
+	# Côté ouest de la Prairie : aucune route n'y touche le bord.
+	var centre := Vector2i(-6, 0)
+	if not Extension.est_valide(plateau, SENTIER, centre, 1):
+		return "Le sentier ouest doit être accepté grâce au raccord."
+	var raccord: Array[Vector2i] = Extension.raccord(plateau, SENTIER, centre, 1)
+	if raccord.is_empty():
+		return "Le sentier ouest doit creuser un raccord."
+	for case: Vector2i in raccord:
+		if plateau.sol_de(case) != Plateau.Sol.HERBE or plateau.piece_de(case) != null:
+			return "Le raccord ne doit passer que par de l'herbe libre (%s)." % case
+		for direction: Vector2i in [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]:
+			if case + direction == DEPART.horloge:
+				return "Le raccord ne doit pas toucher le flanc de l'horloge (%s)." % case
+	if not Extension.appliquer(plateau, SENTIER, centre, 1):
+		return "La pose avec raccord doit réussir."
+	var distances: Dictionary = ChampFlux.calculer(plateau)
+	for case: Vector2i in raccord:
+		if not distances.has(case):
+			return "Le raccord doit être relié à l'horloge."
+	if not ChampFlux.entrees(plateau, distances).has(Vector2i(-7, 0)):
+		return "L'extrémité du sentier doit devenir une entrée."
+	return ""
+
+
+## Une pièce posée bloque le raccord : on contourne, et si tout est fermé, la pose est refusée.
+func test_raccord_bloque_par_des_pieces() -> String:
+	var plateau: Plateau = DEPART.creer_plateau()
+	var atelier: Plateau.PieceDef = preload("res://data/tuiles/atelier_soldats.tres")
+	# Mur d'ateliers sur toute la colonne x = -4 : plus aucun passage depuis l'ouest.
+	for y: int in range(-4, 5):
+		plateau.poser(Vector2i(-4, y), atelier)
+	if Extension.est_valide(plateau, SENTIER, Vector2i(-6, 0), 1):
+		return "Sans passage libre, le sentier ouest doit être refusé."
+	return ""

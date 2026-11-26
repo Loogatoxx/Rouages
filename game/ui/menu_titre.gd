@@ -4,7 +4,6 @@ extends Control
 const APERCU := "res://assets/final/horloge/apercu.png"
 const Langue = preload("res://game/ui/langue.gd")
 const Progression = preload("res://game/core/progression.gd")
-const Options = preload("res://game/ui/options.gd")
 const MODELE := "res://assets/final/horloge/horloge.glb"
 
 var _vitrine: Node3D
@@ -14,7 +13,6 @@ const REGLAGES := "user://reglages.cfg"
 
 
 func _ready() -> void:
-	Options.appliquer_affichage()
 	Langue.appliquer(Langue.lire())
 	# Vitrine 3D : le vrai modèle de l'horloge tourne sur fond transparent (plus vivant qu'une image à fond gris).
 	# Repli sur l'image fixe si le modèle manque.
@@ -119,7 +117,10 @@ func _afficher_plateau() -> void:
 
 
 func _afficher_or() -> void:
-	%Or.text = tr("Engrenages d’or : %d") % Progression.engrenages()
+	# Icône + nombre, légende au survol (« icônes au premier plan, texte au survol ») : la ligne tient dans toutes les langues.
+	%Or.text = str(Progression.engrenages())
+	%Or.tooltip_text = tr("Engrenages d’or : %d") % Progression.engrenages()
+	%Or.mouse_filter = Control.MOUSE_FILTER_PASS
 
 
 func _notification(quoi: int) -> void:
@@ -227,3 +228,18 @@ static func _arreter_animation(controle: Control) -> void:
 	if controle.has_meta(&"animation_interface"):
 		var animation: Tween = controle.get_meta(&"animation_interface")
 		animation.kill()
+
+
+## Fixe la largeur d'un texte à retour à la ligne et lui réserve la hauteur de toutes ses lignes, mesurée sur sa police.
+## Pourquoi : un Label à retour automatique calcule sa hauteur sur sa largeur du moment, nulle ou provisoire tant qu'il
+## n'a pas été mis en page ; les fiches se retrouvaient immenses ou le texte traduit débordait (playtest 1).
+static func caler_hauteur(texte: Label, largeur: float) -> void:
+	texte.custom_minimum_size.x = largeur
+	# Donner aussi la vraie largeur : le Label recalcule ses lignes sur elle (et non sur sa taille minimale).
+	texte.size.x = largeur
+	var police: Font = texte.get_theme_font(&"font")
+	var taille: int = texte.get_theme_font_size(&"font_size")
+	var mesure: Vector2 = police.get_multiline_string_size(texte.tr(texte.text), HORIZONTAL_ALIGNMENT_LEFT, largeur,
+			taille, -1, TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND)
+	var lignes: int = maxi(1, roundi(mesure.y / police.get_height(taille)))
+	texte.custom_minimum_size.y = mesure.y + (lignes - 1) * texte.get_theme_constant(&"line_spacing") + 6

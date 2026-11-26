@@ -73,9 +73,20 @@ func depenser(n: int) -> bool:
 	return true
 
 
-## Tourne une pièce posée et prélève le prix si la rotation a abouti.
+## Prix actuel d'une rotation de pièce posée : gratuite pendant la préparation (avant la vague 1), payante ensuite.
+## Pourquoi : on démarre à 0 ressort ; une rotation payante dès le départ était refusée sans un mot (playtest 1 :
+## « la rotation a disparu »). Avant la vague 1, on peut encore tout réorganiser librement.
+var prix_rotation: int:
+	get:
+		return 0 if vague_actuelle == 0 else regles.prix_rotation
+
+
+## Tourne une pièce posée (jamais l'horloge) et prélève le prix si la rotation a abouti.
 func tourner_piece(plateau: Plateau, case: Vector2i) -> bool:
-	var prix: int = regles.prix_rotation
+	var prix: int = prix_rotation
+	var piece: Plateau.PieceDef = plateau.piece_de(case)
+	if piece == null or piece.type == Plateau.PieceDef.Type.HORLOGE:
+		return false
 	if prix < 0 or ressorts < prix or not plateau.tourner(case):
 		return false
 	return depenser(prix)

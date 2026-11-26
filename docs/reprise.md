@@ -3,7 +3,14 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-26 au soir, autonomie totale)
+## État (mis à jour le 2026-11-26 tard le soir, autonomie totale)
+- **Après playtest 1** : la roadmap `docs/roadmap.md` § « Après playtest 1 » liste 100 % du brief de Carlos (PT-01 à PT-65,
+  règles R1-R7, table de vérification brief → tâches). Les 5 bugs P0 (PT-01 à PT-05) sont corrigés. Suivre l'« Ordre d'exécution ».
+- **Captures** : ajouter `-- --fenetre` après le script (`Godot --path . --windowed --resolution 1600x900 --script res://x.gd
+  -- --fenetre`), sinon l'autoload `Fenetre` applique le plein écran enregistré et la fenêtre ne dessine plus pendant la
+  transition. Dans un script de capture, `load()` les scripts du jeu après le premier `await` (un `preload` compile avant
+  les autoloads et casse `menu_titre.gd`). **La progression de Carlos (`progression.cfg`) est réelle** : la sauvegarder
+  avant une capture qui finit une partie et la restaurer après (ne pas la supprimer).
 - **Carlos a donné carte blanche** : commiter chaque lot terminé sans demander et enchaîner (pas de push sans demande).
 - **Tout est commité jusqu'à l'étape 10.** Étape 10 : tourelles de loot rare via coffres (V3/V6/V9), options (volumes par bus,
   plein écran), progression méta (Établi, engrenages d'or, `user://progression.cfg`), boss Grand Scarabée (V5, V10, barre de vie),

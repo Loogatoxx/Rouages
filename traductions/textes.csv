@@ -93,7 +93,7 @@ Deux entrées longent le bord est et partagent la route vers l’horloge.,Deux e
 Méandres,Méandres,Meanders,Meandros
 Un long chemin en S descend du bord nord jusqu’à l’horloge.,Un long chemin en S descend du bord nord jusqu’à l’horloge.,A long S-shaped path winds down from the northern edge to the clock.,Um longo caminho em S desce do limite norte até ao relógio.
 Fourche,Fourche,Fork,Bifurcação
-Deux chemins en coude arrivent du nord et du sud. Un atelier supplémentaire est en réserve.,Deux chemins en coude arrivent du nord et du sud. Un atelier supplémentaire est en réserve.,Two paths bend in from the north and south. You have an extra workshop in reserve.,Dois caminhos em cotovelo chegam de norte e de sul. Tens mais uma oficina na reserva.
+Deux chemins en coude arrivent du nord et du sud et se rejoignent devant la porte. Un atelier supplémentaire est en réserve.,Deux chemins en coude arrivent du nord et du sud et se rejoignent devant la porte. Un atelier supplémentaire est en réserve.,Two paths bend in from the north and south and meet at the door. You have an extra workshop in reserve.,Dois caminhos em cotovelo chegam de norte e de sul e juntam-se à porta. Tens mais uma oficina na reserva.
 Défi du jour,Défi du jour,Daily challenge,Desafio diário
 Plateau : %s,Plateau : %s,Board: %s,Tabuleiro: %s
 Défi du jour — record : %d / %d,Défi du jour — record : %d / %d,Daily challenge — best: %d / %d,Desafio diário — recorde: %d / %d
@@ -137,3 +137,7 @@ La première relance de chaque tirage est offerte.,La première relance de chaqu
 Grand Scarabée,Grand Scarabée,Great Beetle,Grande Escaravelho
 Réparer l’horloge (+%d PV),Réparer l’horloge (+%d PV),Repair the clock (+%d HP),Reparar o relógio (+%d PV)
 Acheter,Acheter,Buy,Comprar
+Tourner coûte %d ressorts,Tourner coûte %d ressorts,Rotating costs %d springs,Rodar custa %d molas
+Pose l’extension contre le bord sur un repère,Pose l’extension contre le bord sur un repère,Place the extension against the edge on a marker,Coloca a extensão junto à borda sobre um marcador
+"R / clic droit : tourner (gratuit avant la vague 1)","R / clic droit : tourner (gratuit avant la vague 1)","R / right click: rotate (free before wave 1)","R / clique direito: rodar (grátis antes da vaga 1)"
+"R / clic droit : tourner (%d ressorts)","R / clic droit : tourner (%d ressorts)","R / right click: rotate (%d springs)","R / clique direito: rodar (%d molas)"

@@ -62,14 +62,24 @@ func test_graine_du_jour() -> String:
 	return "" if valide else "La date doit reproduire le même défi."
 
 
-## La rotation coûte deux ressorts et un refus conserve le solde et les ports.
+## Avant la vague 1 la rotation est gratuite ; ensuite elle coûte deux ressorts et un refus conserve solde et ports.
 func test_prix_rotation() -> String:
 	var depart: DepartDef = REGLES.departs[0]
 	var plateau: DepartDef.Plateau = depart.creer_plateau()
 	var case := Vector2i(-1, 0)
 	plateau.poser(case, preload("res://data/tuiles/engrenage_droit.tres"))
-	var ports: int = plateau.ports_de(case)
 	var solde: int = Run.ressorts
+	var vague: int = Run.vague_actuelle
+	Run.vague_actuelle = 0
+	Run.ressorts = 0
+	if not Run.tourner_piece(plateau, case) or Run.ressorts != 0:
+		Run.ressorts = solde
+		return "Avant la vague 1, tourner une pièce posée doit être gratuit."
+	if Run.tourner_piece(plateau, depart.horloge):
+		Run.ressorts = solde
+		return "L'horloge ne se tourne pas."
+	Run.vague_actuelle = 1
+	var ports: int = plateau.ports_de(case)
 	Run.ressorts = 1
 	var valide: bool = (REGLES.prix_rotation == 2 and not Run.tourner_piece(plateau, case)
 			and plateau.ports_de(case) == ports and Run.ressorts == 1)
@@ -77,4 +87,5 @@ func test_prix_rotation() -> String:
 	valide = valide and not Run.tourner_piece(plateau, Vector2i(1, 1)) and Run.ressorts == 2
 	valide = valide and Run.tourner_piece(plateau, case) and plateau.ports_de(case) != ports and Run.ressorts == 0
 	Run.ressorts = solde
+	Run.vague_actuelle = vague
 	return "" if valide else "La rotation doit débiter deux ressorts uniquement en cas de succès."

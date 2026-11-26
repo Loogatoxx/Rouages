@@ -102,6 +102,22 @@ func _orienter_extension() -> bool:
 	return true
 
 
+# Reconstruit l'aperçu d'extension quand la case ou l'orientation change, avec le raccord pavé jusqu'à la route.
+func _actualiser_fantome_extension(valide: bool) -> void:
+	var cle := Vector3i(_case.x, _case.y, _rotation if valide else -1)
+	if _fantome.get_meta(&"cle", Vector3i(0, 0, -2)) == cle:
+		return
+	var raccord: Array[Vector2i] = []
+	if valide:
+		for case: Vector2i in Extension.raccord(_source.plateau, _choix, _case, _rotation):
+			raccord.append(case - _case)
+	var nouveau: Node3D = _visuel.creer_extension(_choix, _rotation if valide else 0, _teinte, raccord)
+	nouveau.set_meta(&"cle", cle)
+	_fantome.queue_free()
+	_fantome = nouveau
+	add_child(_fantome)
+
+
 func _survoler() -> bool:
 	var vue: Viewport = get_viewport()
 	var souris: Vector2 = vue.get_mouse_position()
@@ -126,12 +142,14 @@ func _process(_delta: float) -> void:
 		var libre: bool
 		if _choix is ExtensionDef:
 			libre = _orienter_extension()
+			_actualiser_fantome_extension(libre)
 		else:
 			libre = (_source.plateau.sol_de(_case) == _source.Plateau.Sol.HERBE
 					and _source.plateau.piece_de(_case) == null)
 		_teinte.albedo_color = Color("#3D8FD9", 0.62) if libre else Color(1, 0.2, 0.19, 0.65)
 		_fantome.position = GrilleMonde.vers_monde(_case) + Vector3.UP * 0.05
-		_fantome.rotation.y = -_rotation * PI / 2
+		# L'aperçu d'extension est déjà construit dans son orientation (raccord compris).
+		_fantome.rotation.y = 0.0 if _choix is ExtensionDef else -_rotation * PI / 2
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -151,8 +169,11 @@ func _unhandled_input(event: InputEvent) -> void:
 				while not (_rotations_valides[_case] & (1 << _rotation)):
 					_rotation = (_rotation + 1) % 4
 			Sons.jouer(&"rotation")
-		elif _survoler() and Run.tourner_piece(_source.plateau, _case):
-			Sons.jouer(&"rotation")
+		elif _survoler() and _source.plateau.piece_de(_case) != null:
+			if Run.tourner_piece(_source.plateau, _case):
+				Sons.jouer(&"rotation")
+			elif _source.plateau.piece_de(_case).type != PieceDef.Type.HORLOGE:
+				Events.message_joueur.emit(tr("Tourner coûte %d ressorts") % Run.prix_rotation)
 	elif event.is_action_pressed("poser_tuile") and _choix != null and _survoler():
 		var id: StringName = _choix.get("id")
 		if Run.reserve.quantite(id) == 0:
@@ -160,7 +181,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _choix is ExtensionDef:
 			# Le retrait du dernier exemplaire peut effacer la sélection par signal.
 			var extension: ExtensionDef = _choix
-			if _orienter_extension() and Extension.appliquer(_source.plateau, extension, _case, _rotation):
+			if not _orienter_extension():
+				Events.message_joueur.emit(tr("Pose l’extension contre le bord sur un repère"))
+			elif Extension.appliquer(_source.plateau, extension, _case, _rotation):
 				Run.reserve.retirer(id)
 				Run.reserve.ajouter_lots(extension.bonus)
 				Run.poser_extension(extension.ressorts, extension.revenu)

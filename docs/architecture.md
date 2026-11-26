@@ -77,12 +77,13 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 ## Signaux (`game/core/events.gd`)
 `plateau_modifie` · `energie_recalculee(alimentees)` · `phase_changee(phase)` · `vague_commencee(n)` ·
 `vague_terminee(n)` · `horloge_touchee(pv)` · `tuile_choisie(id)` · `run_terminee(victoire)` ·
-`ressorts_changes(total)` · `ennemi_casse(position)` · `pause_demandee` (Échap sans pièce sélectionnée)
+`ressorts_changes(total)` · `ennemi_casse(position)` · `pause_demandee` (Échap sans pièce sélectionnée) ·
+`message_joueur(texte)` (retour court au joueur : action refusée, astuce ; affiché par le HUD)
 
 ## Entrées (InputMap)
 `poser_tuile` (clic gauche) · `tourner_tuile` (R / clic droit) · `annuler` (Échap) · `basculer_camera` (Tab) ·
 `camera_gauche/droite/haut/bas` (Q·D·Z·S en AZERTY : touches physiques) · `camera_zoom_avant/arriere` (molette) · `accelerer` (Espace, bascule ×1/×2) · `pause` (P ; Échap aussi, voir
-`pause_demandee`).
+`pause_demandee`) · `plein_ecran` (F11, Alt+Entrée).
 
 ## Journal des décisions
 - 2026-11-23 : Godot 4.7.2, Forward+, GDScript, PC d'abord (itch.io puis Steam). Mini-lanceur de tests maison (zéro addon).
@@ -120,3 +121,18 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   (repli sur les primitives si absent, utile en headless) ; vue inclinée en perspective par défaut (la vue de dessus reste sur
   la touche caméra) ; table d'établi en bois sous la maquette ; kit UI `assets/ui/` (9-patch bois/laiton/papier/étiquette/ruban,
   icônes, polices OFL Fraunces + Nunito).
+
+## Après playtest 1 (2026-11-26) — corrections P0
+- **Raccord des extensions** (`Extension.raccord`) : un sentier posé contre un bord sans route creuse le plus court chemin
+  dans l'herbe libre (sans pièce, jamais collé à l'horloge) jusqu'à une route existante ; l'aperçu montre ce raccord.
+  → Pourquoi : on ne pouvait étendre le terrain que du côté des routes. Le tracé vise une route et non l'horloge pour
+  que tout le réseau arrive par sa porte. Le visuel reconstruit une dalle dont le sol change (herbe → chemin).
+- **Porte de l'horloge** : le modèle (porte au nord, −Z) est tourné vers la case de chemin qui la touche. Fourche
+  redessinée pour que ses deux routes se rejoignent devant la porte (une seule arrivée).
+- **Autoload `Fenetre`** : applique le plein écran une seule fois au lancement, enregistre tout changement de la vraie
+  fenêtre (bouton vert macOS, F11) ; `-- --fenetre` en ligne de commande (captures) la laisse telle quelle.
+- **Rotation** : `Run.prix_rotation` vaut 0 avant la vague 1 (on démarre à 0 ressort : elle était refusée sans un mot).
+  L'horloge ne se tourne pas ; un refus envoie `message_joueur`.
+- **Textes à retour à la ligne** : `Interface.caler_hauteur(label, largeur)` (dans `menu_titre.gd`) fixe la largeur et
+  mesure la hauteur sur la police. → Un Label à retour automatique calcule sa hauteur sur sa largeur du moment (nulle
+  avant la première mise en page) : fiches immenses, texte traduit qui débordait des cartes.

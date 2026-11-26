@@ -4,6 +4,7 @@ extends PanelContainer
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
 const PlateauNoeud = preload("res://game/board/plateau_noeud.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
+const Interface = preload("res://game/ui/menu_titre.gd")
 
 @export var plateau_noeud: NodePath
 @onready var _source: PlateauNoeud = get_node(plateau_noeud)
@@ -45,6 +46,8 @@ func _process(_delta: float) -> void:
 		return
 	if _texte.text != conseil:
 		_texte.text = conseil
+		# Largeur fixe (300 px moins les marges du papier), hauteur mesurée : la fiche épouse son texte.
+		Interface.caler_hauteur(_texte, 252.0)
 		reset_size()
 	show()
 	position = (souris + Vector2(18, 20)).clamp(cadre.position, cadre.end - size)
@@ -65,4 +68,7 @@ func _decrire(case_plateau: Vector2i) -> String:
 	if piece.type == PieceDef.Type.ATELIER:
 		var etat: String = tr("Alimenté") if case_plateau in _source.alimentees else tr("Pas alimenté : relie-le à l’horloge")
 		texte += "\n" + etat
+	if piece.type != PieceDef.Type.HORLOGE:
+		texte += "\n" + (tr("R / clic droit : tourner (gratuit avant la vague 1)") if Run.prix_rotation == 0
+				else tr("R / clic droit : tourner (%d ressorts)") % Run.prix_rotation)
 	return texte

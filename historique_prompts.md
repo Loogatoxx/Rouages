@@ -93,3 +93,15 @@
 - **Prompt** : « tu t'es vite arrêté… dis-toi que je dis oui à tout… commit tout, n'attends pas d'autorisation » ; puis « pense au design, je trouve moche ; en vue 3D rien ne doit être plat ; l'UI fait AI slop ; demande à Antigravity de chercher des jeux à la DA similaire et d'appliquer un design quasi identique au meilleur ».
 - **Réponse** : commit des étapes 7-9. Étape 10 : T10a tourelles de loot rare en coffres (V3/V6/V9, rareté commune/rare/épique), T10d menu d'options (volumes par bus, plein écran). T10e Antigravity : étude DA (Bad North, Dorfromantik, Townscaper, Tiny Glade, Kingdom Rush…), kit 3D en volume (tuiles biseautées, engrenages dentés, ateliers, tourelles, unités), kit UI « établi d'horloger » (bois, laiton riveté, papier, ruban, icônes, polices OFL Fraunces/Nunito). T10f intégration du kit 3D, T10c progression méta (Établi, engrenages d'or), puis thème UI v2 et boss.
 - **Objectif** : un jeu qui ressemble à une sortie publique, sans aller-retour de validation.
+
+
+## 2026-11-26 — Brief de playtest 1 → roadmap, puis corrections critiques
+- **Prompt** (transmis par la session principale, au nom de Carlos) : brief de playtest complet en 6 parties (bugs critiques,
+  UI/UX et charte d'icônes, DA/Hyper3D/animations/vie, caméra, gameplay et upgrades, modes/méta/onboarding/lore) à
+  transformer à 100 % en roadmap court/moyen/long terme, puis exécution en autonomie (commits sans demander, pas de push).
+- **Réponse** : roadmap « Après playtest 1 » (PT-01 à PT-65 avec priorité, responsable, dépendances ; règles R1-R7 ; table de
+  vérification ligne à ligne). Lot P0 : sentiers posables partout (raccord creusé jusqu'à la route), horloge face à la
+  route (Fourche redessinée), plein écran conservé (autoload `Fenetre`, F11), rotation gratuite avant la vague 1 + message
+  si refus, menus robustes aux langues (cartes, infobulle, boutique alignée, réserve dans son cadre, compteur d'or en icône).
+  75 tests verts, vérifié par captures FR/EN/PT.
+- **Objectif** : repartir sur une base sans régression avant l'UI, la caméra et le gameplay.

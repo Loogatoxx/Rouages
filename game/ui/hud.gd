@@ -52,7 +52,9 @@ func _ready() -> void:
 	Events.vague_commencee.connect(_debut_vague)
 	Events.vague_terminee.connect(_fin_vague)
 	Events.run_terminee.connect(_afficher_fin)
+	Events.message_joueur.connect(func(texte: String) -> void: _annoncer(texte, -1))
 	_creer_boutique()
+	_caler_prix(%PrixReparation)
 	_actualiser_prix()
 	_solde = Run.ressorts
 	_actualiser_phase(Run.phase)
@@ -127,9 +129,10 @@ func _notification(quoi: int) -> void:
 	_actualiser_compteurs(Run.phase)
 	_actualiser_solde(Run.ressorts)
 	if $Draft.visible:
-		_actualiser_noms_lots()
+		# Reconstruire les cartes : leur papier se redimensionne alors avec le texte traduit (sinon il débordait).
+		_afficher_lots()
 	if _bandeau.visible:
-		%Annonce.text = tr(_cle_annonce) % _valeur_annonce
+		%Annonce.text = tr(_cle_annonce) if _valeur_annonce < 0 else tr(_cle_annonce) % _valeur_annonce
 	if $Fin.visible:
 		_actualiser_bilan()
 
@@ -157,6 +160,7 @@ func _creer_boutique() -> void:
 		bouton.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		var prix := Label.new()
 		prix.theme_type_variation = &"Badge"
+		_caler_prix(prix)
 		ligne.add_child(bouton)
 		ligne.add_child(prix)
 		%Achats.add_child(ligne)
@@ -164,6 +168,15 @@ func _creer_boutique() -> void:
 		Interface.preparer_bouton(bouton)
 		bouton.pressed.connect(Run.acheter.bind(i))
 		_ventes.append(bouton)
+
+
+# Colonne de prix de largeur fixe, chiffres à droite : tous les boutons de la boutique ont la même largeur,
+# quel que soit le prix ou la langue (playtest 1 : « textes désalignés »).
+func _caler_prix(prix: Label) -> void:
+	prix.custom_minimum_size.x = 128
+	prix.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	prix.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	prix.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 
 func _actualiser_prix() -> void:
@@ -269,6 +282,7 @@ func _ajuster_hauteur() -> void:
 class Carte extends Button:
 	var nom: Label = Label.new()
 	var _papier: PanelContainer = PanelContainer.new()
+	var _textes: Array[Label] = []
 	var _mouvement: Tween
 
 	func _init(lot: Lot, indice: int, coffre: bool) -> void:
@@ -301,13 +315,18 @@ class Carte extends Button:
 		var description := Label.new()
 		description.theme_type_variation = &"CarteTexte"
 		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		# Même largeur fixe que le nom : un texte à retour à la ligne calcule sa hauteur sur sa largeur ; sans largeur
+		# fixe, la hauteur venait d'une mise en page précédente et le texte portugais débordait du papier.
+		description.custom_minimum_size.x = 206
 		description.text = lot.objet.get("description")
 		colonne.add_child(description)
+		_textes = [nom, description]
 		_papier.rotation_degrees = -1.5 if indice % 2 == 0 else 1.5
 		_papier.minimum_size_changed.connect(_dimensionner)
 		resized.connect(_ajuster_papier)
 
 	func _ready() -> void:
+		_caler_hauteurs()
 		_dimensionner()
 		_papier.scale = Vector2.ONE * 1.06
 		var rebond: Tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -318,6 +337,11 @@ class Carte extends Button:
 		focus_exited.connect(_soulever)
 		button_down.connect(_soulever)
 		button_up.connect(_soulever)
+
+	# Hauteur de chaque texte mesurée sur sa police (voir `Interface.caler_hauteur`).
+	func _caler_hauteurs() -> void:
+		for texte: Label in _textes:
+			Interface.caler_hauteur(texte, 206.0)
 
 	func _dimensionner() -> void:
 		custom_minimum_size = _papier.get_combined_minimum_size()
@@ -350,7 +374,7 @@ func _annoncer(cle: String, valeur: int) -> void:
 		_animation_bandeau.kill()
 	_cle_annonce = cle
 	_valeur_annonce = valeur
-	%Annonce.text = tr(cle) % valeur
+	%Annonce.text = tr(cle) if valeur < 0 else tr(cle) % valeur
 	_bandeau.show()
 	Interface.apparaitre(_bandeau)
 	_animation_bandeau = create_tween()
