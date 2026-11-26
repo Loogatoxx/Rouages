@@ -41,6 +41,9 @@ func _ready() -> void:
 	Events.plateau_modifie.connect(_actualiser)
 	Events.energie_recalculee.connect(_energie)
 	_poser_table()
+	# Micro-détails d'ambiance (poussière dorée, pétales) : seulement avec un vrai rendu, pas en headless.
+	if DisplayServer.get_name() != "headless":
+		add_child(preload("res://game/board/ambiance_plateau.gd").new())
 
 
 ## Grande table d'établi sous la maquette : sans elle, le plateau flotte sur un fond uni (DA v2, « maquette posée »).
