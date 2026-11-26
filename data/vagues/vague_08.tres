@@ -4,10 +4,14 @@
 [ext_resource type="Resource" path="res://data/unites/scarabee.tres" id="scarabee"]
 [ext_resource type="Resource" path="res://data/unites/scarabee_cuirasse.tres" id="cuirasse"]
 
+[ext_resource type="Resource" path="res://data/unites/libellule.tres" id="libellule"]
+
 [resource]
 script = ExtResource("vague")
 unite = ExtResource("scarabee")
 renfort = ExtResource("cuirasse")
+volants = ExtResource("libellule")
+nombre_volants = 8
 nombre_renforts = 12
 nombre = 160
 intervalle = 0.25

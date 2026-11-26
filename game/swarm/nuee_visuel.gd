@@ -18,6 +18,7 @@ var sim: SwarmSim:
 		sim = valeur
 		if sim != null:
 			sim.tir.connect(_sur_tir)
+var _phase_vol: float = 0.0
 var _billes: Array[MeshInstance3D] = []
 var _departs := PackedVector2Array()
 var _arrivees := PackedVector2Array()
@@ -181,7 +182,9 @@ func _forme_de_repli(id: StringName, camp: int) -> ArrayMesh:
 
 func _forme_du_kit(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
-	if def.boss:
+	if def.volant:
+		nom = &"fourmi"
+	elif def.boss:
 		nom = &"scarabee_cuirasse"  # même silhouette, agrandie par son rayon et assombrie
 	var scene: PackedScene = Materiaux.scene_du_kit(nom)
 	if scene == null:
@@ -227,7 +230,7 @@ func _creer_lot(def: SwarmSim.UniteDef, camp: int) -> MultiMesh:
 			var carapace := ShaderMaterial.new()
 			carapace.shader = _shader_carapace
 			var teinte: Color = origine.albedo_color.darkened(0.35) if def.boss else origine.albedo_color
-			carapace.set_shader_parameter("teinte", teinte)
+			carapace.set_shader_parameter("teinte", Color("#5FA8A0") if def.volant else teinte)
 			carapace.set_shader_parameter("creme", CREME)
 			carapace.set_shader_parameter("metal", origine.metallic)
 			carapace.set_shader_parameter("rugosite", origine.roughness)
@@ -250,6 +253,7 @@ func _creer_lot(def: SwarmSim.UniteDef, camp: int) -> MultiMesh:
 
 
 func _process(delta: float) -> void:
+	_phase_vol = fmod(_phase_vol + delta * 10.0, TAU)
 	_avancer_billes(delta)
 	if sim == null:
 		return
@@ -272,7 +276,8 @@ func _process(delta: float) -> void:
 				lot.set_instance_color(indice, CREME if touche else Color.WHITE)
 				if touche:
 					base = base.scaled_local(Vector3.ONE * 1.12)
-			lot.set_instance_transform(indice, Transform3D(base, Vector3(lieux[i].x, 0.0, lieux[i].y)))
+			var hauteur: float = 0.9 + 0.05 * sin(_phase_vol + i) if modeles[i].volant else 0.0
+			lot.set_instance_transform(indice, Transform3D(base, Vector3(lieux[i].x, hauteur, lieux[i].y)))
 			_effectifs[id] = indice + 1
 	for id: StringName in _lots:
 		_lots[id].visible_instance_count = _effectifs[id]

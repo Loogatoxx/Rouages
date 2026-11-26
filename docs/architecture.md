@@ -182,3 +182,15 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   identique collé, plancher ×0,4). Réglages dans `Regles` (groupe « Placement »). Lu par `Production`, `Tourelles`,
   l'infobulle (effets + aperçu de pose) et donc le banc. → Les cases ne se valent plus : la stratégie bat le spam.
 - Banc : la disposition en grappe du banc perd un peu (parfait 37/83/0 PV, moyen chute en V5) : c'est voulu.
+
+## Après playtest 1 — lot 6 (contre-jeu, chance, méta, lore)
+- **Libellule mécanique** (T11c, Codex) : `UniteDef.volant` ; les jouets au corps à corps (portée < 1 m) l'ignorent,
+  lance-billes et tourelles la touchent ; elle ne combat pas, file à l'horloge (1 dégât). `VagueDef.volants` /
+  `nombre_volants` (4 à 12, V6-V10), comptée par le directeur. → Un build « tout soldats » ne gagne plus (le banc, qui
+  ne pose que des soldats, perd exactement ces 40 PV) : il faut mêler tir à distance et corps à corps.
+- **Chance** : `Run.chance` (0-10) multiplie le poids des cartes rares (×(1 + 0,25 × chance)) et épiques
+  (×(1 + 0,5 × chance)) dans les coffres (`Draft.tirer(..., chance, facteurs)`). Sources : vague sans dégât (+1),
+  porte-bonheur de la boutique (+2, 8 ressorts, une fois par pause), amélioration « Trèfle » de l'Établi (+1/niveau).
+  Ignorée au défi du jour. Plaque trèfle dans le HUD dès 1 point.
+- **Engrenages d'or** : prix de l'Établi rehaussés d'environ 40 % (~9 victoires pour tout débloquer au lieu de 5).
+- **Lore** : `docs/lore.md` (bible vivante, relue par Gemini, 6 corrections intégrées).

@@ -8,6 +8,6 @@ id = &"rente"
 nom = "Boîte à remontage"
 description = "+2 ressorts par vague tenue et par niveau."
 niveaux_max = 2
-prix = Array[int]([3, 6])
+prix = Array[int]([4, 8])
 effet = &"rente"
 valeur_par_niveau = 2.0

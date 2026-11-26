@@ -10,6 +10,7 @@ const ChampFlux = preload("res://game/swarm/champ_flux.gd")
 const UniteDef = preload("res://game/swarm/unite_def.gd")
 const CAPACITE := 400
 const MAILLE := 2.0
+const PORTEE_DISTANCE := 1.0
 const POURSUITE := 6.0
 const ALLIE := UniteDef.Camp.ALLIE
 const ENNEMI := UniteDef.Camp.ENNEMI
@@ -195,7 +196,7 @@ func avancer(dt: float) -> void:
 			var cellule: Cellule = nuee.grille[case]
 			var cibles: Array = adverse.influence.get(case, [])
 			for i: int in cellule.indices:
-				_decider(camp, i, cibles, dt)
+				_decider(camp, i, [] if camp == ENNEMI and nuee.modeles[i].volant else cibles, dt)
 	for nuee: Nuee in _camps:
 		_separer(nuee, dt)
 		nuee.lieux = nuee.suivants
@@ -268,11 +269,14 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 	var rayon: float = maxf(POURSUITE, modele.portee) if camp == ALLIE else modele.portee
 	var meilleur: float = rayon * rayon
 	var cible: int = -1
+	var melee: bool = camp == ALLIE and modele.portee < PORTEE_DISTANCE
 	var adversaires: PackedVector2Array = adverse.lieux
 	for cellule: Cellule in cibles:
 		if lieu.distance_squared_to(lieu.clamp(cellule.minimum, cellule.maximum)) > meilleur:
 			continue
 		for j: int in cellule.indices:
+			if melee and adverse.modeles[j].volant:
+				continue
 			var d: float = lieu.distance_squared_to(adversaires[j])
 			if d < meilleur or (d == meilleur and (cible < 0 or j < cible)):
 				meilleur = d
@@ -291,7 +295,7 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 				var coups: int = maxi(1, ceili((dt - recharge - 0.000001) / periode))
 				adverse.vies[cible] -= modele.degats * coups
 				adverse.touches[cible] = 0.12
-				if camp == ALLIE and modele.portee > 1.0:
+				if camp == ALLIE and modele.portee >= PORTEE_DISTANCE:
 					for coup: int in coups:
 						tir.emit(lieu, adversaires[cible])
 				recharge += periode * coups

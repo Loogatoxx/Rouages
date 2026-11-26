@@ -8,6 +8,6 @@ id = &"choix_draft"
 nom = "Casier à plans"
 description = "Une carte de plus à chaque tirage."
 niveaux_max = 1
-prix = Array[int]([6])
+prix = Array[int]([8])
 effet = &"choix_draft"
 valeur_par_niveau = 1.0

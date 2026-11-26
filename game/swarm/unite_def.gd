@@ -15,3 +15,5 @@ enum Camp { ALLIE, ENNEMI }
 @export var rayon: float
 ## Un boss a sa barre de vie dédiée en haut de l'écran.
 @export var boss: bool = false
+## Une unité volante survole les combattants au sol.
+@export var volant: bool = false

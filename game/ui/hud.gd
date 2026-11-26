@@ -9,6 +9,7 @@ const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
 const ICONE_RESSORT: Texture2D = preload("res://assets/ui/icones/ressort.png")
 const ICONE_PV: Texture2D = preload("res://assets/ui/icones/horloge_pv.png")
+const ICONE_CHANCE: Texture2D = preload("res://assets/ui/icones/chance.png")
 const VITESSE_NORMALE: Texture2D = preload("res://assets/ui/icones/vitesse_x1.png")
 const VITESSE_DOUBLE: Texture2D = preload("res://assets/ui/icones/vitesse_x2.png")
 const MEDAILLONS: Array[Texture2D] = [
@@ -38,6 +39,10 @@ var _animation_boss: Tween
 var _boss_visible: bool = false
 ## Choix du joueur (bouton ou touche B) gardé toute la run : la boutique ne se rouvre pas toute seule s'il l'a fermée.
 var _boutique_ouverte: bool = true
+var _plaque_chance: PanelContainer
+var _chance: Label
+var _porte_bonheur: Button
+var _prix_porte_bonheur: Label
 
 
 func _ready() -> void:
@@ -73,6 +78,7 @@ func _ready() -> void:
 	_actualiser_phase(Run.phase)
 	Interface.apparaitre(%Tableau)
 	_creer_barre_boss()
+	_creer_chance()
 	var reperes := Reperes.new()
 	reperes.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
 	reperes.partie = get_parent().get_node_or_null("Partie")
@@ -157,6 +163,49 @@ func _notification(quoi: int) -> void:
 		%Annonce.text = tr(_cle_annonce) if _valeur_annonce < 0 else tr(_cle_annonce) % _valeur_annonce
 	if $Fin.visible:
 		_actualiser_bilan()
+
+
+# Compteur de chance (trèfle) dans la barre du haut, et porte-bonheur dans la boutique (benchmark D4).
+func _creer_chance() -> void:
+	_plaque_chance = PanelContainer.new()
+	_plaque_chance.theme_type_variation = &"Plaque"
+	_plaque_chance.visible = false
+	var ligne := HBoxContainer.new()
+	ligne.add_theme_constant_override(&"separation", 4)
+	_plaque_chance.add_child(ligne)
+	ligne.add_child(_icone(ICONE_CHANCE, 34))
+	_chance = Label.new()
+	_chance.theme_type_variation = &"Nombre"
+	ligne.add_child(_chance)
+	%Tableau.add_child(_plaque_chance)
+	%Tableau.move_child(_plaque_chance, %Ressorts.get_parent().get_parent().get_index() + 1)
+	var rangee := HBoxContainer.new()
+	_porte_bonheur = Button.new()
+	_porte_bonheur.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_porte_bonheur.icon = ICONE_CHANCE
+	_porte_bonheur.expand_icon = true
+	_porte_bonheur.add_theme_constant_override(&"icon_max_width", 30)
+	_porte_bonheur.text = "+%d" % Run.regles.chance_porte_bonheur
+	_porte_bonheur.pressed.connect(Run.acheter_porte_bonheur)
+	Interface.preparer_bouton(_porte_bonheur)
+	rangee.add_child(_porte_bonheur)
+	rangee.add_child(_icone(ICONE_RESSORT, 24))
+	_prix_porte_bonheur = Label.new()
+	_prix_porte_bonheur.theme_type_variation = &"Badge"
+	_prix_porte_bonheur.text = str(Run.regles.prix_porte_bonheur)
+	_caler_prix(_prix_porte_bonheur)
+	rangee.add_child(_prix_porte_bonheur)
+	%Reparer.get_parent().add_sibling(rangee)
+
+
+func _icone(texture: Texture2D, cote: float) -> TextureRect:
+	var icone := TextureRect.new()
+	icone.texture = texture
+	icone.custom_minimum_size = Vector2(cote, cote)
+	icone.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icone.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icone.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return icone
 
 
 # La boutique se replie pour dégager le plateau (playtest 1 : « elle reste constamment dépliée »).
@@ -300,6 +349,13 @@ func _actualiser_solde(total: int) -> void:
 	%PrixRelance.text = str(Run.prix_relance)
 	%Relancer.accessibility_name = tr("Relancer le tirage — %d") % Run.prix_relance if Run.prix_relance > 0 else tr("Relancer gratuitement")
 	%Reparer.disabled = total < Run.regles.prix_reparation or Run.pv_horloge >= Run.pv_max
+	if _chance != null:
+		_plaque_chance.visible = Run.chance > 0
+		_chance.text = str(Run.chance)
+		_plaque_chance.tooltip_text = tr("Chance : les coffres montrent plus de raretés")
+		_porte_bonheur.disabled = total < Run.regles.prix_porte_bonheur or Run.chance >= Run.regles.chance_max \
+				or Run.get("_porte_bonheur_achete")
+		_porte_bonheur.tooltip_text = tr("Porte-bonheur : +%d chance (une fois par pause)") % Run.regles.chance_porte_bonheur
 	for i: int in _ventes.size():
 		var lot: Lot = Run.regles.boutique[i]
 		var verrouille: bool = lot.vague_min > Run.vague_actuelle + 1
@@ -519,6 +575,6 @@ func _afficher_fin(victoire: bool) -> void:
 func _actualiser_bilan() -> void:
 	%Bilan.text = "Victoire !" if _victoire else "L’horloge s’est arrêtée…"
 	var tenues: int = Run.vague_actuelle if _victoire else maxi(0, Run.vague_actuelle - 1)
-	%Stats.text = tr("Vagues tenues : %d / %d\nScarabées cassés : %d\nRessorts gagnés : %d") % [
+	%Stats.text = tr("Vagues tenues : %d / %d\nScarabées endormis : %d\nRessorts gagnés : %d") % [
 		tenues, Run.nb_vagues, Run.ennemis_casses, Run.ressorts_gagnes]
 	%PrimeOr.text = tr("+%d engrenages d’or") % Run.engrenages_gagnes

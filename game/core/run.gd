@@ -42,6 +42,9 @@ var prix_relance: int:
 var phase: Phase = Phase.DRAFT
 var vague_actuelle: int = 0
 var deplacements_pause: int = 0
+## Chance (benchmark D4) : favorise les raretés des coffres. Gagnée par les vagues sans dégât, le porte-bonheur, l'Établi.
+var chance: int = 0
+var _porte_bonheur_achete: bool = false
 var ressorts: int = regles.ressorts_depart
 var ennemis_casses: int = 0
 var ressorts_gagnes: int = 0
@@ -117,6 +120,23 @@ func tourner_piece(plateau: Plateau, case: Vector2i) -> bool:
 	return depenser(prix)
 
 
+## Ajoute des points de chance, dans la limite de `regles.chance_max`.
+func ajouter_chance(n: int) -> void:
+	chance = clampi(chance + n, 0, regles.chance_max)
+	Events.ressorts_changes.emit(ressorts)
+
+
+## Achète le porte-bonheur de la boutique (une fois par pause) : de la chance pour les prochains coffres.
+func acheter_porte_bonheur() -> bool:
+	if phase != Phase.CONSTRUCTION or _porte_bonheur_achete or chance >= regles.chance_max:
+		return false
+	if not depenser(regles.prix_porte_bonheur):
+		return false
+	_porte_bonheur_achete = true
+	ajouter_chance(regles.chance_porte_bonheur)
+	return true
+
+
 ## Achète un lot disponible pour la prochaine vague et le range dans la réserve.
 func acheter(i: int) -> bool:
 	if phase != Phase.CONSTRUCTION or i < 0 or i >= regles.boutique.size():
@@ -135,7 +155,8 @@ func _tirer_offre() -> void:
 		offre.clear()
 		var montres: Array = []
 		for i: int in choix_par_draft:
-			var carte: Array[Lot] = Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng, montres)
+			var carte: Array[Lot] = Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng, montres, chance,
+					Vector2(regles.chance_rare, regles.chance_epique))
 			offre.append_array(carte)
 			for lot: Lot in carte:
 				montres.append(lot.objet)
@@ -205,6 +226,7 @@ func lancer_vague() -> void:
 		return
 	vague_actuelle += 1
 	deplacements_pause = 0
+	_porte_bonheur_achete = false
 	_pv_debut_vague = pv_horloge
 	changer_phase(Phase.VAGUE)
 	Events.vague_commencee.emit(vague_actuelle)
@@ -228,6 +250,7 @@ func terminer_vague() -> void:
 	derniere_recompense += revenu_extensions + _rente
 	if pv_horloge == _pv_debut_vague:
 		derniere_recompense += regles.bonus_sans_degat
+		ajouter_chance(regles.chance_par_vague_propre)
 	gagner(derniere_recompense)
 	Events.vague_terminee.emit(vague_actuelle)
 	if vague_actuelle == nb_vagues:
@@ -283,6 +306,8 @@ func reinitialiser() -> void:
 		randomize()
 	vague_actuelle = 0
 	deplacements_pause = 0
+	_porte_bonheur_achete = false
+	chance = int(_bonus(&"chance"))
 	pv_max = regles.pv_horloge + int(_bonus(&"pv_horloge"))
 	pv_horloge = pv_max
 	choix_par_draft = regles.choix_par_draft + int(_bonus(&"choix_draft"))

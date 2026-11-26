@@ -8,6 +8,6 @@ id = &"ressorts_depart"
 nom = "Tiroir à ressorts"
 description = "+8 ressorts au départ par niveau."
 niveaux_max = 3
-prix = Array[int]([3, 6, 10])
+prix = Array[int]([4, 8, 14])
 effet = &"ressorts_depart"
 valeur_par_niveau = 8.0

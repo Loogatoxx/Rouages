@@ -20,6 +20,15 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var distance_arriere: int = 3
 ## Cadence en moins pour chaque atelier identique collé à un atelier (encombrement).
 @export var malus_encombrement: float = 0.1
+@export_group("Chance (benchmark D4)")
+## Chaque point de chance multiplie le poids des cartes rares par (1 + chance × ce facteur) dans les coffres.
+@export var chance_rare: float = 0.25
+## Idem pour les cartes épiques.
+@export var chance_epique: float = 0.5
+@export var chance_par_vague_propre: int = 1
+@export var chance_max: int = 10
+@export var prix_porte_bonheur: int = 8
+@export var chance_porte_bonheur: int = 2
 @export_group("")
 @export var prix_deplacement: int = 3
 @export var prix_deplacement_pas: int = 2

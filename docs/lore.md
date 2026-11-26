@@ -1,0 +1,75 @@
+# Lore — Rouages (bible vivante, PT-64)
+
+Règle (R7) : chaque feature livrée ajoute ou ajuste une entrée ici. Ton : chaleureux, tous âges, jamais sombre, mais
+**pas simpliste** : une vraie histoire qui se découvre par petits indices, avec un retournement préparé dès la première
+partie. Validation croisée multi-IA à chaque jalon (PT-65) : voir § Suivi.
+
+## Prémisse (ce que le joueur sait au départ)
+Sur l'établi d'un vieil atelier d'horlogerie, une **maquette** tient lieu de village. En son centre, **l'Horloge-Mère**
+fait battre la maquette : son tic-tac remonte les jouets reliés par des engrenages. À chaque coup du carillon (une
+vague), des **scarabées mécaniques** sortent des tiroirs de l'établi et marchent vers elle ; entre deux sonneries, tout
+l'établi retient son souffle (la vraie pause entre les vagues). Le joueur, invisible, est la main qui pose les
+pièces : il défend l'Horloge.
+
+## Personnages
+- **Maître Anselme Brévin**, l'horloger, parti en voyage il y a longtemps en promettant de revenir « à l'heure que
+  marquera l'Horloge ». On ne le voit jamais ; on lit ses notes au crayon (« Tant que l'Horloge bat, les figurines se
+  réveillent chaque matin »).
+- **Lise**, son apprentie d'autrefois (aujourd'hui adulte, elle ne revient qu'à la fin de la campagne). Enfant, elle a
+  fabriqué les scarabées pour qu'ils « gardent les tiroirs » ; l'Horloge les remontait à distance, par les rouages cachés
+  de l'établi. Ce lien faiblit depuis peu : c'est pour ça qu'ils sortent.
+- **L'Inventeur** (le Héros du backlog) : figurine que Lise avait faite à l'image d'Anselme. Il deviendra jouable.
+
+## Les factions de la maquette
+- **Les jouets à remontoir** (soldats, lance-billes) : fidèles à l'Horloge, ils n'existent que tant qu'elle bat.
+- **Les scarabées** et leur famille (fourmis, cuirassés, libellules, Grand Scarabée) : des gardiens de tiroirs dont le
+  ressort se détend. Ce que le joueur prend pour une attaque est en réalité une **migration** : ils marchent vers la seule
+  source de remontage de l'établi, l'Horloge-Mère.
+
+## Le retournement (préparé, révélé à la fin de la campagne)
+Personne n'est « tué » : un scarabée à court de ressort **s'endort** et lâche son ressort de trop-plein (nos
+« ressorts ») avant d'être ramené au tiroir par ses voisins. Les scarabées ne veulent pas détruire l'Horloge : ils
+veulent **être remontés** ; chaque PV perdu par l'Horloge est un tour de clé qu'un scarabée lui prend. L'enjeu caché :
+l'Horloge ne garde pas seulement l'heure, elle garde **l'heure du rendez-vous d'Anselme**. Si elle s'arrête, il ne
+retrouvera plus le chemin de l'atelier. La campagne finit quand le joueur
+retrouve la **clé d'or** (assemblée avec les engrenages d'or gagnés partie après partie) et que Lise rentre : on peut
+alors **remonter les scarabées** au lieu de les casser (mode final et nouveau mode de jeu « Veille »).
+
+## Indices semés dès maintenant (foreshadowing)
+| Indice | Où le joueur le voit | Ce qu'il annonce |
+|---|---|---|
+| Une **clé de remontoir** cachée sous la carapace, visible seulement quand un scarabée s'endort (à partir du chapitre 3) | animation d'endormissement | ils sont de la même famille que les jouets |
+| Un scarabée cassé laisse un **petit ressort** (le butin, nos « ressorts ») | économie | on récupère leur énergie, pas leur métal |
+| Le Grand Scarabée **ralentit** quand ses PV baissent, au lieu de s'énerver | boss V5 / V10 | il s'épuise, il n'est pas méchant |
+| Chaque engrenage d'or porte un **fragment gravé** d'anneau | icône, Établi | mis bout à bout, ils forment l'anneau de la clé d'or |
+| La note de l'Établi « Rouages huilés » est **signée L., d'une écriture d'enfant** | description de l'amélioration (à ajouter) | Lise a appris le métier ici |
+| À la victoire de la V10, l'Horloge sonne **un coup de plus** que prévu et une aiguille avance seule | son et animation (à ajouter) | quelqu'un approche : le rendez-vous se rapproche |
+
+## Easter eggs (cachés, sans incidence sur le jeu)
+- Le défi du jour du **1er avril** : tous les scarabées portent un minuscule chapeau de soldat.
+- Taper « LISE » sur le clavier pendant la pause fait jouer trois notes de la boîte à musique.
+- Sur la table, un **carnet fermé** porte la date du premier commit du projet (23 novembre).
+
+## Lien avec les features (mis à jour à chaque lot)
+| Feature | Explication dans le monde |
+|---|---|
+| Extensions de terrain (sentiers) | Le joueur déplie de nouvelles planches de la maquette ; les tiroirs ouverts laissent entrer d'autres scarabées. |
+| Drapeaux d'extension | Fanions de chantier plantés par Anselme pour ses agrandissements jamais finis. |
+| Engrenages à identité (démultiplicateur, répartiteur, moyeu) | Les trois « métiers » d'engrenages qu'Anselme enseignait à Lise. |
+| Route et arrière-garde | Les jouets proches de la route entendent mieux le tic-tac de l'Horloge ; ceux de l'arrière se remontent au calme. |
+| Libellule (volante) | La seule création de Lise qui sache voler : les soldats, trop petits, ne l'atteignent pas. |
+| Chance (trèfle) | Un trèfle émaillé qu'Anselme gardait sur l'établi ; il « fait tomber les bonnes pièces des tiroirs ». |
+| Vraie pause entre les vagues | La nuit, tout l'établi s'arrête ; on n'entend plus que l'Horloge. |
+| Établi de l'inventeur (méta) | On reprend les outils d'Anselme, un à un. |
+
+## Campagne envisagée (PT-62)
+Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie sur l'établi.
+1. **L'Établi** (tutoriel, Prairie) · 2. **Les Tiroirs** (Méandres, les fourmis) · 3. **La Fourche du Grenier**
+(cuirassés, premiers coffres) · 4. **Le Jardin d'hiver** (libellules) · 5. **La Boîte à musique** (Grand Scarabée) ·
+6. **Le Retour de Lise** (révélation, mode « Veille »). Choix libre de carte et défi du jour débloqués après le chapitre 3.
+
+## Suivi de la validation multi-IA (PT-65)
+- 2026-11-26 : v1 relue par Gemini (relecture adverse). 6 corrections intégrées : plus aucun scarabée « tué » (ils
+  s'endorment), chronologie de Lise et de l'Horloge clarifiée, clé cachée jusqu'au chapitre 3 et enjeu du rendez-vous
+  d'Anselme (twist moins prévisible), chapitres = dioramas pliants, indices concrets pour un enfant (fragments d'anneau,
+  réveil des figurines), vagues = coups du carillon. Bilan renommé « Scarabées endormis » (fait) ; prochaine relecture par Codex (cohérence avec le gameplay).

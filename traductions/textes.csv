@@ -46,13 +46,13 @@ Vague tenue ! +%d ressorts,Vague tenue ! +%d ressorts,Wave cleared! +%d springs,
 Victoire !,Victoire !,Victory!,Vitória!
 L’horloge s’est arrêtée…,L’horloge s’est arrêtée…,The clock has stopped…,O relógio parou…
 "Vagues tenues : %d / %d
-Scarabées cassés : %d
+Scarabées endormis : %d
 Ressorts gagnés : %d","Vagues tenues : %d / %d
-Scarabées cassés : %d
+Scarabées endormis : %d
 Ressorts gagnés : %d","Waves cleared: %d / %d
-Beetles smashed: %d
+Beetles put to sleep: %d
 Springs earned: %d","Vagas superadas: %d / %d
-Escaravelhos desfeitos: %d
+Escaravelhos adormecidos: %d
 Molas ganhas: %d"
 Chemin des scarabées,Chemin des scarabées,Beetle path,Caminho dos escaravelhos
 Alimenté,Alimenté,Powered,Com energia
@@ -160,3 +160,8 @@ Plafond +%d jouets,Plafond +%d jouets,Cap +%d toys,Limite +%d brinquedos
 Bord de route : dégâts +%d %%,Bord de route : dégâts +%d %%,Roadside: damage +%d %%,Beira da estrada: dano +%d %%
 Tir +%d %% (moyeu voisin),Tir +%d %% (moyeu voisin),Fire rate +%d %% (nearby hub),Disparo +%d %% (cubo vizinho)
 Aperçu de pose,Aperçu de pose,Placement preview,Pré-visualização
+Trèfle porte-bonheur,Trèfle porte-bonheur,Lucky clover,Trevo da sorte
++1 chance au début de chaque partie par niveau : les coffres montrent plus de raretés.,+1 chance au début de chaque partie par niveau : les coffres montrent plus de raretés.,+1 luck at the start of each game per level: chests show more rare items.,+1 sorte no início de cada partida por nível: os baús mostram mais raridades.
+Chance : %d,Chance : %d,Luck: %d,Sorte: %d
+Chance : les coffres montrent plus de raretés,Chance : les coffres montrent plus de raretés,Luck: chests show more rare items,Sorte: os baús mostram mais raridades
+Porte-bonheur : +%d chance (une fois par pause),Porte-bonheur : +%d chance (une fois par pause),Lucky charm: +%d luck (once per break),Amuleto: +%d sorte (uma vez por pausa)

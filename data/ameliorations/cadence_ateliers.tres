@@ -8,6 +8,6 @@ id = &"cadence_ateliers"
 nom = "Rouages huilés"
 description = "Les ateliers produisent 8 % plus vite par niveau."
 niveaux_max = 3
-prix = Array[int]([3, 6, 10])
+prix = Array[int]([4, 8, 14])
 effet = &"cadence_ateliers"
 valeur_par_niveau = 0.08

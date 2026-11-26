@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"trefle"
+nom = "Trèfle porte-bonheur"
+description = "+1 chance au début de chaque partie par niveau : les coffres montrent plus de raretés."
+niveaux_max = 3
+prix = Array[int]([5, 10, 15])
+effet = &"chance"
+valeur_par_niveau = 1.0

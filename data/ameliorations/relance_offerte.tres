@@ -8,6 +8,6 @@ id = &"relance_offerte"
 nom = "Seconde esquisse"
 description = "La première relance de chaque tirage est offerte."
 niveaux_max = 1
-prix = Array[int]([6])
+prix = Array[int]([8])
 effet = &"relance_offerte"
 valeur_par_niveau = 1.0
