@@ -4,6 +4,7 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
 ## État (mis à jour le 2026-11-26)
+- **Étape 6 validée** (« ça reste fun ») : jouets en teintes « peinture de jouet » + chapeau, V2-V4 adoucies, `pv_horloge` 30, aperçu de pose bleu. Étape 7 lancée (T07a : visuel de l'horloge + sons, Antigravity).
 - Étapes 0 à 4 commitées (`d24f33b`). **Étape 5 testée par Carlos et commitée** (« c'est très bien ») :
   draft d'un lot parmi 3 (`Run.choisir_lot`), réserve (`Run.reserve`), plateau et réserve de départ dans `data/depart.tres`,
   pioche et 10 vagues dans `data/regles.tres`, extensions de terrain (`data/extensions/`, +1 entrée obligatoire, bonus à la pose),

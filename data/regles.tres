@@ -67,7 +67,7 @@ vague_min = 3
 
 [resource]
 script = ExtResource("regles")
-pv_horloge = 20
+pv_horloge = 30
 plafond_allies_par_atelier = 15
 multiplicateur_acceleration = 2.0
 choix_par_draft = 3

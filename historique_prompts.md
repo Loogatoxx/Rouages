@@ -60,3 +60,8 @@
 - **Prompt** : « oui c'est très bien juste on voit pas vraiment les soldats parce que c'est du blanc sur du blanc sinon continue et s'il faut ouvre une nouvelle fenêtre ».
 - **Réponse** : commit de l'étape 5 ; lisibilité des soldats notée en priorité pour l'étape 6 ; session neuve ouverte pour l'étape 6.
 - **Objectif** : clore l'étape 5 et repartir avec un contexte frais.
+
+## 2026-11-26 — Étape 6 : lisibilité et équilibrage
+- **Prompt** : correction « blanc sur blanc » validée (« tout est bon continue ») ; ressenti : « je perds vague 4 », pas d'ennui, extensions = « je double juste », tuto/argent pour plus tard.
+- **Réponse** : T06a (Codex) : teintes « peinture de jouet » + chapeau brun, test de contraste WCAG (43 tests). Banc sur 3 graines : un joueur un cran sous le parfait mourait en V3-V4 ; V2-V4 adoucies (44→36, 70→54, 97→80) et `pv_horloge` 20→30. Retours extensions/tuto/argent notés au backlog.
+- **Objectif** : un début de run accessible sans toucher la fin de run.

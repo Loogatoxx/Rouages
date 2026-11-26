@@ -16,6 +16,6 @@ l'issue ; les deux nuées sont lisibles en vue de dessus ; l'horloge 3D est à l
 | 3 | SwarmSim : champ de flux, grille spatiale, combats, rendu MultiMesh | Codex (spec Claude) | 300 contre 300 à 60 FPS | ✅ (T03 : 60 FPS en fenêtre, 3,2 ms/pas, 20 tests) |
 | 4 | Ateliers alimentés → jouets ; vagues de scarabées ; PV horloge ; défaite | Codex | Une vague jouable de bout en bout | ✅ (T04 : 27 tests, 3 vagues provisoires) |
 | 5 | Draft 1 parmi 3, machine à états de la run, UI minimale, victoire/défaite/rejouer, données de 10 vagues | Codex + Claude (équilibrage) | Run complète de 15 min | ✅ (T05a draft/réserve, T05b extensions, T05c 10 vagues + remontage ; 40 tests) |
-| 6 | 🚦 Playtest Carlos + équilibrage. **Aucun crédit Hyper3D avant ce feu vert.** | Carlos + Claude | « C'est fun » | à faire |
+| 6 | 🚦 Playtest Carlos + équilibrage. **Aucun crédit Hyper3D avant ce feu vert.** | Carlos + Claude | « C'est fun » | ✅ (T06a contraste des jouets, V2-V4 adoucies, horloge 30 PV, aperçu de pose bleu ; 43 tests) |
 | 7 | Horloge : image → validation Carlos → Image-to-3D (1 crédit) → Blender → intégration ; 4-5 sons locaux | Antigravity | Horloge à l'échelle en jeu | à faire |
 | 8 | Builds Mac + Windows, test sur le PC Windows | Claude + Carlos | Deux `.zip` qui se lancent | à faire |

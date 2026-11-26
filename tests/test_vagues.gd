@@ -11,7 +11,7 @@ const SCARABEE = preload("res://data/unites/scarabee.tres")
 const DONNEES_REGLES = preload("res://data/regles.tres")
 ## Courbe de difficulté (équilibrée au banc, voir taches/T05c_vagues_equilibrage.md) : [nombre, intervalle, × PV].
 const COURBE := [
-	[14, 1.25, 1.0], [44, 0.5, 1.0], [70, 0.37, 1.1], [97, 0.3, 1.2], [123, 0.26, 1.35],
+	[14, 1.25, 1.0], [36, 0.5, 1.0], [54, 0.37, 1.1], [80, 0.3, 1.2], [123, 0.26, 1.35],
 	[140, 0.25, 1.5], [150, 0.25, 1.7], [160, 0.25, 1.85], [190, 0.23, 2.05], [229, 0.21, 2.4],
 ]
 
@@ -29,7 +29,7 @@ class SimulationTemoin extends SwarmSim:
 ## Vérifie les types et les valeurs des ressources utilisées par la partie.
 func test_ressources() -> String:
 	var regles: Regles = load("res://data/regles.tres") as Regles
-	if (regles == null or regles.pv_horloge != 20
+	if (regles == null or regles.pv_horloge != 30
 			or regles.plafond_allies_par_atelier != 15 or regles.multiplicateur_acceleration != 2.0):
 		return "Règles de partie incorrectes."
 	if regles.vagues.size() != COURBE.size():

@@ -41,3 +41,6 @@ Héros Inventeur (RPG léger), arbre de compétences méta.
 5. **Le relecteur n'est jamais le producteur.**
 6. Tenir `historique_prompts.md` à jour à chaque requête de Carlos.
 7. Français partout (code, commentaires, docs, commits). Expliquer le *pourquoi* à Carlos, qui apprend.
+8. **« continue » = enchaîner sans attendre** : quand Carlos dit « continue » (avec ou sans demande en plus), traiter la demande en plus
+   PUIS enchaîner les étapes suivantes de la roadmap sans redemander. Ne s'arrêter que pour ce qui exige vraiment Carlos
+   (test manuel, validation visuelle, crédit Hyper3D, commit). Le commit reste soumis à son accord explicite.

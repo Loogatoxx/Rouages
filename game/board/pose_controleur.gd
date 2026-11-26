@@ -89,7 +89,7 @@ func _process(_delta: float) -> void:
 		else:
 			libre = (_source.plateau.sol_de(_case) == _source.Plateau.Sol.HERBE
 					and _source.plateau.piece_de(_case) == null)
-		_teinte.albedo_color = Color(0.25, 0.95, 0.33, 0.56) if libre else Color(1, 0.2, 0.19, 0.65)
+		_teinte.albedo_color = Color("#3D8FD9", 0.62) if libre else Color(1, 0.2, 0.19, 0.65)
 		_fantome.position = GrilleMonde.vers_monde(_case) + Vector3.UP * 0.05
 		_fantome.rotation.y = -_rotation * PI / 2
 

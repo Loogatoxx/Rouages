@@ -6,6 +6,6 @@
 [resource]
 script = ExtResource("vague")
 unite = ExtResource("scarabee")
-nombre = 70
+nombre = 54
 intervalle = 0.37
 multiplicateur_pv = 1.1

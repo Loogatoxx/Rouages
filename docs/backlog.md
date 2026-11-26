@@ -19,6 +19,8 @@
 ## Retours de relecture
 - Les jouets sortent de l'atelier côté port (vers l'horloge), puis contournent : prévoir une sortie dédiée côté chemin (T04).
 - ✅ Bridge Antigravity → Blender réparé (autorisations au format `mcp(blender/<outil>)`, testé le 2026-11-23). Les générateurs de l’addon sont « off » : activer Hyper3D dans l’addon avant l’étape 7.
+- Retour playtest étape 6 : une extension donne l'impression de « juste doubler » (un front de plus) ; rendre la récompense plus visible ou plus tentante.
+- Retour playtest étape 6 : tutoriel de première run, système d'argent/monnaie (après le MVP).
 
 ## Plus tard / peut-être
 - Version navigateur (renderer Compatibility) ; version mobile.
