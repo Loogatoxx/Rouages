@@ -17,9 +17,6 @@
 [ext_resource type="Script" path="res://game/ui/info_survol.gd" id="survol"]
 [ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
 
-[sub_resource type="BoxMesh" id="table"]
-size = Vector3(56, 0.4, 56)
-
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 
@@ -30,10 +27,6 @@ transform = Transform3D(1, 0, 0, 0, 0.342, 0.94, 0, -0.94, 0.342, 0, 22, 8)
 projection = 1
 size = 26.0
 script = ExtResource("camera_plateau")
-
-[node name="TableGreybox" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
-mesh = SubResource("table")
 
 [node name="PlateauNoeud" type="Node3D" parent="."]
 script = ExtResource("plateau_noeud")

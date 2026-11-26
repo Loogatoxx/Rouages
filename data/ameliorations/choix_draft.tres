@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"choix_draft"
+nom = "Casier à plans"
+description = "Une carte de plus à chaque tirage."
+niveaux_max = 1
+prix = Array[int]([6])
+effet = &"choix_draft"
+valeur_par_niveau = 1.0

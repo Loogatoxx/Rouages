@@ -5,5 +5,4 @@ extends Node3D
 func _ready() -> void:
 	$NueeVisuel.sim = $Partie.sim
 	$Partie.production.jouet_produit.connect($PlateauNoeud/PlateauVisuel.rebondir)
-	$TableGreybox.material_override = $PlateauNoeud/PlateauVisuel.materiau("bois_plateau")
 	print("Rouages : scène principale chargée (phase %d)." % Run.phase)

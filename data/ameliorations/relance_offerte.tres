@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"relance_offerte"
+nom = "Seconde esquisse"
+description = "La première relance de chaque tirage est offerte."
+niveaux_max = 1
+prix = Array[int]([6])
+effet = &"relance_offerte"
+valeur_par_niveau = 1.0

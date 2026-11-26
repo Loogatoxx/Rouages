@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"cadence_ateliers"
+nom = "Rouages huilés"
+description = "Les ateliers produisent 8 % plus vite par niveau."
+niveaux_max = 3
+prix = Array[int]([3, 6, 10])
+effet = &"cadence_ateliers"
+valeur_par_niveau = 0.08

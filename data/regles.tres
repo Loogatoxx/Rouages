@@ -29,6 +29,14 @@
 [ext_resource type="Resource" path="res://data/vagues/vague_09.tres" id="vague_9"]
 [ext_resource type="Resource" path="res://data/vagues/vague_10.tres" id="vague_10"]
 
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+[ext_resource type="Resource" path="res://data/ameliorations/pv_horloge.tres" id="meta_pv_horloge"]
+[ext_resource type="Resource" path="res://data/ameliorations/ressorts_depart.tres" id="meta_ressorts_depart"]
+[ext_resource type="Resource" path="res://data/ameliorations/choix_draft.tres" id="meta_choix_draft"]
+[ext_resource type="Resource" path="res://data/ameliorations/cadence_ateliers.tres" id="meta_cadence_ateliers"]
+[ext_resource type="Resource" path="res://data/ameliorations/rente.tres" id="meta_rente"]
+[ext_resource type="Resource" path="res://data/ameliorations/relance_offerte.tres" id="meta_relance_offerte"]
+
 [sub_resource type="Resource" id="lot_atelier"]
 script = ExtResource("lot")
 objet = ExtResource("atelier")
@@ -115,6 +123,9 @@ poids = 1.0
 
 [resource]
 script = ExtResource("regles")
+ameliorations = Array[ExtResource("amelioration")]([ExtResource("meta_pv_horloge"), ExtResource("meta_ressorts_depart"), ExtResource("meta_choix_draft"), ExtResource("meta_cadence_ateliers"), ExtResource("meta_rente"), ExtResource("meta_relance_offerte")])
+engrenages_par_vague = 1
+engrenages_victoire = 5
 departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("meandres"), ExtResource("fourche")])
 garde_ratio = 0.55
 prix_rotation = 2

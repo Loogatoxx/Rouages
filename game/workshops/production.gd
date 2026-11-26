@@ -24,7 +24,7 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 		var atelier: Plateau.PieceDef = plateau.piece_de(case)
 		if atelier.cadence_production <= 0.0 or atelier.unite_produite == null:
 			continue
-		var progression: float = _progressions.get(case, 0.0) + dt * atelier.cadence_production
+		var progression: float = _progressions.get(case, 0.0) + dt * atelier.cadence_production * Run.bonus_cadence
 		var prets: int = floori(progression)
 		_progressions[case] = progression - prets
 		var places: int = plafond - sim.nombre(SwarmSim.ALLIE)

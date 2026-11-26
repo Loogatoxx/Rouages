@@ -3,6 +3,7 @@ extends Control
 
 const APERCU := "res://assets/final/horloge/apercu.png"
 const Langue = preload("res://game/ui/langue.gd")
+const Progression = preload("res://game/core/progression.gd")
 const Options = preload("res://game/ui/options.gd")
 const MODELE := "res://assets/final/horloge/horloge.glb"
 
@@ -24,6 +25,14 @@ func _ready() -> void:
 	elif ResourceLoader.exists(APERCU):
 		%Illustration.texture = load(APERCU)
 	preparer_boutons(self)
+	%BoutonEtabli.pressed.connect(func() -> void:
+		%Panneau.hide()
+		%Etabli.ouvrir())
+	%Etabli.ferme.connect(func() -> void:
+		_afficher_or()
+		%Panneau.show()
+		%BoutonEtabli.grab_focus())
+	_afficher_or()
 	%Options.pressed.connect(func() -> void:
 		%Panneau.hide()
 		%Reglages.ouvrir())
@@ -109,9 +118,14 @@ func _afficher_plateau() -> void:
 	%Defi.text = tr("Défi du jour") if record < 0 else tr("Défi du jour — record : %d / %d") % [record, Run.nb_vagues]
 
 
+func _afficher_or() -> void:
+	%Or.text = tr("Engrenages d’or : %d") % Progression.engrenages()
+
+
 func _notification(quoi: int) -> void:
 	if quoi == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_afficher_plateau()
+		_afficher_or()
 
 
 func _jouer() -> void:

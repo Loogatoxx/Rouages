@@ -6,8 +6,9 @@ const DUREE_SECOUSSE := 0.25
 var _secousse: float = 0.0
 var _cible := Vector3.ZERO
 var _cadre: float = 21.0
-var _inclinee: bool = false
-var _melange: float = 0.0
+## Vue inclinée par défaut : le plateau est une maquette en volume (DA v2) ; la vue de dessus reste à un raccourci.
+var _inclinee: bool = true
+var _melange: float = 1.0
 var _transition: Tween
 
 
@@ -26,7 +27,7 @@ func _process(delta: float) -> void:
 
 
 func _appliquer_vue() -> void:
-	var angle: float = deg_to_rad(lerpf(80.0, 50.0, _melange))
+	var angle: float = deg_to_rad(lerpf(80.0, 54.0, _melange))
 	var distance: float = _cadre
 	if _melange <= 0:
 		projection = PROJECTION_ORTHOGONAL
@@ -34,7 +35,7 @@ func _appliquer_vue() -> void:
 	else:
 		projection = PROJECTION_PERSPECTIVE
 		# Un champ très étroit rejoint la vue orthographique sans saut de cadrage.
-		fov = lerpf(1.0, 48.0, _melange)
+		fov = lerpf(1.0, 40.0, _melange)
 		distance = _cadre / (2 * tan(deg_to_rad(fov) / 2))
 	position = _cible + Vector3(0, sin(angle), cos(angle)) * distance
 	rotation.x = -angle

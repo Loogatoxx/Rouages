@@ -1,0 +1,44 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/ui/etabli.gd" id="script"]
+[ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
+
+[node name="Etabli" type="CanvasLayer"]
+layer = 3
+visible = false
+script = ExtResource("script")
+
+[node name="Voile" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.12, 0.08, 0.05, 0.65)
+
+[node name="Panneau" type="PanelContainer" parent="Voile"]
+anchor_left = 0.12
+anchor_top = 0.06
+anchor_right = 0.88
+anchor_bottom = 0.94
+theme = ExtResource("theme")
+
+[node name="Colonne" type="VBoxContainer" parent="Voile/Panneau"]
+
+[node name="Titre" type="Label" parent="Voile/Panneau/Colonne"]
+theme_type_variation = &"SousTitre"
+text = "Établi de l’inventeur"
+
+[node name="Solde" type="Label" parent="Voile/Panneau/Colonne"]
+unique_name_in_owner = true
+
+[node name="Defilement" type="ScrollContainer" parent="Voile/Panneau/Colonne"]
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+follow_focus = true
+
+[node name="Lignes" type="VBoxContainer" parent="Voile/Panneau/Colonne/Defilement"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+
+[node name="Retour" type="Button" parent="Voile/Panneau/Colonne"]
+unique_name_in_owner = true
+size_flags_horizontal = 8
+text = "Retour"

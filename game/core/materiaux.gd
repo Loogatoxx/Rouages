@@ -1,5 +1,7 @@
 class_name Materiaux extends RefCounted
-## Partage les matériaux du plateau et des nuées.
+## Partage les matériaux et les scènes du kit entre le plateau et les nuées.
+
+const KIT := "res://assets/final/kit_v2/"
 
 const COULEURS := {
 	"herbe": "#A9C98B", "herbe_sombre": "#A0C283", "pierre_creme": "#EFE3C8", "bois_plateau": "#B9773E",
@@ -11,6 +13,15 @@ const COULEURS := {
 }
 
 static var _materiaux: Dictionary[String, Material] = {}
+static var _scenes: Dictionary[StringName, PackedScene] = {}
+
+
+## Charge une scène du kit une seule fois, y compris si le modèle est absent.
+static func scene_du_kit(nom: StringName) -> PackedScene:
+	if not _scenes.has(nom):
+		var chemin: String = KIT + "%s/%s.glb" % [nom, nom]
+		_scenes[nom] = (load(chemin) as PackedScene) if ResourceLoader.exists(chemin) else null
+	return _scenes[nom]
 
 
 ## Calcule le ratio de contraste WCAG entre deux couleurs sRGB.

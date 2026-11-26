@@ -1,6 +1,7 @@
 extends Node
 ## Conserve les PV de l'horloge et publie les transitions de la partie.
 
+const Progression = preload("res://game/core/progression.gd")
 const Plateau = preload("res://game/board/plateau.gd")
 const Regles = preload("res://game/core/regles.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
@@ -27,7 +28,17 @@ var vagues: Array[VagueDef]:
 var nb_vagues: int:
 	get:
 		return vagues.size()
-var pv_horloge: int = regles.pv_horloge
+var pv_max: int = regles.pv_horloge
+var pv_horloge: int = pv_max
+var choix_par_draft: int = regles.choix_par_draft
+var bonus_cadence: float = 1.0
+var engrenages_gagnes: int = 0
+var _rente: int
+var _relance_offerte: bool
+var _relance_disponible: bool
+var prix_relance: int:
+	get:
+		return 0 if _relance_disponible else regles.prix_relance
 var phase: Phase = Phase.DRAFT
 var vague_actuelle: int = 0
 var ressorts: int = regles.ressorts_depart
@@ -86,16 +97,17 @@ func _tirer_offre() -> void:
 	if offre_coffre:
 		# Chaque carte a son tirage pour que la rareté compte même avec trois modèles.
 		offre.clear()
-		for i: int in regles.choix_par_draft:
+		for i: int in choix_par_draft:
 			offre.append_array(Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng))
 	else:
-		offre = Draft.tirer(regles.pioche, regles.choix_par_draft, vague_actuelle + 1, rng)
+		offre = Draft.tirer(regles.pioche, choix_par_draft, vague_actuelle + 1, rng)
 
 
 ## Paie un nouveau tirage et présente les lots dans la même phase de draft.
 func relancer_offre() -> bool:
-	if phase != Phase.DRAFT or not depenser(regles.prix_relance):
+	if phase != Phase.DRAFT or not depenser(prix_relance):
 		return false
+	_relance_disponible = false
 	_tirer_offre()
 	Events.phase_changee.emit(Phase.DRAFT)
 	return true
@@ -103,12 +115,12 @@ func relancer_offre() -> bool:
 
 ## Répare l'horloge en construction et publie le solde une fois les PV restaurés.
 func reparer_horloge() -> bool:
-	if phase != Phase.CONSTRUCTION or pv_horloge >= regles.pv_horloge:
+	if phase != Phase.CONSTRUCTION or pv_horloge >= pv_max:
 		return false
 	var prix: int = regles.prix_reparation
 	if prix < 0 or ressorts < prix:
 		return false
-	pv_horloge = mini(pv_horloge + regles.pv_reparation, regles.pv_horloge)
+	pv_horloge = mini(pv_horloge + regles.pv_reparation, pv_max)
 	return depenser(prix)
 
 
@@ -164,8 +176,7 @@ func subir_degats(d: float) -> void:
 	pv_horloge = maxi(0, pv_horloge - ceili(d))
 	Events.horloge_touchee.emit(pv_horloge)
 	if pv_horloge == 0:
-		changer_phase(Phase.FIN)
-		Events.run_terminee.emit(false)
+		_terminer_partie(false)
 
 
 ## Clôt la vague, puis propose un nouveau tirage ou annonce la victoire.
@@ -173,17 +184,29 @@ func terminer_vague() -> void:
 	if phase != Phase.VAGUE:
 		return
 	derniere_recompense = regles.recompense_vague + regles.recompense_par_vague * (vague_actuelle - 1)
-	derniere_recompense += revenu_extensions
+	derniere_recompense += revenu_extensions + _rente
 	if pv_horloge == _pv_debut_vague:
 		derniere_recompense += regles.bonus_sans_degat
 	gagner(derniere_recompense)
 	Events.vague_terminee.emit(vague_actuelle)
 	if vague_actuelle == nb_vagues:
-		changer_phase(Phase.FIN)
-		Events.run_terminee.emit(true)
+		_terminer_partie(true)
 	else:
+		_relance_disponible = _relance_offerte
 		_tirer_offre()
 		changer_phase(Phase.DRAFT)
+
+
+func _terminer_partie(victoire: bool) -> void:
+	if not defi_du_jour:
+		var vagues_tenues: int = vague_actuelle if victoire else maxi(0, vague_actuelle - 1)
+		var gain: int = vagues_tenues * regles.engrenages_par_vague
+		if victoire:
+			gain += regles.engrenages_victoire
+		if Progression.gagner(gain):
+			engrenages_gagnes = gain
+	changer_phase(Phase.FIN)
+	Events.run_terminee.emit(victoire)
 
 
 ## Sélectionne le plateau de la prochaine partie libre.
@@ -205,6 +228,10 @@ func preparer_defi(date: String) -> void:
 	defi_du_jour = true
 
 
+func _bonus(effet: StringName) -> float:
+	return 0.0 if defi_du_jour else Progression.bonus(effet)
+
+
 ## Restaure l'horloge et la réserve, puis propose les lots de la première vague.
 func reinitialiser() -> void:
 	if defi_du_jour:
@@ -214,9 +241,16 @@ func reinitialiser() -> void:
 		rng.randomize()
 		randomize()
 	vague_actuelle = 0
-	pv_horloge = regles.pv_horloge
+	pv_max = regles.pv_horloge + int(_bonus(&"pv_horloge"))
+	pv_horloge = pv_max
+	choix_par_draft = regles.choix_par_draft + int(_bonus(&"choix_draft"))
+	bonus_cadence = 1.0 + _bonus(&"cadence_ateliers")
+	_rente = int(_bonus(&"rente"))
+	_relance_offerte = _bonus(&"relance_offerte") > 0.0
+	_relance_disponible = _relance_offerte
+	engrenages_gagnes = 0
 	_pv_debut_vague = pv_horloge
-	ressorts = regles.ressorts_depart
+	ressorts = regles.ressorts_depart + int(_bonus(&"ressorts_depart"))
 	ennemis_casses = 0
 	ressorts_gagnes = 0
 	derniere_recompense = 0

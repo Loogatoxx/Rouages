@@ -83,7 +83,6 @@ func _actualiser_prix() -> void:
 		var lot: Lot = Run.regles.boutique[i]
 		_ventes[i].text = tr("%s ×%d — %d") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
 	%Reparer.text = tr("Réparer l’horloge (+%d PV) — %d") % [Run.regles.pv_reparation, Run.regles.prix_reparation]
-	%Relancer.text = tr("Relancer le tirage — %d") % Run.regles.prix_relance
 
 
 func _actualiser_phase(phase: int) -> void:
@@ -113,9 +112,10 @@ func _actualiser_solde(total: int) -> void:
 		_faire_flotter_gain(total - _solde)
 	_solde = total
 	_ressorts.text = tr("Ressorts : %d") % total
-	_pv.text = tr("Horloge · %d / %d PV") % [Run.pv_horloge, Run.regles.pv_horloge]
-	%Relancer.disabled = total < Run.regles.prix_relance
-	%Reparer.disabled = total < Run.regles.prix_reparation or Run.pv_horloge >= Run.regles.pv_horloge
+	_pv.text = tr("Horloge · %d / %d PV") % [Run.pv_horloge, Run.pv_max]
+	%Relancer.disabled = total < Run.prix_relance
+	%Relancer.text = tr("Relancer gratuitement") if Run.prix_relance == 0 else tr("Relancer le tirage — %d") % Run.prix_relance
+	%Reparer.disabled = total < Run.regles.prix_reparation or Run.pv_horloge >= Run.pv_max
 	for i: int in _ventes.size():
 		var lot: Lot = Run.regles.boutique[i]
 		var verrouille: bool = lot.vague_min > Run.vague_actuelle + 1
@@ -215,7 +215,7 @@ func _annoncer(cle: String, valeur: int) -> void:
 
 
 func _recevoir_choc(pv: int) -> void:
-	_pv.text = tr("Horloge · %d / %d PV") % [pv, Run.regles.pv_horloge]
+	_pv.text = tr("Horloge · %d / %d PV") % [pv, Run.pv_max]
 	if _animation_choc:
 		_animation_choc.kill()
 	_flash.color.a = 0.24
@@ -264,3 +264,4 @@ func _actualiser_bilan() -> void:
 	var tenues: int = Run.vague_actuelle if _victoire else maxi(0, Run.vague_actuelle - 1)
 	%Stats.text = tr("Vagues tenues : %d / %d\nScarabées cassés : %d\nRessorts gagnés : %d") % [
 		tenues, Run.nb_vagues, Run.ennemis_casses, Run.ressorts_gagnes]
+	%Stats.text += "\n" + tr("+%d engrenages d’or") % Run.engrenages_gagnes

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"pv_horloge"
+nom = "Boîtier renforcé"
+description = "+5 PV pour l’horloge par niveau."
+niveaux_max = 3
+prix = Array[int]([3, 6, 10])
+effet = &"pv_horloge"
+valeur_par_niveau = 5.0

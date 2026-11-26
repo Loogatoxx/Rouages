@@ -25,6 +25,7 @@ var _ages := PackedFloat32Array()
 var _prochaine_bille: int = 0
 var _shader_carapace := Shader.new()
 var _lots: Dictionary[StringName, MultiMesh] = {}
+var _bases: Dictionary[StringName, Basis] = {}
 var _effectifs: Dictionary[StringName, int] = {}
 var _eclats: Array[CPUParticles3D] = []
 var _prochain_eclat: int = 0
@@ -150,7 +151,7 @@ func _sphere(rayon: float, hauteur: float) -> SphereMesh:
 	return volume
 
 
-func _creer_lot(id: StringName, camp: int) -> MultiMesh:
+func _forme_de_repli(id: StringName, camp: int) -> ArrayMesh:
 	var forme := ArrayMesh.new()
 	var soldat: bool = camp == SwarmSim.ALLIE and id != &"lance_bille"
 	if soldat:
@@ -175,6 +176,49 @@ func _creer_lot(id: StringName, camp: int) -> MultiMesh:
 			var crete := BoxMesh.new()
 			crete.size = Vector3(0.46, 0.12, 0.1)
 			_ajouter_piece(forme, crete, 0.50, Materiaux.obtenir("pierre_creme"))
+	return forme
+
+
+func _forme_du_kit(def: SwarmSim.UniteDef, camp: int) -> Mesh:
+	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
+	var scene: PackedScene = Materiaux.scene_du_kit(nom)
+	if scene == null:
+		return null
+	var racine := scene.instantiate() as Node3D
+	var volume := racine as MeshInstance3D
+	if volume == null:
+		var volumes: Array[Node] = racine.find_children("*", "MeshInstance3D", true, false)
+		if not volumes.is_empty():
+			volume = volumes[0] as MeshInstance3D
+	var forme: Mesh
+	if volume != null and volume.mesh != null:
+		# Les cinq figurines ont un seul maillage, en mètres, avec le pivot au pied.
+		var taille: Vector3 = volume.mesh.get_aabb().size
+		var largeur: float = maxf(taille.x, taille.z)
+		if largeur > 0.0:
+			var echelle: float = 2.0 * def.rayon / largeur
+			var orientation: float = PI / 2.0 if camp == SwarmSim.ENNEMI else -PI / 2.0
+			_bases[def.id] = Basis(Vector3.UP, orientation).scaled(Vector3.ONE * echelle)
+			forme = volume.mesh.duplicate() as Mesh
+			if nom == &"soldat":
+				for i: int in forme.get_surface_count():
+					var mat := forme.surface_get_material(i) as StandardMaterial3D
+					if mat != null and mat.resource_name == "PastelBleu":
+						var veste := mat.duplicate() as StandardMaterial3D
+						veste.albedo_color = Color.WHITE
+						veste.vertex_color_use_as_albedo = true
+						forme.surface_set_material(i, veste)
+	racine.free()
+	return forme
+
+
+func _creer_lot(def: SwarmSim.UniteDef, camp: int) -> MultiMesh:
+	var id: StringName = def.id
+	var soldat: bool = camp == SwarmSim.ALLIE and id != &"lance_bille"
+	var forme: Mesh = _forme_du_kit(def, camp)
+	if forme == null:
+		forme = _forme_de_repli(id, camp)
+		_bases[id] = Basis.from_scale(Vector3(1.25, 1.0, 0.85)) if camp == SwarmSim.ENNEMI else Basis.IDENTITY
 	if camp == SwarmSim.ENNEMI:
 		for i: int in forme.get_surface_count():
 			var origine: StandardMaterial3D = forme.surface_get_material(i) as StandardMaterial3D
@@ -209,7 +253,6 @@ func _process(delta: float) -> void:
 	for id: StringName in _lots:
 		_effectifs[id] = 0
 	for camp: int in [SwarmSim.ALLIE, SwarmSim.ENNEMI]:
-		var hauteur: float = 0.04 if camp == SwarmSim.ENNEMI else 0.0
 		var lieux: PackedVector2Array = sim.positions(camp)
 		var touches: PackedFloat32Array = sim.touches(camp)
 		var angles: PackedFloat32Array = sim.caps(camp)
@@ -218,16 +261,15 @@ func _process(delta: float) -> void:
 			var id: StringName = modeles[i].id
 			var lot: MultiMesh = _lots.get(id)
 			if lot == null:
-				lot = _creer_lot(id, camp)
-			var base := Basis(Vector3.UP, -angles[i])
+				lot = _creer_lot(modeles[i], camp)
+			var base: Basis = Basis(Vector3.UP, -angles[i]) * _bases[id]
 			var indice: int = _effectifs[id]
 			if camp == SwarmSim.ENNEMI:
 				var touche: bool = touches[i] > 0.0
 				lot.set_instance_color(indice, CREME if touche else Color.WHITE)
 				if touche:
 					base = base.scaled_local(Vector3.ONE * 1.12)
-				base = base.scaled_local(Vector3(1.25, 1.0, 0.85))
-			lot.set_instance_transform(indice, Transform3D(base, Vector3(lieux[i].x, hauteur, lieux[i].y)))
+			lot.set_instance_transform(indice, Transform3D(base, Vector3(lieux[i].x, 0.0, lieux[i].y)))
 			_effectifs[id] = indice + 1
 	for id: StringName in _lots:
 		_lots[id].visible_instance_count = _effectifs[id]
