@@ -8,5 +8,7 @@ id = &"engrenage_coude"
 nom = "Engrenage coudé"
 description = "Le moins cher : fait prendre un quart de tour à l’énergie."
 type = 1
+niveau_max = 3
+prix_amelioration = 4
 ports = 3
 transmet = true

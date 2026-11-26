@@ -9,6 +9,7 @@ enum Sol { HERBE, CHEMIN }
 
 var _sols: Dictionary[Vector2i, Sol] = {}
 var _pieces: Dictionary[Vector2i, PieceDef] = {}
+var _niveaux: Dictionary[Vector2i, int] = {}
 var _rotations: Dictionary[Vector2i, int] = {}
 
 
@@ -36,6 +37,7 @@ func dupliquer() -> Plateau:
 	copie._sols = _sols.duplicate()
 	copie._pieces = _pieces.duplicate()
 	copie._rotations = _rotations.duplicate()
+	copie._niveaux = _niveaux.duplicate()
 	return copie
 
 
@@ -54,6 +56,7 @@ func poser(coord: Vector2i, def: PieceDef, rotation: int = 0) -> bool:
 	if def == null or sol_de(coord) != Sol.HERBE or _pieces.has(coord):
 		return false
 	_pieces[coord] = def
+	_niveaux[coord] = 1
 	_rotations[coord] = posmod(rotation, 4)
 	modifie.emit()
 	return true
@@ -65,9 +68,25 @@ func retirer(coord: Vector2i) -> PieceDef:
 	if piece == null or piece.type == PieceDef.Type.HORLOGE:
 		return null
 	_pieces.erase(coord)
+	_niveaux.erase(coord)
 	_rotations.erase(coord)
 	modifie.emit()
 	return piece
+
+
+## Renvoie le niveau de la pièce ou le niveau initial d'une case libre.
+func niveau_de(coord: Vector2i) -> int:
+	return _niveaux.get(coord, 1)
+
+
+## Monte la pièce d'un niveau et avertit les observateurs du plateau.
+func ameliorer(coord: Vector2i) -> bool:
+	var piece: PieceDef = piece_de(coord)
+	if piece == null or niveau_de(coord) >= piece.niveau_max:
+		return false
+	_niveaux[coord] = niveau_de(coord) + 1
+	modifie.emit()
+	return true
 
 
 ## Tourne une pièce posée d’un quart de tour horaire.

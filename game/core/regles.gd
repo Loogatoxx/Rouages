@@ -20,6 +20,11 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var distance_arriere: int = 3
 ## Cadence en moins pour chaque atelier identique collé à un atelier (encombrement).
 @export var malus_encombrement: float = 0.1
+@export_group("Améliorations")
+@export var gain_niveau_atelier: float
+@export var plafond_niveau_atelier: int
+@export var gain_niveau_tourelle: float
+@export var gain_niveau_engrenage: float
 @export_group("Chance (benchmark D4)")
 ## Chaque point de chance multiplie le poids des cartes rares par (1 + chance × ce facteur) dans les coffres.
 @export var chance_rare: float = 0.25

@@ -194,3 +194,13 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   Ignorée au défi du jour. Plaque trèfle dans le HUD dès 1 point.
 - **Engrenages d'or** : prix de l'Établi rehaussés d'environ 40 % (~9 victoires pour tout débloquer au lieu de 5).
 - **Lore** : `docs/lore.md` (bible vivante, relue par Gemini, 6 corrections intégrées).
+
+## Après playtest 1 — lot 7 (améliorations, chantier d'extension)
+- **Améliorations** (T11d, Codex) : `PieceDef.niveau_max` / `prix_amelioration`, niveaux par case dans `Plateau`
+  (perdus à la reprise), `Run.ameliorer_piece` (prix = base × niveau). Gains dans `Placement` (`Regles` groupe
+  « Améliorations ») : atelier +20 % cadence et +3 au plafond par niveau, tourelle +25 % dégâts, engrenage ×1,5 sur ses
+  bonus aux voisins. **Panneau contextuel** (`game/ui/panneau_piece.gd`) au clic gauche sur une pièce : améliorer ·
+  tourner · reprendre, avec prix. Ornements faits main (PT-51) : billes de laiton par niveau, anneau au niveau 3, fanion
+  doré au niveau 5.
+- **Chantier d'extension** (Gemini, `kit_v2/chantier_extension`) remplace les fanions : flèche vers l'extérieur,
+  panneau qui se balance, un repère tous les 3 cases au plus.

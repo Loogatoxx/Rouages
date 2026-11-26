@@ -93,6 +93,35 @@ var prix_deplacement: int:
 		return regles.prix_deplacement + regles.prix_deplacement_pas * deplacements_pause
 
 
+## Calcule le prix du passage au niveau suivant, ou zéro si la pièce ne peut plus évoluer.
+func prix_amelioration(plateau: Plateau, case: Vector2i) -> int:
+	var piece: Plateau.PieceDef = plateau.piece_de(case)
+	var niveau: int = plateau.niveau_de(case)
+	if piece == null or piece.type == Plateau.PieceDef.Type.HORLOGE or niveau >= piece.niveau_max:
+		return 0
+	return piece.prix_amelioration * niveau
+
+
+## Achète un niveau pour une pièce posée pendant la construction ou la vague.
+func ameliorer_piece(plateau: Plateau, case: Vector2i) -> bool:
+	if phase != Phase.CONSTRUCTION and phase != Phase.VAGUE:
+		return false
+	var piece: Plateau.PieceDef = plateau.piece_de(case)
+	if piece == null or piece.type == Plateau.PieceDef.Type.HORLOGE or plateau.niveau_de(case) >= piece.niveau_max:
+		return false
+	var prix: int = prix_amelioration(plateau, case)
+	if ressorts < prix:
+		Events.message_joueur.emit(tr("Améliorer coûte %d ressorts") % prix)
+		return false
+	if prix < 0:
+		return false
+	# Les observateurs du plateau voient déjà le solde après achat.
+	ressorts -= prix
+	plateau.ameliorer(case)
+	Events.ressorts_changes.emit(ressorts)
+	return true
+
+
 ## Rend une pièce posée à la réserve et paie son déplacement.
 func reprendre_piece(plateau: Plateau, case: Vector2i) -> bool:
 	if phase != Phase.CONSTRUCTION and phase != Phase.VAGUE:

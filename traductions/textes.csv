@@ -146,7 +146,7 @@ Aide et commandes,Aide et commandes,Help and controls,Ajuda e comandos
 Quitter le jeu,Quitter le jeu,Quit game,Sair do jogo
 Menu (Échap),Menu (Échap),Menu (Esc),Menu (Esc)
 Ouvrir ou fermer la boutique (B),Ouvrir ou fermer la boutique (B),Open or close the shop (B),Abrir ou fechar a loja (B)
-"Clic gauche : poser, ou reprendre une pièce posée · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran","Clic gauche : poser, ou reprendre une pièce posée · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran","Left click: place, or pick up a placed piece · R or right click: rotate\nEsc: deselect, then menu · B: shop\nSpace: speed ×1 / ×2 · Tab: top / tilted view\nWheel or + / −: zoom · Middle-drag or Q / E: tilt\nW A S D: move the view · F11: fullscreen","Clique esquerdo: colocar, ou recolher uma peça colocada · R ou clique direito: rodar\nEsc: desselecionar, depois menu · B: loja\nEspaço: velocidade ×1 / ×2 · Tab: vista de cima / inclinada\nRoda ou + / −: zoom · Arrastar com a roda ou Q / E: inclinação\nW A S D: mover a vista · F11: ecrã inteiro"
+"Clic gauche : poser, ou reprendre une pièce posée · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran","Clic gauche : poser, ou ouvrir les actions d’une pièce · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran","Left click: place, or open a piece’s actions · R or right click: rotate\nEsc: deselect, then menu · B: shop\nSpace: speed ×1 / ×2 · Tab: top / tilted view\nWheel or + / −: zoom · Middle-drag or Q / E: tilt\nW A S D: move the view · F11: fullscreen","Clique esquerdo: colocar, ou abrir as ações de uma peça · R ou clique direito: rodar\nEsc: desselecionar, depois menu · B: loja\nEspaço: velocidade ×1 / ×2 · Tab: vista de cima / inclinada\nRoda ou + / −: zoom · Arrastar com a roda ou Q / E: inclinação\nW A S D: mover a vista · F11: ecrã inteiro"
 Déplacer coûte %d ressorts,Déplacer coûte %d ressorts,Moving costs %d springs,Mover custa %d molas
 Clic : reprendre (gratuit avant la vague 1),Clic : reprendre (gratuit avant la vague 1),Click to pick up (free before wave 1),Clica para recolher (grátis antes da vaga 1)
 Clic : reprendre (%d ressorts),Clic : reprendre (%d ressorts),Click to pick up (%d springs),Clica para recolher (%d molas)
@@ -165,3 +165,11 @@ Trèfle porte-bonheur,Trèfle porte-bonheur,Lucky clover,Trevo da sorte
 Chance : %d,Chance : %d,Luck: %d,Sorte: %d
 Chance : les coffres montrent plus de raretés,Chance : les coffres montrent plus de raretés,Luck: chests show more rare items,Sorte: os baús mostram mais raridades
 Porte-bonheur : +%d chance (une fois par pause),Porte-bonheur : +%d chance (une fois par pause),Lucky charm: +%d luck (once per break),Amuleto: +%d sorte (uma vez por pausa)
+Améliorer,Améliorer,Upgrade,Melhorar
+Tourner,Tourner,Rotate,Rodar
+Reprendre la pièce,Reprendre,Pick up,Recolher
+Niveau %d / %d,Niveau %d / %d,Level %d / %d,Nível %d / %d
+Améliorer coûte %d ressorts,Améliorer coûte %d ressorts,Upgrading costs %d springs,Melhorar custa %d molas
+Clic : ouvrir les actions de la pièce,Clic : ouvrir les actions de la pièce,Click for piece actions,Clica para ver as ações da peça
+Reprendre ramène la pièce au niveau 1.,Reprendre ramène la pièce au niveau 1.,Picking up resets this piece to level 1.,Recolher repõe a peça no nível 1.
+Bonus aux voisins ×%s,Bonus aux voisins ×%s,Neighbour bonus ×%s,Bónus aos vizinhos ×%s

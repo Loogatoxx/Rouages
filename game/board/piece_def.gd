@@ -12,6 +12,8 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var nom: String
 @export var description: String
 @export var type: Type
+@export var niveau_max: int = 1
+@export var prix_amelioration: int = 0
 @export_flags("N", "E", "S", "O") var ports: int
 @export var transmet: bool = true
 @export var unite_produite: UniteDef

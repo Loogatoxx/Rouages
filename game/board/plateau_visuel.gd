@@ -19,6 +19,7 @@ const ECHELLE_PLATEAU := GrilleMonde.TAILLE_CASE / 2.0
 var _ateliers: Dictionary[Vector2i, Node3D] = {}
 var _rebonds_ateliers: Dictionary[Vector2i, Tween] = {}
 var _rotors: Array[Node3D] = []
+var _insignes: Dictionary[Vector2i, Node3D] = {}
 var _pieces: Node3D
 ## Sol affiché par case (vrai = chemin) et dalle correspondante : une case d'herbe pavée par un raccord est reconstruite.
 var _cases_construites: Dictionary[Vector2i, bool] = {}
@@ -84,6 +85,7 @@ func materiau(nom: String) -> Material:
 
 
 func _actualiser() -> void:
+	_actualiser_insignes()
 	if _sol == null:
 		_sol = Node3D.new()
 		add_child(_sol)
@@ -112,6 +114,48 @@ func _actualiser() -> void:
 		if not _poteaux.has(case):
 			var pied: Vector3 = GrilleMonde.vers_monde(case) + Vector3(0.72, 0.3, 0.72)
 			_poteaux[case] = _boite(_sol, Vector3(0.16, 0.6, 0.16), pied, materiau("pastel_rose"))
+
+
+# Les insignes restent sur le socle pendant que le rotor tourne ou que l'atelier rebondit.
+func _actualiser_insignes() -> void:
+	for case: Vector2i in _insignes.keys():
+		if _source.plateau.niveau_de(case) != _insignes[case].get_meta(&"niveau"):
+			_insignes[case].queue_free()
+			_insignes.erase(case)
+	for case: Vector2i in _source.plateau.coords_pieces():
+		var niveau: int = _source.plateau.niveau_de(case)
+		if niveau > 1 and not _insignes.has(case):
+			var socle: Node3D = Node3D.new()
+			add_child(socle)
+			socle.position = GrilleMonde.vers_monde(case)
+			socle.set_meta(&"niveau", niveau)
+			_insignes[case] = socle
+			_decorer_niveau(socle, niveau)
+
+
+func _decorer_niveau(socle: Node3D, niveau: int) -> void:
+	var laiton: Material = materiau("laiton")
+	var bille: SphereMesh = SphereMesh.new()
+	bille.radius = 0.09
+	bille.height = 0.18
+	bille.radial_segments = 12
+	bille.rings = 6
+	for i: int in range(niveau - 1):
+		var x: float = (i - (niveau - 2) * 0.5) * 0.22
+		_ajouter_forme(socle, bille, Vector3(x, 0.37, 0.86), laiton)
+	if niveau >= 3:
+		var anneau: TorusMesh = TorusMesh.new()
+		anneau.inner_radius = 0.85
+		anneau.outer_radius = 0.94
+		anneau.rings = 36
+		anneau.ring_segments = 8
+		_ajouter_forme(socle, anneau, Vector3.UP * 0.19, laiton)
+	if niveau >= 5:
+		_boite(socle, Vector3(0.045, 1.65, 0.045), Vector3(-0.7, 0.825, 0.6), laiton)
+		var fanion: PrismMesh = PrismMesh.new()
+		fanion.size = Vector3(0.31, 0.46, 0.055)
+		var tissu: MeshInstance3D = _ajouter_forme(socle, fanion, Vector3(-0.47, 1.49, 0.6), laiton)
+		tissu.rotation.z = -PI / 2.0
 
 
 # Un côté se crée à la première dalle et disparaît dès que la dalle voisine arrive.
@@ -183,19 +227,53 @@ func afficher_marqueurs(cases: Array[Vector2i]) -> void:
 	disque.top_radius = 0.28
 	disque.bottom_radius = 0.28
 	disque.height = 0.04
-	for case: Vector2i in cases:
-		var marqueur: Node3D = _instancier(&"marqueur_extension")
+	# Un repère tous les 3 cases au plus (règle R3 : détail sans surcharge) ; la pose reste permise partout où c'est valide.
+	var gardes: Array[Vector2i] = []
+	var tries: Array[Vector2i] = cases.duplicate()
+	tries.sort()
+	for candidat: Vector2i in tries:
+		var libre: bool = true
+		for garde: Vector2i in gardes:
+			if maxi(absi(garde.x - candidat.x), absi(garde.y - candidat.y)) < 3:
+				libre = false
+				break
+		if libre:
+			gardes.append(candidat)
+	for case: Vector2i in gardes:
+		# Petit chantier de maquette (playtest 1 : les fanions étaient trop discrets), flèche vers l'extérieur.
+		var marqueur: Node3D = _instancier(&"chantier_extension")
+		if marqueur == null:
+			marqueur = _instancier(&"marqueur_extension")
 		if marqueur != null:
 			_marqueurs.add_child(marqueur)
 			marqueur.position = GrilleMonde.vers_monde(case)
-			var fanion := marqueur.find_child("Fanion*", true, false) as Node3D
-			if fanion != null:
-				var repos: float = fanion.rotation.z
-				var vent: Tween = fanion.create_tween().set_loops().set_trans(Tween.TRANS_SINE)
-				vent.tween_property(fanion, "rotation:z", repos + 0.05, 0.7)
-				vent.tween_property(fanion, "rotation:z", repos, 0.7)
+			marqueur.rotation.y = -_cote_exterieur(case) * PI / 2.0
+			var panneau := marqueur.find_child("Panneau*", true, false) as Node3D
+			if panneau == null:
+				panneau = marqueur.find_child("Fanion*", true, false) as Node3D
+			if panneau != null:
+				var repos: float = panneau.rotation.z
+				var vent: Tween = panneau.create_tween().set_loops().set_trans(Tween.TRANS_SINE)
+				vent.tween_property(panneau, "rotation:z", repos + 0.05, 0.9)
+				vent.tween_property(panneau, "rotation:z", repos - 0.03, 0.9)
 			continue
 		_ajouter_forme(_marqueurs, disque, GrilleMonde.vers_monde(case) + Vector3.UP * 0.04, bleu)
+
+
+# Côté (N, E, S, O) qui s'éloigne le plus du plateau depuis une case hors terrain : la flèche du chantier y pointe.
+# Le modèle a sa flèche vers -Z (nord) : un quart de tour par côté, comme les ports.
+func _cote_exterieur(case: Vector2i) -> int:
+	var proche: Vector2i = case
+	var meilleure: int = -1
+	for sol: Vector2i in _source.plateau.coords_sols():
+		var d: int = absi(sol.x - case.x) + absi(sol.y - case.y)
+		if meilleure < 0 or d < meilleure:
+			meilleure = d
+			proche = sol
+	var ecart: Vector2i = case - proche
+	if absi(ecart.x) >= absi(ecart.y):
+		return 1 if ecart.x > 0 else 3
+	return 2 if ecart.y > 0 else 0
 
 
 ## Construit un aperçu orienté dont la teinte se superpose à l'herbe et au chemin.

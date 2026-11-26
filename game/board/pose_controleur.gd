@@ -1,6 +1,7 @@
 extends Node3D
 ## Projette la souris sur le plateau et applique la pose ou la rotation demandée.
 
+const PanneauPiece = preload("res://game/ui/panneau_piece.gd")
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
 const PlateauNoeud = preload("res://game/board/plateau_noeud.gd")
 const PlateauVisuel = preload("res://game/board/plateau_visuel.gd")
@@ -10,6 +11,7 @@ const Extension = preload("res://game/board/extension.gd")
 
 @onready var _source: PlateauNoeud = get_parent()
 @onready var _visuel: PlateauVisuel = $"../PlateauVisuel"
+var _panneau: PanneauPiece = PanneauPiece.new()
 var _choix: Resource
 var _rotation: int = 0
 var _fantome: Node3D
@@ -19,6 +21,10 @@ var _rotations_valides: Dictionary[Vector2i, int] = {}
 
 
 func _ready() -> void:
+	var couche: CanvasLayer = CanvasLayer.new()
+	couche.layer = 6
+	add_child(couche)
+	couche.add_child(_panneau)
 	_teinte.no_depth_test = true
 	_teinte.render_priority = 1
 	_teinte.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -34,6 +40,7 @@ func _pose_autorisee(phase: int) -> bool:
 
 
 func _changer_phase(phase: int) -> void:
+	_panneau.fermer()
 	if not _pose_autorisee(phase):
 		Events.tuile_choisie.emit(&"")
 
@@ -44,6 +51,7 @@ func _verifier_stock() -> void:
 
 
 func _choisir(id: StringName) -> void:
+	_panneau.fermer()
 	if _fantome != null:
 		_fantome.hide()
 		_fantome.queue_free()
@@ -171,18 +179,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			Sons.jouer(&"rotation")
 		elif _survoler() and _source.plateau.piece_de(_case) != null:
 			if Run.tourner_piece(_source.plateau, _case):
+				_panneau.fermer()
 				Sons.jouer(&"rotation")
 			elif _source.plateau.piece_de(_case).type != PieceDef.Type.HORLOGE:
 				Events.message_joueur.emit(tr("Tourner coûte %d ressorts") % Run.prix_rotation)
 	elif event.is_action_pressed("poser_tuile") and _survoler():
 		if _choix == null:
-			var piece: PieceDef = _source.plateau.piece_de(_case)
-			if piece != null and piece.type != PieceDef.Type.HORLOGE:
-				if Run.reprendre_piece(_source.plateau, _case):
-					Sons.jouer(&"pose")
-					Events.tuile_choisie.emit(piece.id)
-				elif Run.ressorts < Run.prix_deplacement:
-					Events.message_joueur.emit(tr("Déplacer coûte %d ressorts") % Run.prix_deplacement)
+			if _source.plateau.piece_de(_case) != null:
+				_panneau.ouvrir(_source.plateau, _case)
 			return
 		var id: StringName = _choix.get("id")
 		if Run.reserve.quantite(id) == 0:

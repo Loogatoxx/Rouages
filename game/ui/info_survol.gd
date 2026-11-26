@@ -29,6 +29,7 @@ func _process(_delta: float) -> void:
 	var souris: Vector2 = vue.get_mouse_position()
 	var cadre: Rect2 = vue.get_visible_rect()
 	if (get_tree().paused or Run.phase == Run.Phase.FIN
+			or get_tree().has_group(&"panneau_piece_ouvert")
 			or not cadre.has_point(souris) or vue.gui_get_hovered_control() != null):
 		hide()
 		return
@@ -77,7 +78,8 @@ func _decrire(case_plateau: Vector2i) -> String:
 		return ""
 	var texte: String = tr("%s\n%s") % [tr(piece.nom), tr(piece.description)]
 	if piece.type == PieceDef.Type.TOURELLE:
-		texte += "\n" + tr("Portée %s m · Dégâts %s") % [String.num(piece.portee_tir), String.num(piece.degats_tir)]
+		var degats: float = piece.degats_tir * Placement.degats_tourelle(_source.plateau, case_plateau, Run.regles)
+		texte += "\n" + tr("Portée %s m · Dégâts %s") % [String.num(piece.portee_tir), String.num(degats, 2)]
 		texte += "\n" + (tr("Alimentée") if case_plateau in _source.alimentees else tr("Relie la tourelle à l’horloge"))
 	if piece.type == PieceDef.Type.ATELIER:
 		var etat: String = tr("Alimenté") if case_plateau in _source.alimentees else tr("Pas alimenté : relie-le à l’horloge")
@@ -87,6 +89,5 @@ func _decrire(case_plateau: Vector2i) -> String:
 	if piece.type != PieceDef.Type.HORLOGE:
 		texte += "\n" + (tr("R / clic droit : tourner (gratuit avant la vague 1)") if Run.prix_rotation == 0
 				else tr("R / clic droit : tourner (%d ressorts)") % Run.prix_rotation)
-		texte += "\n" + (tr("Clic : reprendre (gratuit avant la vague 1)") if Run.vague_actuelle == 0
-				else tr("Clic : reprendre (%d ressorts)") % Run.prix_deplacement)
+		texte += "\n" + tr("Clic : ouvrir les actions de la pièce")
 	return texte
