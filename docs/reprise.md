@@ -5,7 +5,12 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
 
 ## État (mis à jour le 2026-11-26 tard le soir, autonomie totale)
 - **Après playtest 1** : la roadmap `docs/roadmap.md` § « Après playtest 1 » liste 100 % du brief de Carlos (PT-01 à PT-65,
-  règles R1-R7, table de vérification brief → tâches). Les 5 bugs P0 (PT-01 à PT-05) sont corrigés. Suivre l'« Ordre d'exécution ».
+  règles R1-R7, table de vérification brief → tâches). Faits et commités : PT-01 à 05 (bugs P0), 12, 13, 14, 16, 17, 20, 21,
+  30, 31, 32, 40, 41 + engrenage en T en boutique. 80 tests. Builds Mac/Windows réexportés (non relancés).
+  **Prochain** : PT-10 audit UI (Gemini, captures à lui fournir dans `art_refs/`), PT-15 refonte boutique (grille d'icônes),
+  PT-18 icônes d'abord + infobulles, PT-34 benchmark web → PT-35/36/37/38, PT-33 engrenages d'or.
+  Gemini : `agy-bridge` uniquement (le CLI `agy` avec saut de permissions est refusé) ; un `delegate` tient ~12 min,
+  un `follow_up` expire à 5 min → découper finement.
 - **Captures** : ajouter `-- --fenetre` après le script (`Godot --path . --windowed --resolution 1600x900 --script res://x.gd
   -- --fenetre`), sinon l'autoload `Fenetre` applique le plein écran enregistré et la fenêtre ne dessine plus pendant la
   transition. Dans un script de capture, `load()` les scripts du jeu après le premier `await` (un `preload` compile avant
