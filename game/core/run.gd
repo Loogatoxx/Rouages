@@ -19,6 +19,7 @@ var defi_du_jour: bool = false
 var _graine_defi: int
 var reserve: Reserve = Reserve.new()
 var offre: Array[Lot] = []
+var offre_coffre: bool = false
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var vagues: Array[VagueDef]:
 	get:
@@ -81,7 +82,14 @@ func acheter(i: int) -> bool:
 
 
 func _tirer_offre() -> void:
-	offre = Draft.tirer(regles.pioche, regles.choix_par_draft, vague_actuelle + 1, rng)
+	offre_coffre = vague_actuelle > 0 and vague_actuelle in regles.vagues_coffre
+	if offre_coffre:
+		# Chaque carte a son tirage pour que la rareté compte même avec trois modèles.
+		offre.clear()
+		for i: int in regles.choix_par_draft:
+			offre.append_array(Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng))
+	else:
+		offre = Draft.tirer(regles.pioche, regles.choix_par_draft, vague_actuelle + 1, rng)
 
 
 ## Paie un nouveau tirage et présente les lots dans la même phase de draft.

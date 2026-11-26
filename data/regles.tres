@@ -6,6 +6,9 @@
 [ext_resource type="Resource" path="res://data/departs/meandres.tres" id="meandres"]
 [ext_resource type="Resource" path="res://data/departs/fourche.tres" id="fourche"]
 [ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_canon.tres" id="canon"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_carillon.tres" id="carillon"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_mortier.tres" id="mortier"]
 [ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
 [ext_resource type="Resource" path="res://data/tuiles/atelier_billes.tres" id="billes"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
@@ -92,6 +95,24 @@ objet = ExtResource("coude")
 quantite = 1
 prix = 3
 
+[sub_resource type="Resource" id="lot_canon"]
+script = ExtResource("lot")
+objet = ExtResource("canon")
+quantite = 1
+poids = 6.0
+
+[sub_resource type="Resource" id="lot_carillon"]
+script = ExtResource("lot")
+objet = ExtResource("carillon")
+quantite = 1
+poids = 3.0
+
+[sub_resource type="Resource" id="lot_mortier"]
+script = ExtResource("lot")
+objet = ExtResource("mortier")
+quantite = 1
+poids = 1.0
+
 [resource]
 script = ExtResource("regles")
 departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("meandres"), ExtResource("fourche")])
@@ -101,6 +122,8 @@ pv_horloge = 30
 plafond_allies_par_atelier = 15
 multiplicateur_acceleration = 2.0
 choix_par_draft = 3
+vagues_coffre = Array[int]([3, 6, 9])
+coffre = Array[ExtResource("lot")]([SubResource("lot_canon"), SubResource("lot_carillon"), SubResource("lot_mortier")])
 pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes")])
 ressorts_depart = 0
 recompense_vague = 6

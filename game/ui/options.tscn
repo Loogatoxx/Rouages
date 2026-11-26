@@ -1,0 +1,146 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/ui/options.gd" id="script"]
+[ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
+
+[sub_resource type="StyleBoxFlat" id="Rail"]
+bg_color = Color(0.53, 0.41, 0.27, 1)
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="Niveau"]
+bg_color = Color(0.83, 0.67, 0.34, 1)
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="NiveauFocus"]
+bg_color = Color(1, 0.87, 0.58, 1)
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="Gradient" id="PoigneeDegrade"]
+offsets = PackedFloat32Array(0, 0.88, 1)
+colors = PackedColorArray(0.86, 0.72, 0.43, 1, 0.86, 0.72, 0.43, 1, 0.86, 0.72, 0.43, 0)
+
+[sub_resource type="GradientTexture2D" id="Poignee"]
+width = 24
+height = 24
+gradient = SubResource("PoigneeDegrade")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="PoigneeFocusDegrade"]
+offsets = PackedFloat32Array(0, 0.88, 1)
+colors = PackedColorArray(1, 0.92, 0.73, 1, 1, 0.92, 0.73, 1, 1, 0.92, 0.73, 0)
+
+[sub_resource type="GradientTexture2D" id="PoigneeFocus"]
+width = 24
+height = 24
+gradient = SubResource("PoigneeFocusDegrade")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="Options" type="CanvasLayer"]
+process_mode = 3
+layer = 30
+visible = false
+script = ExtResource("script")
+
+[node name="Voile" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("theme")
+color = Color(0.22, 0.15, 0.1, 0.62)
+
+[node name="Centre" type="CenterContainer" parent="Voile"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panneau" type="PanelContainer" parent="Voile/Centre"]
+custom_minimum_size = Vector2(460, 0)
+
+[node name="Colonne" type="VBoxContainer" parent="Voile/Centre/Panneau"]
+theme_override_constants/separation = 14
+
+[node name="Titre" type="Label" parent="Voile/Centre/Panneau/Colonne"]
+theme_type_variation = &"Titre"
+text = "Options"
+
+[node name="LibelleMusique" type="Label" parent="Voile/Centre/Panneau/Colonne"]
+text = "Musique"
+
+[node name="Musique" type="HSlider" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+focus_previous = NodePath("../Retour")
+focus_neighbor_top = NodePath("../Retour")
+focus_next = NodePath("../Effets")
+focus_neighbor_bottom = NodePath("../Effets")
+custom_minimum_size = Vector2(0, 32)
+accessibility_name = "Musique"
+max_value = 1.0
+step = 0.05
+theme_override_styles/slider = SubResource("Rail")
+theme_override_styles/grabber_area = SubResource("Niveau")
+theme_override_styles/grabber_area_highlight = SubResource("NiveauFocus")
+theme_override_icons/grabber = SubResource("Poignee")
+theme_override_icons/grabber_highlight = SubResource("PoigneeFocus")
+
+[node name="LibelleEffets" type="Label" parent="Voile/Centre/Panneau/Colonne"]
+text = "Effets"
+
+[node name="Effets" type="HSlider" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+focus_previous = NodePath("../Musique")
+focus_neighbor_top = NodePath("../Musique")
+focus_next = NodePath("../PleinEcran")
+focus_neighbor_bottom = NodePath("../PleinEcran")
+custom_minimum_size = Vector2(0, 32)
+accessibility_name = "Effets"
+max_value = 1.0
+step = 0.05
+theme_override_styles/slider = SubResource("Rail")
+theme_override_styles/grabber_area = SubResource("Niveau")
+theme_override_styles/grabber_area_highlight = SubResource("NiveauFocus")
+theme_override_icons/grabber = SubResource("Poignee")
+theme_override_icons/grabber_highlight = SubResource("PoigneeFocus")
+
+[node name="PleinEcran" type="CheckButton" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+focus_previous = NodePath("../Effets")
+focus_neighbor_top = NodePath("../Effets")
+focus_next = NodePath("../ChoixLangue")
+focus_neighbor_bottom = NodePath("../ChoixLangue")
+text = "Plein écran"
+theme_type_variation = &"Button"
+theme_override_colors/button_checked_color = Color(0.30, 0.43, 0.24, 1)
+theme_override_colors/button_unchecked_color = Color(0.43, 0.31, 0.20, 1)
+
+[node name="ChoixLangue" type="Button" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+focus_previous = NodePath("../PleinEcran")
+focus_neighbor_top = NodePath("../PleinEcran")
+focus_next = NodePath("../Retour")
+focus_neighbor_bottom = NodePath("../Retour")
+text = "Langue : Français"
+
+[node name="Retour" type="Button" parent="Voile/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+focus_previous = NodePath("../ChoixLangue")
+focus_neighbor_top = NodePath("../ChoixLangue")
+focus_next = NodePath("../Musique")
+focus_neighbor_bottom = NodePath("../Musique")
+text = "Retour"

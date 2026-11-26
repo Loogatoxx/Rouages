@@ -1,6 +1,7 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://game/ui/menu_pause.gd" id="script"]
+[ext_resource type="PackedScene" path="res://game/ui/options.tscn" id="options"]
 [ext_resource type="Theme" path="res://game/ui/theme_rouages.tres" id="theme"]
 
 [node name="MenuPause" type="CanvasLayer"]
@@ -38,22 +39,13 @@ text = "Reprendre"
 unique_name_in_owner = true
 text = "Recommencer la run"
 
-[node name="ChoixLangue" type="Button" parent="Voile/Centre/Panneau/Colonne"]
+[node name="Options" type="Button" parent="Voile/Centre/Panneau/Colonne"]
 unique_name_in_owner = true
-text = "Langue : Français"
-
-[node name="Son" type="HBoxContainer" parent="Voile/Centre/Panneau/Colonne"]
-
-[node name="Musique" type="Button" parent="Voile/Centre/Panneau/Colonne/Son"]
-unique_name_in_owner = true
-text = "Musique"
-size_flags_horizontal = 3
-
-[node name="Effets" type="Button" parent="Voile/Centre/Panneau/Colonne/Son"]
-unique_name_in_owner = true
-text = "Effets"
-size_flags_horizontal = 3
+text = "Options"
 
 [node name="MenuTitre" type="Button" parent="Voile/Centre/Panneau/Colonne"]
 unique_name_in_owner = true
 text = "Menu titre"
+
+[node name="Reglages" parent="." instance=ExtResource("options")]
+unique_name_in_owner = true

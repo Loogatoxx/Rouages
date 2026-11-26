@@ -160,6 +160,27 @@ func creer_piece(piece: PieceDef, ports: int, teinte: Material = null) -> Node3D
 			_cylindre(rotor, 0.65, 0.3, metal)
 			_boite(rotor, Vector3(0.94, 0.09, 0.14), Vector3.UP * 0.34,
 					teinte if teinte else materiau("bois_plateau"))
+		PieceDef.Type.TOURELLE:
+			_cylindre(racine, 0.62, 0.38, teinte if teinte else materiau("bois_clair"))
+			var finition := StandardMaterial3D.new()
+			finition.albedo_color = PieceDef.TEINTES_RARETE[piece.rarete]
+			var fut := CylinderMesh.new()
+			fut.bottom_radius = 0.22
+			fut.top_radius = 0.22
+			fut.height = 0.95
+			var inclinaison: float = 65.0
+			match piece.rarete:
+				PieceDef.Rarete.RARE:
+					# La cloche s'évase au-dessus du socle.
+					fut.bottom_radius = 0.46
+					fut.height = 0.55
+					inclinaison = 0.0
+				PieceDef.Rarete.EPIQUE:
+					fut.top_radius = 0.35
+					inclinaison = 35.0
+			var canon: MeshInstance3D = _ajouter_forme(racine, fut, Vector3.UP * 0.61,
+					teinte if teinte else finition)
+			canon.rotation.x = deg_to_rad(inclinaison)
 		PieceDef.Type.ATELIER:
 			var a_billes: bool = piece.id == &"atelier_billes"
 			_boite(racine, Vector3(1.18, 0.85, 1.18), Vector3.UP * 0.425,

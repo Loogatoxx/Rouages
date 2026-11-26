@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PieceDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/piece_def.gd" id="piece"]
+
+[resource]
+script = ExtResource("piece")
+id = &"tourelle_mortier"
+nom = "Mortier à ressort"
+description = "Son ressort lance de lourdes billes au loin."
+type = 3
+ports = 4
+transmet = false
+rarete = 2
+portee_tir = 8.0
+degats_tir = 18.0
+cadence_tir = 0.35
+zone_tir = 1.6

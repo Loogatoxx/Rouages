@@ -3,6 +3,7 @@ extends Control
 
 const APERCU := "res://assets/final/horloge/apercu.png"
 const Langue = preload("res://game/ui/langue.gd")
+const Options = preload("res://game/ui/options.gd")
 const MODELE := "res://assets/final/horloge/horloge.glb"
 
 var _vitrine: Node3D
@@ -12,16 +13,23 @@ const REGLAGES := "user://reglages.cfg"
 
 
 func _ready() -> void:
+	Options.appliquer_affichage()
 	Langue.appliquer(Langue.lire())
 	# Vitrine 3D : le vrai modèle de l'horloge tourne sur fond transparent (plus vivant qu'une image à fond gris).
 	# Repli sur l'image fixe si le modèle manque.
 	if ResourceLoader.exists(MODELE):
-		%Illustration.replace_by(_creer_vitrine())
+		var illustration: TextureRect = %Illustration
+		illustration.replace_by(_creer_vitrine())
+		illustration.queue_free()
 	elif ResourceLoader.exists(APERCU):
 		%Illustration.texture = load(APERCU)
 	preparer_boutons(self)
-	brancher_son(%Musique, %Effets)
-	%ChoixLangue.pressed.connect(Langue.suivante)
+	%Options.pressed.connect(func() -> void:
+		%Panneau.hide()
+		%Reglages.ouvrir())
+	%Reglages.ferme.connect(func() -> void:
+		%Panneau.show()
+		%Options.grab_focus())
 	%Jouer.pressed.connect(_jouer)
 	%Plateau.pressed.connect(_plateau_suivant)
 	%Defi.pressed.connect(_lancer_defi)
@@ -176,20 +184,6 @@ static func commencer_partie(arbre: SceneTree) -> void:
 static func ouvrir_titre(arbre: SceneTree) -> void:
 	arbre.paused = false
 	arbre.change_scene_to_file(TITRE)
-
-
-## Relie les deux commandes audio aux préférences persistantes.
-static func brancher_son(musique: Button, effets: Button) -> void:
-	var actualiser: Callable = func() -> void:
-		musique.text = "Musique : oui" if Sons.musique_active else "Musique : non"
-		effets.text = "Effets : oui" if Sons.effets_actifs else "Effets : non"
-	actualiser.call()
-	musique.pressed.connect(func() -> void:
-		Sons.regler_musique(not Sons.musique_active)
-		actualiser.call())
-	effets.pressed.connect(func() -> void:
-		Sons.regler_effets(not Sons.effets_actifs)
-		actualiser.call())
 
 
 ## Anime l'entrée du panneau autour de son centre après sa mise en page.

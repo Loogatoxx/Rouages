@@ -91,7 +91,6 @@ custom_minimum_size = Vector2(450, 0)
 [node name="TitreDraft" type="Label" parent="Draft/PanneauDraft/Colonne"]
 unique_name_in_owner = true
 theme_type_variation = &"SousTitre"
-text = "Choisis un lot"
 
 [node name="Lots" type="VBoxContainer" parent="Draft/PanneauDraft/Colonne"]
 unique_name_in_owner = true

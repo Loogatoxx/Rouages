@@ -3,7 +3,7 @@ extends Node
 ##
 ## Pourquoi un autoload qui écoute `Events` : les systèmes de jeu n'ont pas à connaître l'audio ; la plupart des sons
 ## découlent d'un signal déjà existant. Les rares sons sans signal (pose, rotation, clic) s'appellent par `Sons.jouer()`.
-## Les réglages (musique et effets activés) sont gardés dans `user://reglages.cfg`.
+## Les réglages (volumes de la musique et des effets) sont gardés dans `user://reglages.cfg`.
 
 const DOSSIER := "res://assets/audio/"
 const REGLAGES := "user://reglages.cfg"
@@ -13,8 +13,17 @@ const ANTI_REPETITION := {&"scarabee_casse": 0.07, &"jouet_sort": 0.25, &"horlog
 ## Volume propre à chaque son (dB) : les sons fréquents restent discrets.
 const VOLUMES := {&"scarabee_casse": -14.0, &"jouet_sort": -12.0, &"clic": -8.0, &"ressorts": -4.0, &"rotation": -6.0}
 
-var musique_active: bool = true
-var effets_actifs: bool = true
+const MUSIQUE := &"Musique"
+const EFFETS := &"Effets"
+const VOLUME_DEFAUT := 0.8
+
+var _chemin_reglages: String = REGLAGES
+var musique_active: bool:
+	get:
+		return volume(MUSIQUE) > 0.0
+var effets_actifs: bool:
+	get:
+		return volume(EFFETS) > 0.0
 var _flux: Dictionary[StringName, AudioStream] = {}
 var _voies: Array[AudioStreamPlayer] = []
 var _prochaine: int = 0
@@ -32,6 +41,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	for i: int in VOIES:
 		var voie := AudioStreamPlayer.new()
+		voie.bus = EFFETS
 		add_child(voie)
 		_voies.append(voie)
 	var flux: AudioStream = _charger(&"musique")
@@ -39,12 +49,14 @@ func _ready() -> void:
 		(flux as AudioStreamOggVorbis).loop = true
 	_musique.stream = flux
 	_musique.volume_db = VOLUME_MUSIQUE
+	_musique.bus = MUSIQUE
 	add_child(_musique)
 	var flux_vague: AudioStream = _charger(&"musique_vague")
 	if flux_vague is AudioStreamOggVorbis:
 		(flux_vague as AudioStreamOggVorbis).loop = true
 	_musique_vague.stream = flux_vague
 	_musique_vague.volume_db = SILENCE
+	_musique_vague.bus = MUSIQUE
 	add_child(_musique_vague)
 	Events.phase_changee.connect(_changer_ambiance)
 	_lire_reglages()
@@ -53,7 +65,7 @@ func _ready() -> void:
 	Events.vague_terminee.connect(func(_n: int) -> void: jouer(&"ressorts"))
 	Events.ennemi_casse.connect(func(_p: Vector2) -> void: jouer(&"scarabee_casse", 0.15))
 	Events.run_terminee.connect(func(victoire: bool) -> void: jouer(&"victoire" if victoire else &"defaite"))
-	if musique_active and not _sans_audio():
+	if not _sans_audio():
 		_musique.play()
 
 
@@ -78,24 +90,53 @@ func jouer(nom: StringName, variation: float = 0.0) -> void:
 
 ## Active ou coupe la musique de fond (réglage sauvegardé).
 func regler_musique(active: bool) -> void:
-	musique_active = active
-	if active and not _musique.playing and not _sans_audio():
-		_musique.play()
-	elif not active:
-		_musique.stop()
-		_musique_vague.stop()
-	_ecrire_reglages()
+	regler_volume(MUSIQUE, VOLUME_DEFAUT if active else 0.0)
 
 
-## Active ou coupe les effets sonores (réglage sauvegardé).
+## Active ou coupe les effets sonores.
 func regler_effets(actifs: bool) -> void:
-	effets_actifs = actifs
-	_ecrire_reglages()
+	regler_volume(EFFETS, VOLUME_DEFAUT if actifs else 0.0)
+
+
+## Applique et mémorise le volume linéaire du bus choisi.
+func regler_volume(bus: StringName, lineaire: float) -> void:
+	if bus != MUSIQUE and bus != EFFETS:
+		return
+	var niveau: float = clampf(lineaire, 0.0, 1.0)
+	_appliquer_volume(bus, niveau)
+	var fichier := ConfigFile.new()
+	var lecture: Error = fichier.load(_chemin_reglages)
+	if lecture != OK and lecture != ERR_FILE_NOT_FOUND:
+		push_warning("Lecture des réglages impossible : " + error_string(lecture))
+		return
+	fichier.set_value("son", _cle_volume(bus), niveau)
+	var ecriture: Error = fichier.save(_chemin_reglages)
+	if ecriture != OK:
+		push_warning("Écriture des réglages impossible : " + error_string(ecriture))
+
+
+## Renvoie le volume linéaire audible sur le bus.
+func volume(bus: StringName) -> float:
+	var index: int = AudioServer.get_bus_index(bus)
+	if index < 0 or AudioServer.is_bus_mute(index):
+		return 0.0
+	return db_to_linear(AudioServer.get_bus_volume_db(index))
+
+
+func _appliquer_volume(bus: StringName, niveau: float) -> void:
+	var index: int = AudioServer.get_bus_index(bus)
+	if niveau > 0.0:
+		AudioServer.set_bus_volume_db(index, linear_to_db(niveau))
+	AudioServer.set_bus_mute(index, niveau == 0.0)
+
+
+func _cle_volume(bus: StringName) -> String:
+	return "volume_" + String(bus).to_lower()
 
 
 # Vague → musique rythmée ; sinon musique calme. Fondu de 1,2 s pour ne jamais couper net.
 func _changer_ambiance(phase: int) -> void:
-	if not musique_active or _sans_audio() or _musique_vague.stream == null:
+	if _sans_audio() or _musique_vague.stream == null:
 		return
 	var en_vague: bool = phase == Run.Phase.VAGUE
 	var entrant: AudioStreamPlayer = _musique_vague if en_vague else _musique
@@ -124,14 +165,10 @@ func _sans_audio() -> bool:
 
 func _lire_reglages() -> void:
 	var fichier := ConfigFile.new()
-	if fichier.load(REGLAGES) == OK:
-		musique_active = fichier.get_value("son", "musique", true)
-		effets_actifs = fichier.get_value("son", "effets", true)
-
-
-func _ecrire_reglages() -> void:
-	var fichier := ConfigFile.new()
-	fichier.load(REGLAGES)  # garde les autres sections (ex. tutoriel vu)
-	fichier.set_value("son", "musique", musique_active)
-	fichier.set_value("son", "effets", effets_actifs)
-	fichier.save(REGLAGES)
+	fichier.load(_chemin_reglages)
+	for bus: StringName in [MUSIQUE, EFFETS]:
+		var ancienne_cle: String = "musique_active" if bus == MUSIQUE else "effets_actifs"
+		var actif: bool = fichier.get_value("son", ancienne_cle,
+				fichier.get_value("son", String(bus).to_lower(), true))
+		var niveau: float = fichier.get_value("son", _cle_volume(bus), VOLUME_DEFAUT if actif else 0.0)
+		_appliquer_volume(bus, clampf(niveau, 0.0, 1.0))

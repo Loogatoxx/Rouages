@@ -3,6 +3,8 @@ extends CanvasLayer
 
 const Interface = preload("res://game/ui/menu_titre.gd")
 const Lot = preload("res://game/core/lot.gd")
+const PieceDef = preload("res://game/board/piece_def.gd")
+const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
 @onready var _pv: Label = %PV
 @onready var _ressorts: Label = %Ressorts
@@ -133,13 +135,30 @@ func _afficher_lots() -> void:
 		var bouton: Button = %Lots.get_child(-1)
 		Interface.preparer_bouton(bouton)
 		bouton.pressed.connect(Run.choisir_lot.bind(i))
+		if Run.offre_coffre:
+			var piece: PieceDef = lot.objet as PieceDef
+			_colorier_bordure(bouton, PieceDef.TEINTES_RARETE[piece.rarete])
 	_actualiser_noms_lots()
 
 
 func _actualiser_noms_lots() -> void:
+	%TitreDraft.text = tr("Coffre !") if Run.offre_coffre else tr("Choisis un lot")
 	for i: int in _noms_lots.size():
 		var lot: Lot = Run.offre[i]
-		_noms_lots[i].text = tr("%s  ×%d") % [tr(lot.objet.get("nom")), lot.quantite]
+		if Run.offre_coffre:
+			var piece: PieceDef = lot.objet as PieceDef
+			_noms_lots[i].text = tr("%s · %s") % [tr(piece.nom), tr(NOMS_RARETE[piece.rarete])]
+		else:
+			_noms_lots[i].text = tr("%s  ×%d") % [tr(lot.objet.get("nom")), lot.quantite]
+
+
+func _colorier_bordure(bouton: Button, teinte: Color) -> void:
+	for etat: StringName in [&"normal", &"hover", &"pressed"]:
+		var bordure: StyleBoxFlat = bouton.get_theme_stylebox(etat).duplicate() as StyleBoxFlat
+		if bordure != null:
+			bordure.set_border_width_all(3)
+			bordure.border_color = teinte
+			bouton.add_theme_stylebox_override(etat, bordure)
 
 
 ## Carte de lot : nom en demi-gras (ce qu'on gagne) au-dessus d'une description plus petite (à quoi ça sert).

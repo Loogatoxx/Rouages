@@ -56,6 +56,9 @@ func _decrire(case_plateau: Vector2i) -> String:
 			return tr("Chemin des scarabées")
 		return ""
 	var texte: String = tr("%s\n%s") % [tr(piece.nom), tr(piece.description)]
+	if piece.type == PieceDef.Type.TOURELLE:
+		texte += "\n" + tr("Portée %s m · Dégâts %s") % [String.num(piece.portee_tir), String.num(piece.degats_tir)]
+		texte += "\n" + (tr("Alimentée") if case_plateau in _source.alimentees else tr("Relie la tourelle à l’horloge"))
 	if piece.type == PieceDef.Type.ATELIER:
 		var etat: String = tr("Alimenté") if case_plateau in _source.alimentees else tr("Pas alimenté : relie-le à l’horloge")
 		texte += "\n" + etat

@@ -4,6 +4,7 @@ extends Node
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const UniteDef = preload("res://game/swarm/unite_def.gd")
 const Production = preload("res://game/workshops/production.gd")
+const Tourelles = preload("res://game/workshops/tourelles.gd")
 const DirecteurVagues = preload("res://game/waves/directeur_vagues.gd")
 const ChampFlux = preload("res://game/swarm/champ_flux.gd")
 const PlateauNoeud = preload("res://game/board/plateau_noeud.gd")
@@ -11,6 +12,7 @@ const PlateauNoeud = preload("res://game/board/plateau_noeud.gd")
 @onready var _source: PlateauNoeud = $"../PlateauNoeud"
 var sim: SwarmSim = SwarmSim.new()
 var production: Production = Production.new()
+var tourelles: Tourelles = Tourelles.new()
 var directeur: DirecteurVagues = DirecteurVagues.new()
 var _entrees: Array[Vector2i] = []
 
@@ -51,6 +53,7 @@ func _physics_process(delta: float) -> void:
 		Sons.jouer(&"jouet_sort", 0.08)  # anti-répétition gérée par Sons
 	if vague:
 		directeur.avancer(dt, sim)
+		tourelles.avancer(dt, _source.plateau, _source.alimentees, sim)
 	sim.avancer(dt)
 	if vague and Run.phase == Run.Phase.VAGUE and directeur.est_terminee(sim):
 		Run.terminer_vague()

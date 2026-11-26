@@ -114,6 +114,33 @@ func ajouter(def: UniteDef, position: Vector2) -> bool:
 	return true
 
 
+## Frappe l'ennemi vivant le plus proche, puis ses voisins si le tir a une zone d'effet.
+func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) -> bool:
+	if portee < 0.0 or degats <= 0.0:
+		return false
+	var ennemis: Nuee = _camps[ENNEMI]
+	var distance_min: float = portee * portee
+	var cible: int = -1
+	for i: int in ennemis.lieux.size():
+		var distance: float = centre.distance_squared_to(ennemis.lieux[i])
+		if ennemis.vies[i] > 0.0 and distance <= distance_min:
+			cible = i
+			distance_min = distance
+	if cible < 0:
+		return false
+	var impact: Vector2 = ennemis.lieux[cible]
+	ennemis.vies[cible] -= degats
+	ennemis.touches[cible] = 0.12
+	if zone > 0.0:
+		var rayon_carre: float = zone * zone
+		for i: int in ennemis.lieux.size():
+			if i != cible and ennemis.vies[i] > 0.0 and impact.distance_squared_to(ennemis.lieux[i]) <= rayon_carre:
+				ennemis.vies[i] -= degats
+				ennemis.touches[i] = 0.12
+	tir.emit(centre, impact)
+	return true
+
+
 ## Renvoie l'effectif vivant du camp.
 func nombre(camp: int) -> int:
 	return _camps[camp].lieux.size()

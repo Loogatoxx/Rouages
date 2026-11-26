@@ -9,14 +9,20 @@ var _ancien_focus: Control
 func _ready() -> void:
 	Events.pause_demandee.connect(_ouvrir)
 	Interface.preparer_boutons(self)
-	Interface.brancher_son(%Musique, %Effets)
-	%ChoixLangue.pressed.connect(Interface.Langue.suivante)
+	%Options.pressed.connect(func() -> void:
+		%Panneau.hide()
+		%Reglages.ouvrir())
+	%Reglages.ferme.connect(func() -> void:
+		%Panneau.show()
+		%Options.grab_focus())
 	%Reprendre.pressed.connect(_reprendre)
 	%Recommencer.pressed.connect(Interface.commencer_partie.bind(get_tree()))
 	%MenuTitre.pressed.connect(Interface.ouvrir_titre.bind(get_tree()))
 
 
 func _input(evenement: InputEvent) -> void:
+	if %Reglages.visible:
+		return
 	if evenement.is_action_pressed(&"pause"):
 		get_viewport().set_input_as_handled()
 		if visible:

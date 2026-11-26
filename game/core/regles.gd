@@ -21,4 +21,6 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var boutique: Array[Lot] = []
 @export var choix_par_draft: int = 3
 @export var pioche: Array[Lot] = []
+@export var vagues_coffre: Array[int] = [3, 6, 9]
+@export var coffre: Array[Lot] = []
 @export var vagues: Array[VagueDef] = []
