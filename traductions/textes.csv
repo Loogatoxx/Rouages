@@ -69,13 +69,13 @@ Ton atelier remonte des soldats ! Lance la vague.,Ton atelier remonte des soldat
 Horloge,Horloge,Clock,Relógio
 Son tic-tac donne vie aux ateliers reliés.,Son tic-tac donne vie aux ateliers reliés.,Its ticking brings connected workshops to life.,O seu tiquetaque dá vida às oficinas ligadas.
 Engrenage droit,Engrenage droit,Straight gear,Engrenagem reta
-Transmet le mouvement en ligne droite.,Transmet le mouvement en ligne droite.,Transfers motion in a straight line.,Transmite o movimento em linha reta.
+Démultiplicateur : transmet tout droit et accélère de 15 % les ateliers voisins (2 au plus).,Démultiplicateur : transmet tout droit et accélère de 15 % les ateliers voisins (2 au plus).,Gear-up: passes energy straight on and speeds up neighbouring workshops by 15% (up to 2).,Desmultiplicador: transmite a direito e acelera as oficinas vizinhas em 15% (até 2).
 Engrenage coudé,Engrenage coudé,Corner gear,Engrenagem em cotovelo
-Fait prendre un quart de tour au chemin de l’énergie.,Fait prendre un quart de tour au chemin de l’énergie.,Turns the flow of power by 90 degrees.,Desvia o fluxo de energia um quarto de volta.
+Le moins cher : fait prendre un quart de tour à l’énergie.,Le moins cher : fait prendre un quart de tour à l’énergie.,The cheapest: turns the energy a quarter turn.,O mais barato: faz a energia rodar um quarto de volta.
 Engrenage en T,Engrenage en T,T-junction gear,Engrenagem em T
-Relie trois côtés pour alimenter une branche de plus.,Relie trois côtés pour alimenter une branche de plus.,Connects three sides to power an extra branch.,Liga três lados para levar energia a mais um ramal.
+Répartiteur : ouvre une branche et donne 4 places de jouets en plus aux ateliers voisins.,Répartiteur : ouvre une branche et donne 4 places de jouets en plus aux ateliers voisins.,Splitter: opens a branch and gives neighbouring workshops 4 more toy slots.,Repartidor: abre um ramal e dá mais 4 lugares de brinquedos às oficinas vizinhas.
 Engrenage en croix,Engrenage en croix,Four-way gear,Engrenagem em cruz
-Partage le mouvement entre ses quatre côtés.,Partage le mouvement entre ses quatre côtés.,Transfers motion in all four directions.,Distribui o movimento pelos quatro lados.
+Moyeu : partage l’énergie sur quatre côtés et fait tirer les tourelles voisines 20 % plus vite.,Moyeu : partage l’énergie sur quatre côtés et fait tirer les tourelles voisines 20 % plus vite.,Hub: shares energy on four sides and makes neighbouring turrets fire 20% faster.,Cubo: reparte a energia pelos quatro lados e faz as torres vizinhas disparar 20% mais depressa.
 Atelier de soldats,Atelier de soldats,Soldier workshop,Oficina de soldados
 Remonte de petits soldats quand ses rouages reçoivent l’énergie de l’horloge.,Remonte de petits soldats quand ses rouages reçoivent l’énergie de l’horloge.,Winds up toy soldiers when the clock powers its gears.,Dá corda a soldadinhos quando as engrenagens recebem energia do relógio.
 Atelier de lance-billes,Atelier de lance-billes,Marble shooter workshop,Oficina de lança-berlindes
@@ -139,8 +139,8 @@ Réparer l’horloge (+%d PV),Réparer l’horloge (+%d PV),Repair the clock (+%
 Acheter,Acheter,Buy,Comprar
 Tourner coûte %d ressorts,Tourner coûte %d ressorts,Rotating costs %d springs,Rodar custa %d molas
 Pose l’extension contre le bord sur un repère,Pose l’extension contre le bord sur un repère,Place the extension against the edge on a marker,Coloca a extensão junto à borda sobre um marcador
-"R / clic droit : tourner (gratuit avant la vague 1)","R / clic droit : tourner (gratuit avant la vague 1)","R / right click: rotate (free before wave 1)","R / clique direito: rodar (grátis antes da vaga 1)"
-"R / clic droit : tourner (%d ressorts)","R / clic droit : tourner (%d ressorts)","R / right click: rotate (%d springs)","R / clique direito: rodar (%d molas)"
+R / clic droit : tourner (gratuit avant la vague 1),R / clic droit : tourner (gratuit avant la vague 1),R / right click: rotate (free before wave 1),R / clique direito: rodar (grátis antes da vaga 1)
+R / clic droit : tourner (%d ressorts),R / clic droit : tourner (%d ressorts),R / right click: rotate (%d springs),R / clique direito: rodar (%d molas)
 Menu,Menu,Menu,Menu
 Aide et commandes,Aide et commandes,Help and controls,Ajuda e comandos
 Quitter le jeu,Quitter le jeu,Quit game,Sair do jogo
@@ -153,3 +153,10 @@ Clic : reprendre (%d ressorts),Clic : reprendre (%d ressorts),Click to pick up (
 Plein écran : activé,Plein écran : activé,Fullscreen: on,Ecrã inteiro: ligado
 Plein écran : désactivé,Plein écran : désactivé,Fullscreen: off,Ecrã inteiro: desligado
 %s ×%d — %d ressorts,%s ×%d — %d ressorts,%s ×%d — %d springs,%s ×%d — %d molas
+Cadence %+d %%,Cadence %+d %%,Rate %+d %%,Cadência %+d %%
+Bord de route : jouets lâchés sur la route,Bord de route : jouets lâchés sur la route,Roadside: toys are released on the road,Beira da estrada: brinquedos largados na estrada
+Arrière-garde : production plus rapide,Arrière-garde : production plus rapide,Rearguard: faster production,Retaguarda: produção mais rápida
+Plafond +%d jouets,Plafond +%d jouets,Cap +%d toys,Limite +%d brinquedos
+Bord de route : dégâts +%d %%,Bord de route : dégâts +%d %%,Roadside: damage +%d %%,Beira da estrada: dano +%d %%
+Tir +%d %% (moyeu voisin),Tir +%d %% (moyeu voisin),Fire rate +%d %% (nearby hub),Disparo +%d %% (cubo vizinho)
+Aperçu de pose,Aperçu de pose,Placement preview,Pré-visualização

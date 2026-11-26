@@ -7,6 +7,7 @@ const Plateau = preload("res://game/board/plateau.gd")
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const Regles = preload("res://game/core/regles.gd")
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
+const Placement = preload("res://game/workshops/placement.gd")
 const DIRECTIONS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 
 ## Multiplicateur de cadence (progression méta), réglé par `Partie` : la logique ne lit pas les autoloads,
@@ -26,23 +27,32 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 			ateliers.append(case)
 	var plafond: int = regles.plafond_allies_par_atelier * ateliers.size()
 	for case: Vector2i in ateliers:
+		plafond += Placement.plafond_atelier(plateau, alimentees, case)
+	for case: Vector2i in ateliers:
 		var atelier: Plateau.PieceDef = plateau.piece_de(case)
 		if atelier.cadence_production <= 0.0 or atelier.unite_produite == null:
 			continue
-		var progression: float = _progressions.get(case, 0.0) + dt * atelier.cadence_production * bonus_cadence
+		var cadence: float = atelier.cadence_production * bonus_cadence \
+				* Placement.cadence_atelier(plateau, alimentees, case, regles)
+		var progression: float = _progressions.get(case, 0.0) + dt * cadence
 		var prets: int = floori(progression)
 		_progressions[case] = progression - prets
 		var places: int = plafond - sim.nombre(SwarmSim.ALLIE)
 		if prets > 0 and places > 0:
-			var sortie: Vector2 = _sortie(case, plateau.ports_de(case))
+			var sortie: Vector2 = _sortie(case, plateau)
 			for i: int in mini(prets, places):
 				if not sim.ajouter(atelier.unite_produite, sortie):
 					break
 				jouet_produit.emit(case)
 
 
-func _sortie(case: Vector2i, ports: int) -> Vector2:
+# Un atelier en bord de route lâche ses jouets sur la route (front immédiat) ; sinon, par son premier port.
+func _sortie(case: Vector2i, plateau: Plateau) -> Vector2:
 	var centre: Vector2 = Vector2(case) * GrilleMonde.TAILLE_CASE
+	var route: Vector2i = Placement.cote_route(plateau, case)
+	if route != Vector2i.ZERO:
+		return centre + Vector2(route) * (GrilleMonde.TAILLE_CASE / 2.0)
+	var ports: int = plateau.ports_de(case)
 	for i: int in DIRECTIONS.size():
 		if ports & (1 << i):
 			return centre + Vector2(DIRECTIONS[i]) * (GrilleMonde.TAILLE_CASE / 2.0)
@@ -56,18 +66,21 @@ func _sortie(case: Vector2i, ports: int) -> Vector2:
 func remonter(secondes: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim, regles: Regles) -> void:
 	var dus: Dictionary[Vector2i, int] = {}
 	var ateliers: int = 0
+	var plafond: int = 0
 	for case: Vector2i in alimentees:
 		var piece: Plateau.PieceDef = plateau.piece_de(case)
 		if piece == null or piece.type != Plateau.PieceDef.Type.ATELIER or piece.unite_produite == null:
 			continue
 		ateliers += 1
+		plafond += regles.plafond_allies_par_atelier + Placement.plafond_atelier(plateau, alimentees, case)
 		if not _remontes.has(case):
 			_remontes[case] = true
 			if _remontages_a_deduire > 0:
 				_remontages_a_deduire -= 1
 				continue
-			dus[case] = floori(secondes * piece.cadence_production * bonus_cadence)
-	var places: int = regles.plafond_allies_par_atelier * ateliers - sim.nombre(SwarmSim.ALLIE)
+			dus[case] = floori(secondes * piece.cadence_production * bonus_cadence
+					* Placement.cadence_atelier(plateau, alimentees, case, regles))
+	var places: int = plafond - sim.nombre(SwarmSim.ALLIE)
 	var cases: Array[Vector2i] = dus.keys()
 	cases.sort()
 	var reste: bool = true
@@ -76,7 +89,7 @@ func remonter(secondes: float, plateau: Plateau, alimentees: Dictionary, sim: Sw
 		for case: Vector2i in cases:
 			if dus[case] <= 0 or places <= 0:
 				continue
-			if not sim.ajouter(plateau.piece_de(case).unite_produite, _sortie(case, plateau.ports_de(case))):
+			if not sim.ajouter(plateau.piece_de(case).unite_produite, _sortie(case, plateau)):
 				return
 			dus[case] -= 1
 			places -= 1

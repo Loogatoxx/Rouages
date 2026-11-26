@@ -6,6 +6,14 @@ const Plateau = preload("res://game/board/plateau.gd")
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const ATELIER = preload("res://data/tuiles/atelier_soldats.tres")
 const REGLES = preload("res://data/regles.tres")
+const Regles = preload("res://game/core/regles.gd")
+
+
+# Règles sans malus d'encombrement : le plateau de test colle deux ateliers identiques (voir test_placement.gd).
+func _regles() -> Regles:
+	var regles: Regles = REGLES.duplicate()
+	regles.malus_encombrement = 0.0
+	return regles
 
 
 func _plateau() -> Plateau:
@@ -22,7 +30,7 @@ func test_cadence_et_port() -> String:
 	var production: Production = Production.new()
 	var sim: SwarmSim = SwarmSim.new()
 	for i: int in 40:
-		production.avancer(0.25, plateau, {Vector2i.ZERO: true}, sim, REGLES)
+		production.avancer(0.25, plateau, {Vector2i.ZERO: true}, sim, _regles())
 	if sim.nombre(SwarmSim.ALLIE) != 6:
 		return "Un atelier alimenté doit produire 6 soldats en 10 s."
 	for position: Vector2 in sim.positions(SwarmSim.ALLIE):
@@ -63,16 +71,17 @@ func test_remontage_au_lancement() -> String:
 	var production: Production = Production.new()
 	var sim: SwarmSim = SwarmSim.new()
 	var alimentees: Dictionary = {Vector2i.ZERO: true, Vector2i.RIGHT: true}
-	production.remonter(20.0, plateau, alimentees, sim, REGLES)
+	var regles: Regles = _regles()
+	production.remonter(20.0, plateau, alimentees, sim, regles)
 	var attendu: int = mini(2 * floori(20.0 * ATELIER.cadence_production), 2 * REGLES.plafond_allies_par_atelier)
 	if sim.nombre(SwarmSim.ALLIE) != attendu:
 		return "Le remontage doit sortir %d jouets (obtenu %d)." % [attendu, sim.nombre(SwarmSim.ALLIE)]
 	var avant: int = sim.nombre(SwarmSim.ALLIE)
-	production.remonter(20.0, plateau, alimentees, sim, REGLES)
+	production.remonter(20.0, plateau, alimentees, sim, regles)
 	if sim.nombre(SwarmSim.ALLIE) != avant:
 		return "Un atelier n'est remonté qu'une fois par pause : attendre ne rapporte rien."
 	production.nouvelle_pause()
-	production.remonter(20.0, plateau, alimentees, sim, REGLES)
+	production.remonter(20.0, plateau, alimentees, sim, regles)
 	if sim.nombre(SwarmSim.ALLIE) > 2 * REGLES.plafond_allies_par_atelier:
 		return "Le remontage ne doit jamais dépasser le plafond."
 	return ""

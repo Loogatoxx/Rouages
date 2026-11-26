@@ -12,6 +12,15 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var departs: Array[DepartDef] = []
 @export var garde_ratio: float = 0.55
 @export var prix_rotation: int = 2
+@export_group("Placement (playtest 1 : stratégie plutôt que spam)")
+## Tourelle en bord de route : dégâts en plus.
+@export var bonus_route_degats: float = 0.25
+## Atelier à `distance_arriere` cases ou plus de la route : cadence en plus (« arrière-garde »).
+@export var bonus_arriere_cadence: float = 0.2
+@export var distance_arriere: int = 3
+## Cadence en moins pour chaque atelier identique collé à un atelier (encombrement).
+@export var malus_encombrement: float = 0.1
+@export_group("")
 @export var prix_deplacement: int = 3
 @export var prix_deplacement_pas: int = 2
 @export var pv_horloge: int

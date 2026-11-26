@@ -6,7 +6,8 @@
 script = ExtResource("1")
 id = &"engrenage_droit"
 nom = "Engrenage droit"
-description = "Transmet le mouvement en ligne droite."
+description = "Démultiplicateur : transmet tout droit et accélère de 15 % les ateliers voisins (2 au plus)."
 type = 1
 ports = 5
 transmet = true
+bonus_voisins_cadence = 0.15

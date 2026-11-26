@@ -6,7 +6,8 @@
 script = ExtResource("1")
 id = &"engrenage_croix"
 nom = "Engrenage en croix"
-description = "Partage le mouvement entre ses quatre côtés."
+description = "Moyeu : partage l’énergie sur quatre côtés et fait tirer les tourelles voisines 20 % plus vite."
 type = 1
 ports = 15
 transmet = true
+bonus_voisins_tourelle = 0.2

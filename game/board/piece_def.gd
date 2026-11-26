@@ -21,6 +21,13 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var degats_tir: float = 0.0
 @export var cadence_tir: float = 0.0
 @export var zone_tir: float = 0.0
+@export_group("Identité d'engrenage (bonus aux voisins alimentés)")
+## Démultiplicateur : cadence en plus pour chaque atelier voisin (cumul limité à 2 engrenages).
+@export var bonus_voisins_cadence: float = 0.0
+## Répartiteur : jouets en plus au plafond de chaque atelier voisin.
+@export var bonus_voisins_plafond: int = 0
+## Moyeu : cadence de tir en plus pour chaque tourelle voisine.
+@export var bonus_voisins_tourelle: float = 0.0
 
 
 ## Oriente le masque des ports par quarts de tour dans le sens horaire.

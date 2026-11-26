@@ -6,7 +6,8 @@
 script = ExtResource("1")
 id = &"engrenage_t"
 nom = "Engrenage en T"
-description = "Relie trois côtés pour alimenter une branche de plus."
+description = "Répartiteur : ouvre une branche et donne 4 places de jouets en plus aux ateliers voisins."
 type = 1
 ports = 11
 transmet = true
+bonus_voisins_plafond = 4

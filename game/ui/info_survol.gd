@@ -5,6 +5,7 @@ const GrilleMonde = preload("res://game/board/grille_monde.gd")
 const PlateauNoeud = preload("res://game/board/plateau_noeud.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
 const Interface = preload("res://game/ui/menu_titre.gd")
+const Placement = preload("res://game/workshops/placement.gd")
 
 @export var plateau_noeud: NodePath
 @onready var _source: PlateauNoeud = get_node(plateau_noeud)
@@ -27,7 +28,7 @@ func _process(_delta: float) -> void:
 	var vue: Viewport = get_viewport()
 	var souris: Vector2 = vue.get_mouse_position()
 	var cadre: Rect2 = vue.get_visible_rect()
-	if (not _selection.is_empty() or get_tree().paused or Run.phase == Run.Phase.FIN
+	if (get_tree().paused or Run.phase == Run.Phase.FIN
 			or not cadre.has_point(souris) or vue.gui_get_hovered_control() != null):
 		hide()
 		return
@@ -40,7 +41,8 @@ func _process(_delta: float) -> void:
 	if point == null:
 		hide()
 		return
-	var conseil: String = _decrire(GrilleMonde.vers_case(point))
+	var case_visee: Vector2i = GrilleMonde.vers_case(point)
+	var conseil: String = _apercu(case_visee) if not _selection.is_empty() else _decrire(case_visee)
 	if conseil.is_empty():
 		hide()
 		return
@@ -51,6 +53,18 @@ func _process(_delta: float) -> void:
 		reset_size()
 	show()
 	position = (souris + Vector2(18, 20)).clamp(cadre.position, cadre.end - size)
+
+
+# Aperçu de pose (benchmark D1) : effets de la place visée pour la pièce en main, seulement s'il y en a.
+func _apercu(case_plateau: Vector2i) -> String:
+	var piece: PieceDef = Run.reserve.trouver(_selection) as PieceDef
+	if piece == null or _source.plateau.sol_de(case_plateau) != _source.Plateau.Sol.HERBE \
+			or _source.plateau.piece_de(case_plateau) != null:
+		return ""
+	var copie = _source.plateau.dupliquer()
+	copie.poser(case_plateau, piece)
+	var effets: PackedStringArray = Placement.effets(copie, _source.alimentees, case_plateau, piece, Run.regles)
+	return "" if effets.is_empty() else tr("Aperçu de pose") + "\n" + "\n".join(effets)
 
 
 func _decrire(case_plateau: Vector2i) -> String:
@@ -68,6 +82,8 @@ func _decrire(case_plateau: Vector2i) -> String:
 	if piece.type == PieceDef.Type.ATELIER:
 		var etat: String = tr("Alimenté") if case_plateau in _source.alimentees else tr("Pas alimenté : relie-le à l’horloge")
 		texte += "\n" + etat
+	for effet: String in Placement.effets(_source.plateau, _source.alimentees, case_plateau, piece, Run.regles):
+		texte += "\n" + effet
 	if piece.type != PieceDef.Type.HORLOGE:
 		texte += "\n" + (tr("R / clic droit : tourner (gratuit avant la vague 1)") if Run.prix_rotation == 0
 				else tr("R / clic droit : tourner (%d ressorts)") % Run.prix_rotation)

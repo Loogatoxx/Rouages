@@ -172,3 +172,13 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - **Boutique** : grille de tuiles (vignette, ×quantité, prix + icône ressort), tuile inabordable grisée, nom et effet au
   survol ; réparer = cœur + gain. **Réserve** : vignette + ×N (vignette en enfant de taille fixe : l'icône native d'un
   `Button` rétrécit avec les marges du thème). Cartes de tirage : vignette à côté de l'insigne.
+
+## Après playtest 1 — lot 5 (benchmark, placement, engrenages à identité)
+- **Benchmark** : `docs/benchmark_td.md` (décisions D1-D8) tiré de `art_refs/benchmark_td_sources.md` (17 sources).
+- **`Placement`** (`game/workshops/placement.gd`, logique pure) : bord de route (tourelle +25 % dégâts ; atelier qui
+  lâche ses jouets sur la route), arrière-garde (atelier à ≥ 3 cases de la route : +20 % cadence), engrenages à identité
+  via `PieceDef.bonus_voisins_*` (droit = démultiplicateur +15 % aux ateliers voisins, cumul 2 ; T = répartiteur +4 au
+  plafond ; croix = moyeu +20 % de tir aux tourelles voisines ; coude = le moins cher), encombrement (−10 % par atelier
+  identique collé, plancher ×0,4). Réglages dans `Regles` (groupe « Placement »). Lu par `Production`, `Tourelles`,
+  l'infobulle (effets + aperçu de pose) et donc le banc. → Les cases ne se valent plus : la stratégie bat le spam.
+- Banc : la disposition en grappe du banc perd un peu (parfait 37/83/0 PV, moyen chute en V5) : c'est voulu.

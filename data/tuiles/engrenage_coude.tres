@@ -6,7 +6,7 @@
 script = ExtResource("1")
 id = &"engrenage_coude"
 nom = "Engrenage coudé"
-description = "Fait prendre un quart de tour au chemin de l’énergie."
+description = "Le moins cher : fait prendre un quart de tour à l’énergie."
 type = 1
 ports = 3
 transmet = true

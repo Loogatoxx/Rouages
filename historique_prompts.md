@@ -110,3 +110,10 @@
   compris), vraie pause entre les vagues (remontage instantané une fois par pause, mesuré au banc), tirages sans doublon.
 - **Suite (lot 3)** : HUD lisible (ennemis restants, repères au bord de l'écran vers les entrées et les ennemis hors champ),
   reprise/déplacement des pièces posées (T11b, Codex, relu par Claude). 80 tests verts.
+
+## 2026-11-26 — Suite en autonomie (message de la session principale : « continue le plus possible »)
+- **Demande** : enchaîner tous les PT restants (audit UI, boutique, benchmark, engrenages, améliorations, placement, chance,
+  craft, vie du plateau, extension, Hyper3D, lore), commiter chaque lot, relancer le build Mac.
+- **Fait** : build Mac relancé (démarre). Audit UI par Gemini (63 défauts) et corrections majeures (rubans, contraste,
+  HUD). Boutique et réserve en vignettes rendues depuis le kit 3D. Benchmark web sourcé → décisions D1-D8. Placement par
+  rapport à la route, engrenages à identité, encombrement (module `Placement`, testé, mesuré au banc).
