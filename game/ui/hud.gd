@@ -42,6 +42,8 @@ var _boutique_ouverte: bool = true
 var _plaque_chance: PanelContainer
 var _chance: Label
 var _porte_bonheur: Button
+var _apercu_vague: PanelContainer
+var _apercu_ligne: HBoxContainer
 var _prix_porte_bonheur: Label
 
 
@@ -79,6 +81,7 @@ func _ready() -> void:
 	Interface.apparaitre(%Tableau)
 	_creer_barre_boss()
 	_creer_chance()
+	_creer_apercu_vague()
 	var reperes := Reperes.new()
 	reperes.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
 	reperes.partie = get_parent().get_node_or_null("Partie")
@@ -196,6 +199,45 @@ func _creer_chance() -> void:
 	_caler_prix(_prix_porte_bonheur)
 	rangee.add_child(_prix_porte_bonheur)
 	%Reparer.get_parent().add_sibling(rangee)
+
+
+# Aperçu de la vague suivante pendant la construction (benchmark D8, Legion TD 2) : on prépare sa défense en connaissant
+# la composition (vignette + effectif par type d'ennemi, libellules et boss compris).
+func _creer_apercu_vague() -> void:
+	_apercu_vague = PanelContainer.new()
+	_apercu_vague.theme_type_variation = &"Plaque"
+	_apercu_vague.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_apercu_vague.visible = false
+	_apercu_ligne = HBoxContainer.new()
+	_apercu_ligne.add_theme_constant_override(&"separation", 6)
+	_apercu_vague.add_child(_apercu_ligne)
+	%Lancer.add_sibling(_apercu_vague)
+
+
+func _actualiser_apercu_vague() -> void:
+	var visible_apercu: bool = Run.phase == Run.Phase.CONSTRUCTION and Run.vague_actuelle < Run.nb_vagues
+	_apercu_vague.visible = visible_apercu
+	if not visible_apercu:
+		return
+	for ancien: Node in _apercu_ligne.get_children():
+		ancien.queue_free()
+	var vague: Resource = Run.vagues[Run.vague_actuelle]
+	_apercu_ligne.add_child(_icone(preload("res://assets/ui/icones/vague.png"), 30))
+	var groupes: Array = [[vague.unite, vague.nombre], [vague.renfort, vague.nombre_renforts],
+			[vague.get("volants"), vague.get("nombre_volants")], [vague.boss, 1 if vague.boss != null else 0]]
+	var infobulle: PackedStringArray = [tr("Prochaine vague")]
+	for groupe: Array in groupes:
+		if groupe[0] == null or int(groupe[1]) <= 0:
+			continue
+		var image := _icone(Interface.vignette_de(groupe[0]), 38)
+		_apercu_ligne.add_child(image)
+		var nombre := Label.new()
+		nombre.theme_type_variation = &"Nombre"
+		nombre.add_theme_font_size_override(&"font_size", 18)
+		nombre.text = "×%d" % int(groupe[1])
+		_apercu_ligne.add_child(nombre)
+		infobulle.append("%s ×%d" % [tr(groupe[0].nom), int(groupe[1])])
+	_apercu_vague.tooltip_text = "\n".join(infobulle)
 
 
 func _icone(texture: Texture2D, cote: float) -> TextureRect:
@@ -325,6 +367,8 @@ func _actualiser_phase(phase: int) -> void:
 		Interface.apparaitre(%PanneauDraft)
 	_actualiser_compteurs(phase)
 	_actualiser_solde(Run.ressorts)
+	if _apercu_vague != null:
+		_actualiser_apercu_vague()
 
 
 func _actualiser_compteurs(phase: int) -> void:

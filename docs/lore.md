@@ -17,7 +17,8 @@ pièces : il défend l'Horloge.
   réveillent chaque matin »).
 - **Lise**, son apprentie d'autrefois (aujourd'hui adulte, elle ne revient qu'à la fin de la campagne). Enfant, elle a
   fabriqué les scarabées pour qu'ils « gardent les tiroirs » ; l'Horloge les remontait à distance, par les rouages cachés
-  de l'établi. Ce lien faiblit depuis peu : c'est pour ça qu'ils sortent.
+  de l'établi. Ce lien faiblit depuis peu : c'est pour ça qu'ils sortent. *(Réservé aux auteurs jusqu'au dénouement : le
+  joueur ne l'apprend qu'au chapitre 6.)*
 - **L'Inventeur** (le Héros du backlog) : figurine que Lise avait faite à l'image d'Anselme. Il deviendra jouable.
 
 ## Les factions de la maquette
@@ -27,8 +28,8 @@ pièces : il défend l'Horloge.
   source de remontage de l'établi, l'Horloge-Mère.
 
 ## Le retournement (préparé, révélé à la fin de la campagne)
-Personne n'est « tué » : un scarabée à court de ressort **s'endort** et lâche son ressort de trop-plein (nos
-« ressorts ») avant d'être ramené au tiroir par ses voisins. Les scarabées ne veulent pas détruire l'Horloge : ils
+Personne n'est « tué » : un scarabée à court de ressort **s'endort** et ses voisins le ramènent au tiroir ; seul le
+cuirassé, plus gros, lâche un ressort de trop-plein visible (le butin réel du jeu). Les scarabées ne veulent pas détruire l'Horloge : ils
 veulent **être remontés** ; chaque PV perdu par l'Horloge est un tour de clé qu'un scarabée lui prend. L'enjeu caché :
 l'Horloge ne garde pas seulement l'heure, elle garde **l'heure du rendez-vous d'Anselme**. Si elle s'arrête, il ne
 retrouvera plus le chemin de l'atelier. La campagne finit quand le joueur
@@ -47,20 +48,23 @@ alors **remonter les scarabées** au lieu de les casser (mode final et nouveau m
 
 ## Easter eggs (cachés, sans incidence sur le jeu)
 - Le défi du jour du **1er avril** : tous les scarabées portent un minuscule chapeau de soldat.
-- Taper « LISE » sur le clavier pendant la pause fait jouer trois notes de la boîte à musique.
+- Quatre clics sur le carnet fermé de la table pendant la pause font jouer trois notes de la boîte à musique (« LISE »).
 - Sur la table, un **carnet fermé** porte la date du premier commit du projet (23 novembre).
 
 ## Lien avec les features (mis à jour à chaque lot)
 | Feature | Explication dans le monde |
 |---|---|
 | Extensions de terrain (sentiers) | Le joueur déplie de nouvelles planches de la maquette ; les tiroirs ouverts laissent entrer d'autres scarabées. |
-| Drapeaux d'extension | Fanions de chantier plantés par Anselme pour ses agrandissements jamais finis. |
+| Chantiers d'extension | Panneaux et caisses de pièces laissés par Anselme pour ses agrandissements jamais finis. |
 | Engrenages à identité (démultiplicateur, répartiteur, moyeu) | Les trois « métiers » d'engrenages qu'Anselme enseignait à Lise. |
 | Route et arrière-garde | Les jouets proches de la route entendent mieux le tic-tac de l'Horloge ; ceux de l'arrière se remontent au calme. |
 | Libellule (volante) | La seule création de Lise qui sache voler : les soldats, trop petits, ne l'atteignent pas. |
 | Chance (trèfle) | Un trèfle émaillé qu'Anselme gardait sur l'établi ; il « fait tomber les bonnes pièces des tiroirs ». |
-| Vraie pause entre les vagues | La nuit, tout l'établi s'arrête ; on n'entend plus que l'Horloge. |
+| Vraie pause entre les vagues | Entre deux sonneries, l'Horloge donne un seul tour de clé à chaque atelier relié, qui laisse sortir ses jouets ; puis plus rien ne se remonte jusqu'au coup suivant. |
 | Établi de l'inventeur (méta) | On reprend les outils d'Anselme, un à un. |
+| Améliorations (niveaux) et reprise | Améliorer = régler le socle (ressorts plus tendus, engrenages polis) ; démonter une pièce défait ces réglages, d'où le retour au niveau 1. |
+| Défi du jour | Un plan daté d'Anselme dont les tiroirs et les coffres sont préparés à l'avance : la chance n'y change rien. |
+| Ressorts gagnés | Le cuirassé lâche un ressort visible quand il s'endort ; le reste vient des primes que l'Horloge verse à chaque sonnerie tenue (et des planches dépliées). |
 
 ## Campagne envisagée (PT-62)
 Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie sur l'établi.
@@ -72,4 +76,7 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 - 2026-11-26 : v1 relue par Gemini (relecture adverse). 6 corrections intégrées : plus aucun scarabée « tué » (ils
   s'endorment), chronologie de Lise et de l'Horloge clarifiée, clé cachée jusqu'au chapitre 3 et enjeu du rendez-vous
   d'Anselme (twist moins prévisible), chapitres = dioramas pliants, indices concrets pour un enfant (fragments d'anneau,
-  réveil des figurines), vagues = coups du carillon. Bilan renommé « Scarabées endormis » (fait) ; prochaine relecture par Codex (cohérence avec le gameplay).
+  réveil des figurines), vagues = coups du carillon. Bilan renommé « Scarabées endormis » (fait).
+- 2026-11-26 : relecture par Codex (cohérence avec les règles, `taches/revues/T11e_relecture_lore.md`) : 7 remarques
+  intégrées (ressort visible réservé au cuirassé, pause = un tour de clé par atelier, chantiers d'Anselme, réglages
+  défaits au démontage, défi du jour préparé à l'avance, révélation réservée aux auteurs, easter egg au clic).

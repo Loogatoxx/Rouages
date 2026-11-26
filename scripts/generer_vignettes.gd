@@ -11,6 +11,11 @@ const PIECES: Array[StringName] = [&"atelier_soldats", &"atelier_billes", &"engr
 		&"engrenage_t", &"engrenage_croix", &"tourelle_canon", &"tourelle_carillon", &"tourelle_mortier"]
 ## Ports (N, E, S, O) des socles du kit, comme `PlateauVisuel.PORTS_DU_KIT` : on y pose les dents de laiton du jeu.
 const PORTS := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage_t": 11, &"engrenage_croix": 15}
+## Ennemis (aperçu de la vague suivante) : [modèle du kit, teinte superposée ou transparent], comme `NueeVisuel`.
+const ENNEMIS := {&"scarabee": [&"scarabee", Color.TRANSPARENT], &"fourmi": [&"fourmi", Color.TRANSPARENT],
+		&"scarabee_cuirasse": [&"scarabee_cuirasse", Color.TRANSPARENT],
+		&"grand_scarabee": [&"scarabee_cuirasse", Color(0.35, 0.22, 0.08, 0.4)],
+		&"libellule": [&"fourmi", Color(0.37, 0.66, 0.63, 0.65)]}
 const EXTENSIONS := {&"extension_sentier": "res://data/extensions/sentier.tres",
 		&"extension_carrefour": "res://data/extensions/carrefour.tres"}
 
@@ -47,6 +52,17 @@ func _init() -> void:
 		if PORTS.has(id):
 			_dents(modele, PORTS[id])
 		await _rendre(vue, camera, modele, String(id))
+	for id: StringName in ENNEMIS:
+		var source: StringName = ENNEMIS[id][0]
+		var ennemi: Node3D = (load(KIT % [source, source]) as PackedScene).instantiate()
+		var teinte: Color = ENNEMIS[id][1]
+		if teinte.a > 0.0:
+			var voile := StandardMaterial3D.new()
+			voile.albedo_color = teinte
+			voile.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			for maille: Node in ennemi.find_children("*", "GeometryInstance3D", true, false):
+				(maille as GeometryInstance3D).material_overlay = voile
+		await _rendre(vue, camera, ennemi, String(id))
 	for id: StringName in EXTENSIONS:
 		await _rendre(vue, camera, _extension(load(EXTENSIONS[id])), String(id))
 	quit()
