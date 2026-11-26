@@ -71,4 +71,6 @@ func _decrire(case_plateau: Vector2i) -> String:
 	if piece.type != PieceDef.Type.HORLOGE:
 		texte += "\n" + (tr("R / clic droit : tourner (gratuit avant la vague 1)") if Run.prix_rotation == 0
 				else tr("R / clic droit : tourner (%d ressorts)") % Run.prix_rotation)
+		texte += "\n" + (tr("Clic : reprendre (gratuit avant la vague 1)") if Run.vague_actuelle == 0
+				else tr("Clic : reprendre (%d ressorts)") % Run.prix_deplacement)
 	return texte

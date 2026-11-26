@@ -108,3 +108,5 @@
 - **Suite (lot 2, même demande)** : charte et 12 icônes par Gemini (T11a, relues par Claude), pastille de quantité
   sans pointe, boutique repliable (B), menu en jeu (aide, quitter), zoom et inclinaison de la caméra (trackpad Mac
   compris), vraie pause entre les vagues (remontage instantané une fois par pause, mesuré au banc), tirages sans doublon.
+- **Suite (lot 3)** : HUD lisible (ennemis restants, repères au bord de l'écran vers les entrées et les ennemis hors champ),
+  reprise/déplacement des pièces posées (T11b, Codex, relu par Claude). 80 tests verts.

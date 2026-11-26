@@ -23,7 +23,7 @@ func _ready() -> void:
 
 
 ## Liste des commandes (le menu en jeu sert aussi d'aide-mémoire, playtest 1 : « un vrai menu en pleine partie »).
-const AIDE := "Clic gauche : poser · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran"
+const AIDE := "Clic gauche : poser, ou reprendre une pièce posée · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran"
 
 
 func _afficher_aide(visible_aide: bool) -> void:

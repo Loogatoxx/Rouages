@@ -4,6 +4,7 @@ extends CanvasLayer
 const Interface = preload("res://game/ui/menu_titre.gd")
 const Lot = preload("res://game/core/lot.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
+const Reperes = preload("res://game/ui/reperes.gd")
 const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
 const VITESSE_NORMALE: Texture2D = preload("res://assets/ui/icones/vitesse_x1.png")
@@ -63,6 +64,11 @@ func _ready() -> void:
 	_actualiser_phase(Run.phase)
 	Interface.apparaitre(%Tableau)
 	_creer_barre_boss()
+	var reperes := Reperes.new()
+	reperes.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
+	reperes.partie = get_parent().get_node_or_null("Partie")
+	add_child(reperes)
+	move_child(reperes, 0)
 
 
 func _creer_barre_boss() -> void:
@@ -106,6 +112,10 @@ func _process(_delta: float) -> void:
 	if _barre_boss == null:
 		return
 	var partie: Node = get_parent().get_node_or_null("Partie")
+	# Compteur « ennemis restants » : visible seulement pendant une vague (playtest 1 : HUD clair).
+	%EnnemisPlaque.visible = Run.phase == Run.Phase.VAGUE and partie != null
+	if %EnnemisPlaque.visible:
+		%Ennemis.text = "%d / %d" % [partie.directeur.restants(partie.sim), partie.directeur.total()]
 	var pv: Vector2 = partie.sim.pv_boss() if partie != null else Vector2.ZERO
 	var vivant: bool = pv.y > 0.0
 	if vivant != _boss_visible:

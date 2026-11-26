@@ -12,6 +12,8 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var departs: Array[DepartDef] = []
 @export var garde_ratio: float = 0.55
 @export var prix_rotation: int = 2
+@export var prix_deplacement: int = 3
+@export var prix_deplacement_pas: int = 2
 @export var pv_horloge: int
 @export var plafond_allies_par_atelier: int
 ## Secondes de production versées d'un coup à chaque atelier alimenté, une fois par pause entre les vagues

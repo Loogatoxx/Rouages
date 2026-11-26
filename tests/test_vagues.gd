@@ -82,6 +82,9 @@ func test_alternance_et_fin() -> String:
 	directeur.commencer(vague, entrees)
 	if directeur.est_terminee(sim):
 		return "La vague doit attendre ses premières apparitions."
+	# Compteur du HUD (playtest 1 : « combien d'ennemis restent ») : tout reste à battre au lancement.
+	if directeur.restants(sim) != directeur.total() or directeur.total() != vague.nombre:
+		return "Au lancement, les ennemis restants doivent valoir l'effectif de la vague."
 	for i: int in vague.nombre:
 		directeur.avancer(0.0 if i == 0 else vague.intervalle, sim)
 		if sim.nombre(SwarmSim.ENNEMI) != i + 1:
@@ -92,10 +95,12 @@ func test_alternance_et_fin() -> String:
 	directeur.avancer(100.0, sim)
 	if sim.nombre(SwarmSim.ENNEMI) != vague.nombre or directeur.est_terminee(sim):
 		return "La vague doit attendre ses derniers survivants sans renforts."
+	if directeur.restants(sim) != sim.nombre(SwarmSim.ENNEMI):
+		return "Une fois tous entrés, les restants sont les ennemis vivants."
 	for i: int in 600:
 		sim.avancer(1.0 / 60.0)
 		if directeur.est_terminee(sim):
-			return ""
+			return "" if directeur.restants(sim) == 0 else "Vague finie : plus aucun ennemi restant."
 	return "La vague est restée active après les arrivées à l'horloge."
 
 

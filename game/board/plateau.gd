@@ -59,6 +59,17 @@ func poser(coord: Vector2i, def: PieceDef, rotation: int = 0) -> bool:
 	return true
 
 
+## Retire une pièce et son orientation, sauf si la case porte l’horloge.
+func retirer(coord: Vector2i) -> PieceDef:
+	var piece: PieceDef = piece_de(coord)
+	if piece == null or piece.type == PieceDef.Type.HORLOGE:
+		return null
+	_pieces.erase(coord)
+	_rotations.erase(coord)
+	modifie.emit()
+	return piece
+
+
 ## Tourne une pièce posée d’un quart de tour horaire.
 func tourner(coord: Vector2i) -> bool:
 	if not _pieces.has(coord):

@@ -18,6 +18,7 @@ var _entrees: Array[Vector2i] = []
 
 
 func _ready() -> void:
+	Events.piece_reprise.connect(_piece_reprise)
 	Events.plateau_modifie.connect(_configurer)
 	Events.vague_commencee.connect(_commencer)
 	sim.ennemi_arrive.connect(Run.subir_degats)
@@ -28,6 +29,12 @@ func _ready() -> void:
 func _unite_morte(camp: int, position: Vector2, def: UniteDef) -> void:
 	if camp == SwarmSim.ENNEMI:
 		Run.casser_ennemi(def, position)
+
+
+func _piece_reprise(case: Vector2i, def: Resource) -> void:
+	var piece: Production.Plateau.PieceDef = def as Production.Plateau.PieceDef
+	if piece != null and piece.type == Production.Plateau.PieceDef.Type.ATELIER:
+		production.atelier_repris(case)
 
 
 func _configurer() -> void:

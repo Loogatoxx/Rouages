@@ -13,6 +13,7 @@ const DIRECTIONS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 ## pour rester utilisable par les tests et le banc d'équilibrage.
 var bonus_cadence: float = 1.0
 var _progressions: Dictionary[Vector2i, float] = {}
+var _remontages_a_deduire: int = 0
 var _remontes: Dictionary[Vector2i, bool] = {}
 
 
@@ -62,6 +63,9 @@ func remonter(secondes: float, plateau: Plateau, alimentees: Dictionary, sim: Sw
 		ateliers += 1
 		if not _remontes.has(case):
 			_remontes[case] = true
+			if _remontages_a_deduire > 0:
+				_remontages_a_deduire -= 1
+				continue
 			dus[case] = floori(secondes * piece.cadence_production * bonus_cadence)
 	var places: int = regles.plafond_allies_par_atelier * ateliers - sim.nombre(SwarmSim.ALLIE)
 	var cases: Array[Vector2i] = dus.keys()
@@ -80,6 +84,14 @@ func remonter(secondes: float, plateau: Plateau, alimentees: Dictionary, sim: Sw
 			jouet_produit.emit(case)
 
 
+## Reporte le remontage déjà reçu sur le prochain atelier alimenté après la reprise.
+func atelier_repris(case: Vector2i) -> void:
+	_progressions.erase(case)
+	if _remontes.erase(case):
+		_remontages_a_deduire += 1
+
+
 ## Ouvre une nouvelle pause : tous les ateliers pourront de nouveau être remontés (appelé au lancement d'une vague).
 func nouvelle_pause() -> void:
 	_remontes.clear()
+	_remontages_a_deduire = 0

@@ -41,6 +41,7 @@ var prix_relance: int:
 		return 0 if _relance_disponible else regles.prix_relance
 var phase: Phase = Phase.DRAFT
 var vague_actuelle: int = 0
+var deplacements_pause: int = 0
 var ressorts: int = regles.ressorts_depart
 var ennemis_casses: int = 0
 var ressorts_gagnes: int = 0
@@ -79,6 +80,30 @@ func depenser(n: int) -> bool:
 var prix_rotation: int:
 	get:
 		return 0 if vague_actuelle == 0 else regles.prix_rotation
+
+
+## Calcule le coût de la prochaine reprise depuis le lancement de la dernière vague.
+var prix_deplacement: int:
+	get:
+		if vague_actuelle == 0:
+			return 0
+		return regles.prix_deplacement + regles.prix_deplacement_pas * deplacements_pause
+
+
+## Rend une pièce posée à la réserve et paie son déplacement.
+func reprendre_piece(plateau: Plateau, case: Vector2i) -> bool:
+	if phase != Phase.CONSTRUCTION and phase != Phase.VAGUE:
+		return false
+	var piece: Plateau.PieceDef = plateau.piece_de(case)
+	if piece == null or piece.type == Plateau.PieceDef.Type.HORLOGE:
+		return false
+	if not depenser(prix_deplacement):
+		return false
+	plateau.retirer(case)
+	deplacements_pause += 1
+	reserve.ajouter(piece, 1)
+	Events.piece_reprise.emit(case, piece)
+	return true
 
 
 ## Tourne une pièce posée (jamais l'horloge) et prélève le prix si la rotation a abouti.
@@ -179,6 +204,7 @@ func lancer_vague() -> void:
 	if phase != Phase.CONSTRUCTION or vague_actuelle >= nb_vagues:
 		return
 	vague_actuelle += 1
+	deplacements_pause = 0
 	_pv_debut_vague = pv_horloge
 	changer_phase(Phase.VAGUE)
 	Events.vague_commencee.emit(vague_actuelle)
@@ -256,6 +282,7 @@ func reinitialiser() -> void:
 		rng.randomize()
 		randomize()
 	vague_actuelle = 0
+	deplacements_pause = 0
 	pv_max = regles.pv_horloge + int(_bonus(&"pv_horloge"))
 	pv_horloge = pv_max
 	choix_par_draft = regles.choix_par_draft + int(_bonus(&"choix_draft"))

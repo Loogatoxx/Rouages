@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icones/vitesse_x1.png" id="vitesse_x1"]
 [ext_resource type="Texture2D" path="res://assets/ui/icones/menu.png" id="pause"]
 [ext_resource type="Texture2D" path="res://assets/ui/icones/boutique.png" id="boutique"]
+[ext_resource type="Texture2D" path="res://assets/ui/icones/ennemis_restants.png" id="ennemis"]
 [ext_resource type="Texture2D" path="res://assets/ui/icones/coffre.png" id="coffre"]
 [ext_resource type="Texture2D" path="res://assets/ui/icones/engrenage_or.png" id="engrenage_or"]
 [ext_resource type="Texture2D" path="res://assets/ui/icones/vague.png" id="fanion"]
@@ -49,6 +50,26 @@ stretch_mode = 5
 mouse_filter = 2
 
 [node name="Vague" type="Label" parent="Colonne/Tableau/VaguePlaque/Ligne"]
+unique_name_in_owner = true
+theme_type_variation = &"Nombre"
+
+[node name="EnnemisPlaque" type="PanelContainer" parent="Colonne/Tableau"]
+unique_name_in_owner = true
+visible = false
+theme_type_variation = &"Plaque"
+tooltip_text = "Ennemis restants dans la vague"
+
+[node name="Ligne" type="HBoxContainer" parent="Colonne/Tableau/EnnemisPlaque"]
+theme_override_constants/separation = 4
+
+[node name="Icone" type="TextureRect" parent="Colonne/Tableau/EnnemisPlaque/Ligne"]
+custom_minimum_size = Vector2(34, 34)
+texture = ExtResource("ennemis")
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Ennemis" type="Label" parent="Colonne/Tableau/EnnemisPlaque/Ligne"]
 unique_name_in_owner = true
 theme_type_variation = &"Nombre"
 

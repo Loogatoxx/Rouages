@@ -71,3 +71,15 @@ func avancer(dt: float, sim: SwarmSim) -> void:
 ## Indique que toute la vague est entrée et que le dernier ennemi a disparu.
 func est_terminee(sim: SwarmSim) -> bool:
 	return _vague != null and _apparues == _total and _boss_lache and sim.nombre(SwarmSim.ENNEMI) == 0
+
+
+## Effectif total de la vague, boss compris (pour le compteur « ennemis restants » du HUD).
+func total() -> int:
+	return _total + (1 if _boss != null else 0)
+
+
+## Ennemis encore à battre : ceux qui ne sont pas encore entrés (boss compris) et ceux qui sont en vie.
+func restants(sim: SwarmSim) -> int:
+	if _vague == null:
+		return 0
+	return (_total - _apparues) + (0 if _boss_lache else 1) + sim.nombre(SwarmSim.ENNEMI)

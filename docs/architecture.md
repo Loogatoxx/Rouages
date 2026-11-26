@@ -78,7 +78,8 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 `plateau_modifie` · `energie_recalculee(alimentees)` · `phase_changee(phase)` · `vague_commencee(n)` ·
 `vague_terminee(n)` · `horloge_touchee(pv)` · `tuile_choisie(id)` · `run_terminee(victoire)` ·
 `ressorts_changes(total)` · `ennemi_casse(position)` · `pause_demandee` (Échap sans pièce sélectionnée) ·
-`message_joueur(texte)` (retour court au joueur : action refusée, astuce ; affiché par le HUD)
+`message_joueur(texte)` (retour court au joueur : action refusée, astuce ; affiché par le HUD) ·
+`piece_reprise(case, def)` (pièce posée reprise en réserve ; écouté par `Partie`)
 
 ## Entrées (InputMap)
 `poser_tuile` (clic gauche) · `tourner_tuile` (R / clic droit) · `annuler` (Échap) · `basculer_camera` (Tab) ·
@@ -152,3 +153,14 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   (icône `menu.png`) ; menu en jeu avec aide et commandes, quitter le jeu. Badges = `pastille.png` (charte T11a).
 - **Charte d'icônes** (T11a, Gemini) : `art_refs/charte_icones.md`, `assets/ui/icones/REGISTRE.md` (une icône = un concept),
   20 icônes dont ressort, cœur (PV), vague, ennemis restants, entrée, chance, déplacer, améliorer, boutique, menu.
+
+## Après playtest 1 — lot 3 (HUD lisible, déplacement)
+- **Ennemis restants** : `DirecteurVagues.total()` / `restants(sim)` (pas encore entrés + boss + vivants) → plaque du HUD
+  pendant les vagues.
+- **Repères** (`game/ui/reperes.gd`, créé par le HUD) : entrées hors champ = panneau fléché au bord ; pendant une vague,
+  ennemis hors champ regroupés en 16 directions (pastilles rouges numérotées). Rien pour ce qui est visible.
+- **Reprendre une pièce** (T11b, Codex) : clic gauche main vide → `Run.reprendre_piece` (retour en réserve, pièce
+  sélectionnée). Gratuit avant la vague 1, puis `prix_deplacement + prix_deplacement_pas × deplacements_pause` (3, 5, 7…,
+  remis à zéro au lancement). Signal `piece_reprise` → `Production.atelier_repris` : un atelier déjà remonté puis déplacé
+  ne l'est pas une 2e fois dans la même pause. → Le placement compte, une erreur se rattrape, et déplacer n'est pas une
+  astuce pour gagner des jouets.

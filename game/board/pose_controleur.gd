@@ -174,7 +174,16 @@ func _unhandled_input(event: InputEvent) -> void:
 				Sons.jouer(&"rotation")
 			elif _source.plateau.piece_de(_case).type != PieceDef.Type.HORLOGE:
 				Events.message_joueur.emit(tr("Tourner coûte %d ressorts") % Run.prix_rotation)
-	elif event.is_action_pressed("poser_tuile") and _choix != null and _survoler():
+	elif event.is_action_pressed("poser_tuile") and _survoler():
+		if _choix == null:
+			var piece: PieceDef = _source.plateau.piece_de(_case)
+			if piece != null and piece.type != PieceDef.Type.HORLOGE:
+				if Run.reprendre_piece(_source.plateau, _case):
+					Sons.jouer(&"pose")
+					Events.tuile_choisie.emit(piece.id)
+				elif Run.ressorts < Run.prix_deplacement:
+					Events.message_joueur.emit(tr("Déplacer coûte %d ressorts") % Run.prix_deplacement)
+			return
 		var id: StringName = _choix.get("id")
 		if Run.reserve.quantite(id) == 0:
 			return
