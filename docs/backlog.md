@@ -16,5 +16,9 @@
 - Déclaration du contenu généré par IA sur Steam (3D Hyper3D, audio).
 - Vérifier la licence commerciale de l'outil audio local.
 
+## Retours de relecture
+- Les jouets sortent de l'atelier côté port (vers l'horloge), puis contournent : prévoir une sortie dédiée côté chemin (T04).
+- ✅ Bridge Antigravity → Blender réparé (autorisations au format `mcp(blender/<outil>)`, testé le 2026-11-23). Les générateurs de l’addon sont « off » : activer Hyper3D dans l’addon avant l’étape 7.
+
 ## Plus tard / peut-être
 - Version navigateur (renderer Compatibility) ; version mobile.

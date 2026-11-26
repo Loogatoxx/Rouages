@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="PieceDef" format=3]
 
 [ext_resource type="Script" path="res://game/board/piece_def.gd" id="1"]
+[ext_resource type="Resource" path="res://data/unites/soldat_remontoir.tres" id="soldat"]
 
 [resource]
 script = ExtResource("1")
@@ -9,3 +10,5 @@ nom = "Atelier de soldats"
 type = 2
 ports = 4
 transmet = false
+unite_produite = ExtResource("soldat")
+cadence_production = 0.6

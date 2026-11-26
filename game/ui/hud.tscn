@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/ui/hud.gd" id="hud"]
+
+[sub_resource type="StyleBoxFlat" id="bois"]
+content_margin_left = 18.0
+content_margin_top = 12.0
+content_margin_right = 18.0
+content_margin_bottom = 12.0
+bg_color = Color(0.26, 0.19, 0.13, 0.96)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+
+[node name="HUD" type="CanvasLayer"]
+layer = 5
+script = ExtResource("hud")
+
+[node name="Tableau" type="PanelContainer" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -236.0
+offset_top = 16.0
+offset_right = -16.0
+theme_override_styles/panel = SubResource("bois")
+
+[node name="Colonne" type="VBoxContainer" parent="Tableau"]
+theme_override_constants/separation = 8
+
+[node name="PV" type="Label" parent="Tableau/Colonne"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.91, 0.73, 1)
+theme_override_font_sizes/font_size = 19
+
+[node name="Vague" type="Label" parent="Tableau/Colonne"]
+unique_name_in_owner = true
+
+[node name="Lancer" type="Button" parent="Tableau/Colonne"]
+unique_name_in_owner = true
+text = "Lancer la vague"
+
+[node name="Fin" type="ColorRect" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.16, 0.12, 0.08, 0.4)
+
+[node name="Centre" type="CenterContainer" parent="Fin"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panneau" type="PanelContainer" parent="Fin/Centre"]
+theme_override_styles/panel = SubResource("bois")
+
+[node name="Colonne" type="VBoxContainer" parent="Fin/Centre/Panneau"]
+theme_override_constants/separation = 12
+
+[node name="Bilan" type="Label" parent="Fin/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 0.91, 0.73, 1)
+theme_override_font_sizes/font_size = 28
+
+[node name="Rejouer" type="Button" parent="Fin/Centre/Panneau/Colonne"]
+unique_name_in_owner = true
+text = "Rejouer"

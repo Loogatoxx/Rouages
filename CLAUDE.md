@@ -32,6 +32,7 @@ Héros Inventeur (RPG léger), arbre de compétences méta.
 - Références V1 : `art_refs/plateau_maquette_v1.jpg`, `art_refs/inventeur_figurine_v1.jpg`.
 
 ## 6. Règles de chantier (Claude)
+0. **Nouvelle session : lire d'abord `docs/reprise.md`** (état, procédure, pièges) au lieu d'explorer le dépôt.
 1. **Une étape de `docs/roadmap.md` à la fois.** Critère de fin atteint → Carlos teste → commit proposé (jamais fait sans son accord).
 2. **Déléguer par fiche** (`taches/README.md`) : une page maximum, avec les fichiers autorisés, le contrat et la commande de test.
    Codex : `./scripts/codex_bridge.sh ecrire <modèle> <effort> taches/Txx.md`. Antigravity : `agy-bridge` (passer `model` explicitement).

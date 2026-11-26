@@ -56,7 +56,7 @@ func _survoler() -> bool:
 func _process(_delta: float) -> void:
 	if _fantome == null:
 		return
-	_fantome.visible = _survoler()
+	_fantome.visible = Run.phase == Run.Phase.CONSTRUCTION and _survoler()
 	if _fantome.visible:
 		var libre: bool = (_source.plateau.sol_de(_case) == _source.Plateau.Sol.HERBE
 				and _source.plateau.piece_de(_case) == null)
@@ -66,6 +66,8 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if Run.phase != Run.Phase.CONSTRUCTION:
+		return
 	if event.is_action_pressed("annuler"):
 		Events.tuile_choisie.emit(&"")
 	elif event.is_action_pressed("tourner_tuile"):

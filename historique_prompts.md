@@ -41,3 +41,11 @@
 - **Réponse** : commit des étapes 1 à 3 ; fiche T04 (ateliers producteurs, vagues, PV de l'horloge, défaite/victoire) confiée à Codex ; ping du bridge Antigravity → Blender.
 - **Modifications** : voir l'entrée suivante une fois T04 relue.
 - **Objectif** : obtenir la première boucle jouable de bout en bout.
+- **Suite (T04 relue)** : Codex (gpt-6.2-astra high) a livré `game/core/partie.gd`, `regles.gd`, `game/workshops/production.gd`, `game/waves/` (VagueDef, DirecteurVagues), `game/ui/hud.*`, `data/regles.tres`, 3 vagues provisoires, et modifié `run.gd`, `piece_def.gd`, `champ_flux.gd` (entrées), `pose_controleur.gd` (pose seulement en construction). 27 tests verts. Le ping du bridge Antigravity → Blender échoue encore : les autorisations ont le format `mcp(blender)` au lieu de `mcp(blender/<outil>)`.
+- Bridge Antigravity → Blender réparé par Carlos (format `mcp(blender/<outil>)`) : test « BLENDER OK » (Blender 5.3, addon v2.0).
+
+## 2026-11-26 — Passage en sessions par étape
+- **Prompt** : « les credit sont revenu tout est en place tu peu continuer hesite pas a ouvrir de nouvelle session quand il faut ».
+- **Réponse** : création de `docs/reprise.md` (état, procédure, pièges) pour qu'une session neuve démarre sans relire le dépôt ; étape 5 confiée à une nouvelle session Claude. Commit de T04 non fait (pas de demande explicite) : la nouvelle session le proposera.
+- **Modifications** : `docs/reprise.md` (nouveau), `CLAUDE.md` (règle 0 : lire la reprise), roadmap (étapes 2, 2b et 4 validées).
+- **Objectif** : réduire le coût en tokens et en cache : une conversation trop longue fait relire tout l'historique à chaque message.

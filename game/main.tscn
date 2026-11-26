@@ -7,6 +7,9 @@
 [ext_resource type="Script" path="res://game/board/pose_controleur.gd" id="pose_controleur"]
 [ext_resource type="Script" path="res://game/camera/camera_plateau.gd" id="camera_plateau"]
 [ext_resource type="PackedScene" path="res://game/ui/palette_debug.tscn" id="palette"]
+[ext_resource type="Script" path="res://game/core/partie.gd" id="partie"]
+[ext_resource type="Script" path="res://game/swarm/nuee_visuel.gd" id="nuee"]
+[ext_resource type="PackedScene" path="res://game/ui/hud.tscn" id="hud"]
 [ext_resource type="PackedScene" path="res://assets/ambiance/ambiance.tscn" id="ambiance"]
 
 [sub_resource type="BoxMesh" id="table"]
@@ -37,3 +40,11 @@ script = ExtResource("plateau_visuel")
 script = ExtResource("pose_controleur")
 
 [node name="PaletteDebug" parent="." instance=ExtResource("palette")]
+
+[node name="Partie" type="Node" parent="."]
+script = ExtResource("partie")
+
+[node name="NueeVisuel" type="Node3D" parent="."]
+script = ExtResource("nuee")
+
+[node name="HUD" parent="." instance=ExtResource("hud")]

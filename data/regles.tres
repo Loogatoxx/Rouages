@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="Regles" format=3]
+
+[ext_resource type="Script" path="res://game/core/regles.gd" id="regles"]
+
+[resource]
+script = ExtResource("regles")
+pv_horloge = 20
+plafond_allies_par_atelier = 15
+multiplicateur_acceleration = 2.0
