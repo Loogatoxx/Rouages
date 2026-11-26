@@ -3,8 +3,20 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-26, rush autonome)
-- **Étapes 7 et 7b faites, non commitées** (indexées) : horloge 3D, sons procéduraux (`scripts/generer_sons.py`, autoload `Sons`),
+## État (mis à jour le 2026-11-26 au soir, autonomie totale)
+- **Carlos a donné carte blanche** : commiter chaque lot terminé sans demander et enchaîner (pas de push sans demande).
+- **Tout est commité jusqu'à l'étape 10.** Étape 10 : tourelles de loot rare via coffres (V3/V6/V9), options (volumes par bus,
+  plein écran), progression méta (Établi, engrenages d'or, `user://progression.cfg`), boss Grand Scarabée (V5, V10, barre de vie),
+  DA v2 (étude `art_refs/etude_da_v2.md`, kit 3D `assets/final/kit_v2/`, kit UI `assets/ui/`, vue inclinée par défaut, table
+  d'établi). 73 tests. Builds Mac + Windows réexportés (Mac testé). Voir `docs/architecture.md` § Étape 10.
+- **Banc** : profil moyen `1,1,1,2,2,3,3,3,4,4`, profil parfait `1,1,2,2,3,3,4,4,5,5` (script prêt à l'emploi : boucle sur
+  3 graines, lancer en `bash`). Repères actuels : parfait 0-7 PV perdus ; moyen premières fuites V3-V5, mort vers V7-V8.
+- **Pièges nouveaux** : la logique (production, sim) ne doit jamais lire un autoload (le banc en `--script` n'en a pas) ;
+  les tests isolent la progression (`tests/run_tests.gd`) ; les captures qui finissent une partie écrivent dans la vraie
+  progression → supprimer `~/Library/Application Support/Godot/app_userdata/Rouages/progression.cfg` après ; une plaque 9-patch
+  plus haute que le bouton s'écrase (d'où `plaque_laiton_petite.png`) ; Codex a un quota (erreur « usage limit » dans le log).
+
+- **Étapes 7 et 7b faites** (commitées) : horloge 3D, sons procéduraux (`scripts/generer_sons.py`, autoload `Sons`),
   ressorts + boutique + relance + réparation, rente des extensions, scarabée cuirassé, atelier de lance-billes, menu titre
   (scène principale, vitrine 3D de l'horloge), pause (Échap/P), fin avec stats, tutoriel en 5 bulles (`user://reglages.cfg`),
   infos de survol, vitesse x2 (Espace bascule), passe visuelle (exposition, SSAO, joints de dalles, damier). 52 tests verts.
