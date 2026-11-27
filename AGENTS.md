@@ -33,3 +33,6 @@ d'engrenages ; les ateliers produisent des nuées de jouets à remontoir contre 
 - **Hyper3D (44 crédits, budget fini)** : jamais de génération sans une image validée par Carlos ET une fiche qui l'autorise
   explicitement avec le nombre de crédits. Note chaque crédit dépensé dans `assets/CREDITS_HYPER3D.md`.
 - Outils : Blender MCP (modulaire, masse, retouches, exports), Hyper3D (pièces maîtresses), outil audio local (`assets/audio/`, `.ogg`).
+- **Modèles animés** : bâtiments = un `AnimationPlayer` dans le `.glb`, animation en boucle nommée `travail` (ou `idle`),
+  le jeu la lance seul. Unités (rendues en MultiMesh, des centaines à la fois) : pas de squelette en jeu ; livrer le cycle
+  de marche cuit en 4 poses `assets/final/<unite>/<unite>_pose_0..3.glb` (même origine, même échelle).

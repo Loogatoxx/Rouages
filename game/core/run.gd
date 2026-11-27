@@ -9,6 +9,7 @@ const UniteDef = preload("res://game/swarm/unite_def.gd")
 
 const DepartDef = preload("res://game/core/depart_def.gd")
 const Reserve = preload("res://game/core/reserve.gd")
+const RecetteDef = preload("res://game/core/recette_def.gd")
 const Lot = preload("res://game/core/lot.gd")
 const Draft = preload("res://game/draft/draft.gd")
 
@@ -163,6 +164,60 @@ func acheter_porte_bonheur() -> bool:
 		return false
 	_porte_bonheur_achete = true
 	ajouter_chance(regles.chance_porte_bonheur)
+	return true
+
+
+## Vérifie que tous les ingrédients de la recette sont disponibles en construction.
+func peut_assembler(recette: RecetteDef) -> bool:
+	if phase != Phase.CONSTRUCTION or recette == null or recette not in regles.recettes:
+		return false
+	var besoins: Dictionary[StringName, int] = {}
+	for lot: Lot in recette.entrees:
+		var id: StringName = lot.objet.get("id")
+		besoins[id] = besoins.get(id, 0) + lot.quantite
+		if reserve.quantite(id) < besoins[id]:
+			return false
+	return true
+
+
+## Remplace les ingrédients en réserve par le lot fabriqué.
+func assembler(recette: RecetteDef) -> bool:
+	if not peut_assembler(recette):
+		return false
+	# Les observateurs ne doivent voir que la réserve finale.
+	var signaux_bloques: bool = reserve.is_blocking_signals()
+	reserve.set_block_signals(true)
+	for lot: Lot in recette.entrees:
+		for i: int in lot.quantite:
+			reserve.retirer(lot.objet.get("id"))
+	reserve.ajouter(recette.sortie.objet, recette.sortie.quantite)
+	reserve.set_block_signals(signaux_bloques)
+	reserve.modifiee.emit()
+	return true
+
+
+## Renvoie le gain en ressorts pour une pièce démontable de la réserve.
+func valeur_demontage(objet: Resource) -> int:
+	var piece := objet as Plateau.PieceDef
+	if piece != null:
+		match piece.type:
+			Plateau.PieceDef.Type.ENGRENAGE:
+				return regles.demontage_engrenage
+			Plateau.PieceDef.Type.ATELIER:
+				return regles.demontage_atelier
+			Plateau.PieceDef.Type.TOURELLE:
+				return regles.demontage_tourelle
+	return 0
+
+
+## Démonte un exemplaire en construction et crédite ses ressorts.
+func demonter(id: StringName) -> bool:
+	if phase != Phase.CONSTRUCTION:
+		return false
+	var valeur: int = valeur_demontage(reserve.trouver(id))
+	if valeur <= 0 or not reserve.retirer(id):
+		return false
+	gagner(valeur)
 	return true
 
 

@@ -252,7 +252,38 @@ func _creer_lot(def: SwarmSim.UniteDef, camp: int) -> MultiMesh:
 	return lot
 
 
+## Animations procédurales des nuées (PT-53). Pourquoi des maths plutôt qu'Hyper3D ici (règle R1, exception b) : des
+## centaines d'unités en MultiMesh ne peuvent pas porter chacune un squelette animé ; un dandinement de jouet à
+## remontoir, un trottinement d'insecte et un battement d'ailes calculés par instance coûtent presque rien et se lisent
+## bien de haut. Les modèles Hyper3D animés passeront par le même point d'entrée (`_pose_animee`).
+var _temps: float = 0.0
+var _precedents: Array[PackedVector2Array] = [PackedVector2Array(), PackedVector2Array()]
+## Dernier état « en marche » connu : la simulation avance au pas physique, l'affichage parfois plus vite ; sans mémoire,
+## une image sans pas physique figerait toute la nuée (clignotement de la démarche).
+var _en_marche: Array[PackedByteArray] = [PackedByteArray(), PackedByteArray()]
+
+
+# Transforme la base d'une unité selon sa démarche : dandinement (jouets), trottinement (insectes), ailes (volants).
+func _pose_animee(base: Basis, def: SwarmSim.UniteDef, camp: int, i: int, en_marche: bool) -> Array:
+	var hauteur: float = 0.0
+	var phase: float = _temps * (11.0 if camp == SwarmSim.ALLIE else 17.0) + i * 1.7
+	if def.volant:
+		hauteur = 0.9 + 0.05 * sin(_phase_vol + i)
+		# Battement d'ailes : le corps « respire » en largeur très vite (le modèle n'a pas d'ailes séparées).
+		base = base.scaled_local(Vector3(1.0 + 0.18 * sin(_temps * 26.0 + i), 1.0, 1.0))
+	elif en_marche and camp == SwarmSim.ALLIE:
+		# Jouet à remontoir : il se balance d'un pied sur l'autre en sautillant.
+		base = base * Basis(Vector3.FORWARD, 0.13 * sin(phase))
+		hauteur = 0.045 * absf(sin(phase))
+	elif en_marche:
+		# Insecte mécanique : petits sauts rapides et léger lacet.
+		base = Basis(Vector3.UP, 0.06 * sin(phase * 0.5)) * base
+		hauteur = 0.02 * absf(sin(phase))
+	return [base, hauteur]
+
+
 func _process(delta: float) -> void:
+	_temps += delta
 	_phase_vol = fmod(_phase_vol + delta * 10.0, TAU)
 	_avancer_billes(delta)
 	if sim == null:
@@ -264,6 +295,14 @@ func _process(delta: float) -> void:
 		var touches: PackedFloat32Array = sim.touches(camp)
 		var angles: PackedFloat32Array = sim.caps(camp)
 		var modeles: Array[SwarmSim.UniteDef] = sim.modeles(camp)
+		var precedents: PackedVector2Array = _precedents[camp]
+		var pas_physique: bool = lieux != precedents
+		if pas_physique:
+			var marche := PackedByteArray()
+			marche.resize(lieux.size())
+			for j: int in lieux.size():
+				marche[j] = 1 if precedents.size() == lieux.size() and not precedents[j].is_equal_approx(lieux[j]) else 0
+			_en_marche[camp] = marche
 		for i: int in lieux.size():
 			var id: StringName = modeles[i].id
 			var lot: MultiMesh = _lots.get(id)
@@ -276,8 +315,10 @@ func _process(delta: float) -> void:
 				lot.set_instance_color(indice, CREME if touche else Color.WHITE)
 				if touche:
 					base = base.scaled_local(Vector3.ONE * 1.12)
-			var hauteur: float = 0.9 + 0.05 * sin(_phase_vol + i) if modeles[i].volant else 0.0
-			lot.set_instance_transform(indice, Transform3D(base, Vector3(lieux[i].x, hauteur, lieux[i].y)))
+			var en_marche: bool = i < _en_marche[camp].size() and _en_marche[camp][i] == 1
+			var pose: Array = _pose_animee(base, modeles[i], camp, i, en_marche)
+			lot.set_instance_transform(indice, Transform3D(pose[0], Vector3(lieux[i].x, pose[1], lieux[i].y)))
 			_effectifs[id] = indice + 1
+		_precedents[camp] = lieux.duplicate()
 	for id: StringName in _lots:
 		_lots[id].visible_instance_count = _effectifs[id]

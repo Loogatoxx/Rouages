@@ -174,3 +174,5 @@ Clic : ouvrir les actions de la pièce,Clic : ouvrir les actions de la pièce,Cl
 Reprendre ramène la pièce au niveau 1.,Reprendre ramène la pièce au niveau 1.,Picking up resets this piece to level 1.,Recolher repõe a peça no nível 1.
 Bonus aux voisins ×%s,Bonus aux voisins ×%s,Neighbour bonus ×%s,Bónus aos vizinhos ×%s
 Prochaine vague,Prochaine vague,Next wave,Próxima vaga
+Assembler,Assembler,Assemble,Montar
+Clic droit : démonter (+%d ressorts),Clic droit : démonter (+%d ressorts),Right-click to dismantle (+%d springs),Clique direito para desmontar (+%d molas)

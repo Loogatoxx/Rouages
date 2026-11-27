@@ -204,3 +204,14 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   doré au niveau 5.
 - **Chantier d'extension** (Gemini, `kit_v2/chantier_extension`) remplace les fanions : flèche vers l'extérieur,
   panneau qui se balance, un repère tous les 3 cases au plus.
+
+## Après playtest 1 — lot 8 (banc mixte, craft, animations)
+- **Banc mixte** : étapes 3 et 5 = ateliers de lance-billes (4e argument `soldats` pour l'ancien). Vagues relissées
+  (V5 100 scarabées et boss ×0,4 ; V6-V9 plus résistantes ; V10 ×2,55). Repères : parfait 0-1 PV, moyen meurt V5-V10.
+- **Craft** (T11f, Codex) : `RecetteDef` (`data/recettes/`, `Regles.recettes`) ; `Run.assembler` / `peut_assembler`,
+  `Run.demonter` (engrenage 1, atelier 6, tourelle 8 ressorts) ; clic droit sur la réserve = démonter, bouton
+  « Assembler » = fiche des recettes (construction seulement).
+- **Animations** : `NueeVisuel._pose_animee` (dandinement des jouets, trottinement des insectes, ailes de la libellule,
+  par instance de MultiMesh, mémoire « en marche » entre deux pas physiques). `PlateauVisuel._jouer_animation` : tout
+  modèle du kit livré avec un `AnimationPlayer` joue « travail », sinon « idle », sinon sa première animation, en boucle.
+  Contrat pour les unités animées Hyper3D (MultiMesh, pas de squelette par unité) : voir `AGENTS.md`.

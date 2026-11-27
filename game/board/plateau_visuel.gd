@@ -79,7 +79,26 @@ func _regler_lumiere() -> void:
 
 func _instancier(nom: StringName) -> Node3D:
 	var scene: PackedScene = Materiaux.scene_du_kit(nom)
-	return scene.instantiate() as Node3D if scene != null else null
+	var noeud: Node3D = scene.instantiate() as Node3D if scene != null else null
+	if noeud != null:
+		_jouer_animation(noeud)
+	return noeud
+
+
+## Pont vers les modèles animés (PT-53, Hyper3D) : si un modèle du kit arrive avec un AnimationPlayer, on joue en boucle
+## son animation « travail » (ou « idle », sinon la première). Le kit actuel n'en a pas : rien ne change aujourd'hui.
+static func _jouer_animation(noeud: Node) -> void:
+	var lecteur := noeud.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	if lecteur == null or lecteur.get_animation_list().is_empty():
+		return
+	var nom: StringName = lecteur.get_animation_list()[0]
+	for prefere: StringName in [&"travail", &"idle"]:
+		if lecteur.has_animation(prefere):
+			nom = prefere
+			break
+	var animation: Animation = lecteur.get_animation(nom)
+	animation.loop_mode = Animation.LOOP_LINEAR
+	lecteur.play(nom)
 
 
 ## Renvoie le matériau partagé pour cette teinte du plateau.

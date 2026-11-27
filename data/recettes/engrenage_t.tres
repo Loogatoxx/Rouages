@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RecetteDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/recette_def.gd" id="recette"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="source"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_t.tres" id="produit"]
+
+[sub_resource type="Resource" id="entree"]
+script = ExtResource("lot")
+objet = ExtResource("source")
+quantite = 2
+
+[sub_resource type="Resource" id="sortie"]
+script = ExtResource("lot")
+objet = ExtResource("produit")
+quantite = 1
+
+[resource]
+script = ExtResource("recette")
+id = &"engrenage_t"
+entrees = Array[ExtResource("lot")]([SubResource("entree")])
+sortie = SubResource("sortie")

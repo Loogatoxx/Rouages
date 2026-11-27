@@ -14,10 +14,30 @@ mouse_filter = 2
 theme = ExtResource("theme")
 script = ExtResource("script")
 
-[node name="Panneau" type="PanelContainer" parent="."]
+[node name="Colonne" type="VBoxContainer" parent="."]
+mouse_filter = 2
+
+[node name="Fiche" type="PanelContainer" parent="Colonne"]
+unique_name_in_owner = true
+visible = false
+size_flags_horizontal = 8
+theme_type_variation = &"Fiche"
+
+[node name="Recettes" type="VBoxContainer" parent="Colonne/Fiche"]
+unique_name_in_owner = true
+
+[node name="Panneau" type="PanelContainer" parent="Colonne"]
 unique_name_in_owner = true
 theme_type_variation = &"Tiroir"
 
-[node name="Pieces" type="GridContainer" parent="Panneau"]
+[node name="Ligne" type="HBoxContainer" parent="Colonne/Panneau"]
+
+[node name="Pieces" type="GridContainer" parent="Colonne/Panneau/Ligne"]
 unique_name_in_owner = true
 columns = 4
+
+[node name="Assembler" type="Button" parent="Colonne/Panneau/Ligne"]
+unique_name_in_owner = true
+size_flags_vertical = 4
+toggle_mode = true
+text = "Assembler"

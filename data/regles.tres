@@ -38,6 +38,11 @@
 [ext_resource type="Resource" path="res://data/ameliorations/rente.tres" id="meta_rente"]
 [ext_resource type="Resource" path="res://data/ameliorations/relance_offerte.tres" id="meta_relance_offerte"]
 
+[ext_resource type="Script" path="res://game/core/recette_def.gd" id="recette"]
+[ext_resource type="Resource" path="res://data/recettes/engrenage_croix.tres" id="recette_engrenage_croix"]
+[ext_resource type="Resource" path="res://data/recettes/engrenage_t.tres" id="recette_engrenage_t"]
+[ext_resource type="Resource" path="res://data/recettes/atelier_billes.tres" id="recette_atelier_billes"]
+
 [sub_resource type="Resource" id="lot_atelier"]
 script = ExtResource("lot")
 objet = ExtResource("atelier")
@@ -157,5 +162,9 @@ prix_relance = 5
 prix_reparation = 10
 prix_porte_bonheur = 8
 pv_reparation = 5
+recettes = Array[ExtResource("recette")]([ExtResource("recette_engrenage_croix"), ExtResource("recette_engrenage_t"), ExtResource("recette_atelier_billes")])
+demontage_engrenage = 1
+demontage_atelier = 6
+demontage_tourelle = 8
 boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("vente_t"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes")])
 vagues = Array[ExtResource("vague")]([ExtResource("vague_1"), ExtResource("vague_2"), ExtResource("vague_3"), ExtResource("vague_4"), ExtResource("vague_5"), ExtResource("vague_6"), ExtResource("vague_7"), ExtResource("vague_8"), ExtResource("vague_9"), ExtResource("vague_10")])

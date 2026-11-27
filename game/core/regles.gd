@@ -3,6 +3,7 @@ class_name Regles extends Resource
 
 const AmeliorationDef = preload("res://game/core/amelioration_def.gd")
 const DepartDef = preload("res://game/core/depart_def.gd")
+const RecetteDef = preload("res://game/core/recette_def.gd")
 const Lot = preload("res://game/core/lot.gd")
 const VagueDef = preload("res://game/waves/vague_def.gd")
 
@@ -50,6 +51,10 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var prix_relance: int
 @export var prix_reparation: int
 @export var pv_reparation: int
+@export var recettes: Array[RecetteDef] = []
+@export var demontage_engrenage: int
+@export var demontage_atelier: int
+@export var demontage_tourelle: int
 @export var boutique: Array[Lot] = []
 @export var choix_par_draft: int = 3
 @export var pioche: Array[Lot] = []
