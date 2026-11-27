@@ -48,14 +48,9 @@ func _ready() -> void:
 
 ## Grande table d'établi sous la maquette : sans elle, le plateau flotte sur un fond uni (DA v2, « maquette posée »).
 func _poser_table() -> void:
-	var bois := StandardMaterial3D.new()
-	var texture_bois := "res://assets/final/kit_v2/bord_plateau/bord_plateau_tex_bois_miel.png"
-	bois.albedo_color = Color("#F2D2A8")
-	if ResourceLoader.exists(texture_bois):
-		bois.albedo_texture = load(texture_bois)
-		bois.uv1_triplanar = true
-		bois.uv1_scale = Vector3.ONE * 0.018
-	bois.roughness = 0.5
+	# Bois procédural (PT-56) : planches, joints, fil et nœuds calculés dans l'espace du monde (`table_bois.gdshader`).
+	var bois := ShaderMaterial.new()
+	bois.shader = preload("res://game/board/table_bois.gdshader")
 	var plateau_table := BoxMesh.new()
 	plateau_table.size = Vector3(140, 1, 140)
 	_ajouter_forme(self, plateau_table, Vector3(0, -0.75, 0), bois)

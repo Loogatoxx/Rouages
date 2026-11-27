@@ -87,7 +87,7 @@ Le relecteur n'est jamais le producteur (Claude relit Codex et Gemini ; Codex ou
 | PT-53 | **Vraies animations** (en tête du moyen terme : demandé en priorité) : marche des insectes et des jouets, tir des tourelles, ateliers qui travaillent, horloge (balancier, aiguilles). Via Hyper3D (rig + animation) ; repli procédural seulement si l'animation générée est inexploitable (blocage noté). | P2 | Hyper3D + Gemini (Blender) → Claude (intégration) | PT-52 | 🟡 démarche procédurale des nuées + lecture auto des AnimationPlayer des bâtiments ; animations Hyper3D à venir |
 | PT-54 | **Plateau vivant, jamais surchargé** : micro-détails d'ambiance (papillons, brins d'herbe au vent, fumée de vapeur, oiseaux-jouets, outils d'horloger sur la table, poussière dans la lumière). Règle pour chaque ajout : « puis-je ajouter un petit détail ici sans en faire trop ? ». | P2 | Gemini (assets) → Claude (intégration, budget de perf) | PT-10 | 🟡 poussière dorée et pétales (particules) ; micro-décors 3D en attente du quota Gemini |
 | PT-55 | **Extension de territoire plus marquante** : remplacer les fanions par un élément fort (ex. pancarte de chantier en bois + boîte de pièces à déballer, tracé en pointillés du futur chemin). | P2 | Gemini (asset) + Claude (aperçu) | PT-01 | ✅ chantier de maquette (Gemini) |
-| PT-56 | Texture de la table autour du plateau à refaire (non prioritaire). | P3 | Gemini | — | ⬜ |
+| PT-56 | Texture de la table autour du plateau à refaire (non prioritaire). | P3 | Gemini | — | ✅ bois procédural (shader) |
 
 ## Long terme — modes, méta, onboarding, lore (P3)
 | ID | Tâche | Prio | Qui | Dépendances | État |
