@@ -58,6 +58,24 @@ static func finir_chapitre(n: int) -> void:
 		_sauver(fichier)
 
 
+## Note un chapitre terminé en Difficile (affiché d'une étoile ; aucun blocage, P2-51).
+static func finir_chapitre_difficile(n: int) -> void:
+	var fichier: ConfigFile = _lire()
+	if fichier == null:
+		return
+	var faits: Array = fichier.get_value("campagne", "difficiles", [])
+	if not faits.has(n):
+		faits.append(n)
+		fichier.set_value("campagne", "difficiles", faits)
+		_sauver(fichier)
+
+
+## Indique si le chapitre `n` (à partir de un) a été terminé en Difficile.
+static func chapitre_difficile_fini(n: int) -> bool:
+	var fichier: ConfigFile = _lire()
+	return fichier != null and fichier.get_value("campagne", "difficiles", []).has(n)
+
+
 ## Ouvre la partie libre et le défi du jour au même palier de campagne.
 static func libre_debloque() -> bool:
 	return chapitres_finis() >= REGLES.chapitre_deblocage_libre or ancien_joueur()

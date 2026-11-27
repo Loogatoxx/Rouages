@@ -17,7 +17,10 @@ const DIFFICULTES: Array[String] = ["Facile", "Normal", "Difficile"]
 var _chapitre: int
 var _plateau_libre: int = 0
 var _difficulte_libre: int = 1
-var _longue_libre: bool = false
+## Mode de partie libre : 0 = classique (10 vagues), 1 = Longue route (15 vagues), 2 = bac à sable (P2-53).
+var _mode_libre: int = 0
+var _difficile: HBoxContainer
+var _chapitre_difficile: int = 0
 var _mode: Button
 
 
@@ -61,10 +64,11 @@ func _ready() -> void:
 	_mode.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	preparer_bouton(_mode)
 	_mode.pressed.connect(func() -> void:
-		_longue_libre = not _longue_libre
+		_mode_libre = (_mode_libre + 1) % 3
 		_afficher_plateau())
 	%ChoixLibre.add_sibling(_mode)
 	%Defi.pressed.connect(_lancer_defi)
+	_creer_difficile()
 	_afficher_plateau()
 	%Tutoriel.pressed.connect(_revoir_tutoriel)
 	%Quitter.pressed.connect(get_tree().quit)
@@ -222,7 +226,8 @@ func _afficher_plateau() -> void:
 	%Difficulte.text = tr("Difficulté : %s") % tr(DIFFICULTES[_difficulte_libre])
 	if _mode != null:
 		_mode.visible = libre
-		_mode.text = tr("Mode : Longue route (15 vagues)") if _longue_libre else tr("Mode : Classique (10 vagues)")
+		_mode.text = [tr("Mode : Classique (10 vagues)"), tr("Mode : Longue route (15 vagues)"),
+				tr("Mode : Bac à sable (tout débloqué)")][_mode_libre]
 	if libre:
 		%Jouer.tooltip_text = tr("Record : %d / %d") % [Progression.record(depart.nom, _difficulte_libre), Run.nb_vagues]
 	var record: int = record_defi(_date())
@@ -240,6 +245,7 @@ func _notification(quoi: int) -> void:
 	if quoi == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
 		_afficher_plateau()
 		_afficher_or()
+		_ecrire_difficile()
 
 
 func _lancer_chapitre() -> void:
@@ -248,10 +254,51 @@ func _lancer_chapitre() -> void:
 
 
 func _jouer() -> void:
-	Run.choisir_depart(_plateau_libre)
+	if _mode_libre == 2:
+		Run.preparer_bac_a_sable(_plateau_libre)
+	else:
+		Run.choisir_depart(_plateau_libre)
 	Run.difficulte = _difficulte_libre
-	Run.longue_route = _longue_libre
+	Run.longue_route = _mode_libre >= 1
 	commencer_partie(get_tree())
+
+
+# Difficile optionnel (P2-51) : rejouer un chapitre déjà terminé, plus dur et mieux récompensé. Aucun blocage :
+# le bouton Campagne propose toujours le chapitre suivant.
+func _creer_difficile() -> void:
+	var finis: int = Progression.chapitres_finis()
+	if finis <= 0:
+		return
+	_chapitre_difficile = finis - 1
+	_difficile = HBoxContainer.new()
+	_difficile.add_theme_constant_override(&"separation", 8)
+	var choix := Button.new()
+	choix.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choix.tooltip_text = tr("Difficile : plus de PV ennemis, engrenages d’or ×1,5, un coffre de plus, +2 chance. Optionnel.")
+	preparer_bouton(choix)
+	choix.pressed.connect(func() -> void:
+		_chapitre_difficile = (_chapitre_difficile + 1) % finis
+		_ecrire_difficile())
+	_difficile.add_child(choix)
+	var lancer := Button.new()
+	lancer.text = "▶"
+	lancer.custom_minimum_size.x = 56
+	lancer.tooltip_text = choix.tooltip_text
+	preparer_bouton(lancer)
+	lancer.pressed.connect(func() -> void:
+		Run.preparer_chapitre(_chapitre_difficile, true)
+		commencer_partie(get_tree()))
+	_difficile.add_child(lancer)
+	%DescriptionChapitre.add_sibling(_difficile)
+	_ecrire_difficile()
+
+
+func _ecrire_difficile() -> void:
+	if _difficile == null:
+		return
+	var id: int = Run.regles.chapitres[_chapitre_difficile].id
+	(_difficile.get_child(0) as Button).text = tr("Chapitre %d en Difficile") % id \
+			+ (" ★" if Progression.chapitre_difficile_fini(id) else "")
 
 
 # Défi du jour : même plateau et même graine pour tout le monde à cette date.

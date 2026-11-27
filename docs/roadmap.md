@@ -192,14 +192,14 @@ Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces �
 ## Moyen / long terme — §4. Campagne, modes, maps, tutoriel, lore BD (P2-P3)
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
-| P2-50 | **Bâtiments débloqués par chapitre** : pool de départ réduit (soldats + engrenages simples), chaque chapitre ajoute un bâtiment, annoncé clairement au début du chapitre (« Nouveau : … » avec vignette). | P1 | Claude | `ChapitreDef`, `Progression`, `draft.gd`, boutique | |
-| P2-51 | **Difficile optionnel par chapitre** : finir un chapitre en Normal débloque son mode Difficile (plus de loot : engrenages d'or ×1,5, coffre en plus) ; aucun blocage pour passer au chapitre suivant. | P1 | Claude | `Progression`, menu de campagne | |
-| P2-52 | **Mode libre conservé** avec tous les bâtiments (test libre). | P1 | Claude | P2-50 | |
-| P2-53 | **Bac à sable / test infini** : tout débloqué, ressources infinies, vagues à la demande, aucun effet sur la progression. | P1 | Claude | `Run`, menu | |
+| P2-50 | **Bâtiments débloqués par chapitre** : pool de départ réduit (soldats + engrenages simples), chaque chapitre ajoute un bâtiment, annoncé clairement au début du chapitre (« Nouveau : … » avec vignette). | P1 | Claude | `ChapitreDef`, `Progression`, `draft.gd`, boutique || ✅ `ChapitreDef.debloque`, fiche « Nouveau ! » |
+| P2-51 | **Difficile optionnel par chapitre** : finir un chapitre en Normal débloque son mode Difficile (plus de loot : engrenages d'or ×1,5, coffre en plus) ; aucun blocage pour passer au chapitre suivant. | P1 | Claude | `Progression`, menu de campagne || ✅ ligne « Chapitre N en Difficile » (★ si fait) |
+| P2-52 | **Mode libre conservé** avec tous les bâtiments (test libre). | P1 | Claude | P2-50 || ✅ |
+| P2-53 | **Bac à sable / test infini** : tout débloqué, ressources infinies, vagues à la demande, aucun effet sur la progression. | P1 | Claude | `Run`, menu || ✅ « Mode : Bac à sable » |
 | P2-54 | **Pas de carte répétée après le chapitre 3** : nouvelles cartes (au moins 3) et nouveaux ennemis par chapitre. | P2 | Claude (dessin des cartes) | P2-32, P2-55 | |
 | P2-55 | **Cartes plus grandes, détaillées et vivantes** (décor par chapitre, animations d'ambiance, budget de perf respecté). | P2 | Gemini (décor) + Claude (intégration) + Hyper3D | PT-54, P2-04 | |
 | P2-56 | **Chemins qui évoluent par segments** : extensions de formes variées (segments longs, L, boucles), au-delà du bloc 3×3 posé un par un. | P3 | Claude (design + `Extension`) | P2-54 | |
-| P2-57 | **Tutoriel réintégré au bon moment** : il était masqué chez Carlos (`tutoriel.vu`), il démarre désormais au chapitre 1 de la campagne (et reste accessible depuis l'aide). | P1 | Claude | `tutoriel.gd`, campagne | |
+| P2-57 | **Tutoriel réintégré au bon moment** : il était masqué chez Carlos (`tutoriel.vu`), il démarre désormais au chapitre 1 de la campagne (et reste accessible depuis l'aide). | P1 | Claude | `tutoriel.gd`, campagne || ✅ revient au chapitre 1 tant qu'il n'est pas fini |
 | P2-58 | **Lore en BD** (façon Plants vs. Zombies) : 3 à 4 cases illustrées au début de chaque chapitre, très peu de texte (bulles courtes). | P3 | Claude (scénario, cases) → Gemini (images) | `docs/lore.md`, quota Gemini | |
 
 ## Restes du playtest 1 (toujours ouverts)

@@ -21,7 +21,10 @@ var _termine: bool = false
 
 func _ready() -> void:
 	var fichier := ConfigFile.new()
-	if fichier.load(Interface.REGLAGES) == OK and fichier.get_value("tutoriel", "vu", false) == true:
+	# Playtest 2 (« le tutoriel a disparu ») : il était masqué pour toujours dès qu'on l'avait vu une fois. Il revient
+	# désormais au bon moment : au chapitre 1 de la campagne tant que ce chapitre n'est pas terminé.
+	var chapitre_un: bool = Run.chapitre == 0 and preload("res://game/core/progression.gd").chapitres_finis() == 0
+	if not chapitre_un and fichier.load(Interface.REGLAGES) == OK and fichier.get_value("tutoriel", "vu", false) == true:
 		return
 	Interface.preparer_boutons(self)
 	%Compris.pressed.connect(_comprendre)

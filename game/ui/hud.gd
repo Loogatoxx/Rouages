@@ -92,6 +92,8 @@ func _ready() -> void:
 	reperes.partie = get_parent().get_node_or_null("Partie")
 	add_child(reperes)
 	move_child(reperes, 0)
+	if not Run.nouveautes.is_empty() and Run.vague_actuelle == 0:
+		_annoncer_nouveautes.call_deferred()
 
 
 func _creer_barre_boss() -> void:
@@ -407,6 +409,8 @@ func _actualiser_solde(total: int) -> void:
 		_porte_bonheur.tooltip_text = tr("Porte-bonheur : +%d chance (une fois par pause)") % Run.regles.chance_porte_bonheur
 	for i: int in _ventes.size():
 		var lot: Lot = Run.regles.boutique[i]
+		# Campagne (P2-50) : une pièce pas encore débloquée n'apparaît pas en boutique.
+		_ventes[i].visible = Run.autorise(lot.objet)
 		var verrouille: bool = lot.vague_min > Run.vague_actuelle + 1
 		_ventes[i].disabled = verrouille or total < lot.prix
 		# Tuile trop chère ou verrouillée : grisée (audit UI : coûts inabordables lisibles d'un coup d'œil).
@@ -414,6 +418,53 @@ func _actualiser_solde(total: int) -> void:
 		var entete: String = tr("%s ×%d — %d ressorts") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
 		_ventes[i].tooltip_text = entete + "\n" + (tr("Disponible à la vague %d") % lot.vague_min
 				if verrouille else tr(lot.objet.get("description")))
+
+
+# Début de chapitre (P2-50) : fiche « Nouveau ! » avec la vignette et le nom de chaque pièce débloquée.
+# Elle se ferme au clic ou seule après 7 s.
+func _annoncer_nouveautes() -> void:
+	var fiche := PanelContainer.new()
+	fiche.theme = THEME_UI
+	fiche.theme_type_variation = &"Fiche"
+	fiche.mouse_filter = Control.MOUSE_FILTER_STOP
+	var colonne := VBoxContainer.new()
+	colonne.alignment = BoxContainer.ALIGNMENT_CENTER
+	fiche.add_child(colonne)
+	var titre := Label.new()
+	titre.theme_type_variation = &"CarteNom"
+	titre.text = tr("Nouveau dans ce chapitre !")
+	titre.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	colonne.add_child(titre)
+	var rangee := HBoxContainer.new()
+	rangee.alignment = BoxContainer.ALIGNMENT_CENTER
+	rangee.add_theme_constant_override(&"separation", 18)
+	colonne.add_child(rangee)
+	for piece: Resource in Run.nouveautes:
+		var case := VBoxContainer.new()
+		rangee.add_child(case)
+		var image := TextureRect.new()
+		image.texture = Interface.vignette_de(piece)
+		image.custom_minimum_size = Vector2(96, 96)
+		image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		case.add_child(image)
+		var nom := Label.new()
+		nom.theme_type_variation = &"CarteTexte"
+		nom.text = tr(piece.get("nom"))
+		nom.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		case.add_child(nom)
+		case.tooltip_text = tr(piece.get("description"))
+	add_child(fiche)
+	fiche.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 70)
+	fiche.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	Interface.apparaitre(fiche)
+	var fermer := func() -> void:
+		if is_instance_valid(fiche):
+			fiche.queue_free()
+	fiche.gui_input.connect(func(evenement: InputEvent) -> void:
+		if evenement is InputEventMouseButton and evenement.pressed:
+			fermer.call())
+	get_tree().create_timer(7.0).timeout.connect(fermer)
 
 
 func _afficher_lots() -> void:

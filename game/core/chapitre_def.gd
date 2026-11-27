@@ -12,3 +12,6 @@ const DepartDef = preload("res://game/core/depart_def.gd")
 @export var tiroirs: Array[int] = []
 ## Partie en « Longue route » (15 vagues).
 @export var longue_route: bool = false
+## Pièces débloquées à partir de ce chapitre (playtest 2 : le pool de départ est réduit, chaque chapitre en ajoute).
+## Disponibles dans un chapitre = cumul des `debloque` des chapitres 1 à celui-ci ; annoncées en début de chapitre.
+@export var debloque: Array[Resource] = []

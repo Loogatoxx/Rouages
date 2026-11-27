@@ -25,7 +25,9 @@ func _ready() -> void:
 	Interface.preparer_bouton(%Assembler)
 	%Assembler.toggled.connect(%Fiche.set_visible)
 	for recette: RecetteDef in Run.regles.recettes:
-		_ajouter_recette(recette)
+		# Campagne (P2-50) : une recette dont la pièce n'est pas encore débloquée reste cachée (pas de spoil).
+		if Run.autorise(recette.sortie.objet):
+			_ajouter_recette(recette)
 	Run.reserve.modifiee.connect(_reconstruire)
 	Events.phase_changee.connect(_actualiser_phase)
 	Events.tuile_choisie.connect(_afficher_selection)

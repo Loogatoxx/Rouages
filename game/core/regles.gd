@@ -15,6 +15,16 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var chapitre_deblocage_libre: int
 @export var difficultes_pv_ennemis: Array[float]
 @export var difficultes_pv_horloge: Array[int]
+@export_group("Difficile optionnel (playtest 2)")
+## PV des ennemis en plus en mode Difficile d'un chapitre (multiplie la difficulté du chapitre).
+@export var facteur_pv_difficile: float = 1.3
+## Engrenages d'or gagnés ×… en Difficile.
+@export var butin_difficile: float = 1.5
+## Chance offerte au départ d'un chapitre en Difficile.
+@export var chance_difficile: int = 2
+## Vague après laquelle le Difficile offre un coffre de plus.
+@export var vague_coffre_difficile: int = 5
+@export_group("")
 @export var departs: Array[DepartDef] = []
 @export var garde_ratio: float = 0.55
 @export var prix_rotation: int = 2

@@ -3,6 +3,10 @@
 [ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
 [ext_resource type="Resource" path="res://data/depart.tres" id="depart"]
 
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="deb_atelier_soldats"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="deb_engrenage_droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="deb_engrenage_coude"]
+
 [resource]
 script = ExtResource("chapitre")
 id = 1
@@ -10,3 +14,4 @@ titre = "L'Établi"
 recit = "Déplie la prairie sur l’établi. Au centre du village, le tic-tac de l’Horloge-Mère réveille un premier soldat de bois."
 depart = ExtResource("depart")
 difficulte = 0
+debloque = Array[Resource]([ExtResource("deb_atelier_soldats"), ExtResource("deb_engrenage_droit"), ExtResource("deb_engrenage_coude")])

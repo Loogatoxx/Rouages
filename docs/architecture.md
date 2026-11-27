@@ -314,3 +314,16 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - **Touches** (P2-13, autoload `Touches`) : 16 actions réassignables (clavier ou souris), seule la touche principale est
   remplacée, une touche reprise est retirée à l'ancienne action, enregistrement dans `reglages.cfg` [touches]
   (`chemin_reglages` remplaçable par les tests), « Touches d'origine ». Onglet « Touches » dans les Options.
+
+## Après playtest 2 — lot D (campagne, modes, tutoriel)
+- **Déblocage par chapitre** (P2-50) : `ChapitreDef.debloque` (ch1 soldats + droit + coude ; ch2 T + canon ; ch3
+  lance-billes + carillon ; ch4 croix + générateur ; ch5 mortier + pont). `Run.pieces_autorisees` (cumul,
+  `pieces_du_chapitre`), `Run.autorise(objet)` filtre pioche et coffre (`exclus` de `Draft.tirer`), boutique (tuile
+  cachée, achat refusé) et recettes (cachées). Un coffre sans tourelle débloquée devient un tirage ordinaire.
+  `Run.nouveautes` → fiche « Nouveau dans ce chapitre ! » du HUD (vignettes, 7 s).
+- **Difficile optionnel** (P2-51) : `Run.preparer_chapitre(i, difficile)` (seulement si le chapitre est fini) ; PV
+  ennemis ×1,3 (`Regles.facteur_pv_difficile`), engrenages d'or ×1,5, coffre en plus après la V5, +2 chance ;
+  `Progression.finir_chapitre_difficile` / `chapitre_difficile_fini` (étoile au titre). Le chapitre suivant reste libre.
+- **Bac à sable** (P2-53) : `Run.preparer_bac_a_sable(i)` : 5 exemplaires de tout, `depenser` toujours vrai, horloge
+  invincible, aucun record ni engrenage. Troisième valeur du bouton « Mode » de la partie libre (P2-52 inchangée).
+- **Tutoriel** (P2-57) : affiché au chapitre 1 tant que ce chapitre n'est pas terminé, même s'il a déjà été vu.

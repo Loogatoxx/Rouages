@@ -24,6 +24,14 @@ var difficulte: int = 1:
 	set(valeur):
 		difficulte = clampi(valeur, 0, 2)
 var defi_du_jour: bool = false
+## Mode Difficile d'un chapitre déjà terminé (P2-51) : plus d'ennemis plus solides, plus de butin, toujours optionnel.
+var chapitre_difficile: bool = false
+## Bac à sable (P2-53) : tout est débloqué, ressorts illimités, horloge invincible, aucun effet sur la progression.
+var bac_a_sable: bool = false
+## Pièces autorisées dans cette partie (campagne : cumul des déblocages des chapitres) ; vide = tout est autorisé.
+var pieces_autorisees: Array[Resource] = []
+## Pièces nouvelles du chapitre, à annoncer au début de la partie.
+var nouveautes: Array[Resource] = []
 var _graine_defi: int
 var reserve: Reserve = Reserve.new()
 var offre: Array[Lot] = []
@@ -84,6 +92,8 @@ func gagner(n: int) -> void:
 
 ## Prélève le prix si le solde permet de le payer en entier.
 func depenser(n: int) -> bool:
+	if bac_a_sable and n >= 0:
+		return true  # ressources illimitées
 	if n < 0 or ressorts < n:
 		return false
 	ressorts -= n
@@ -182,7 +192,8 @@ func acheter_porte_bonheur() -> bool:
 
 ## Vérifie que tous les ingrédients de la recette sont disponibles en construction.
 func peut_assembler(recette: RecetteDef) -> bool:
-	if phase != Phase.CONSTRUCTION or recette == null or recette not in regles.recettes:
+	if phase != Phase.CONSTRUCTION or recette == null or recette not in regles.recettes \
+			or not autorise(recette.sortie.objet):
 		return false
 	var besoins: Dictionary[StringName, int] = {}
 	for lot: Lot in recette.entrees:
@@ -239,27 +250,32 @@ func acheter(i: int) -> bool:
 	if phase != Phase.CONSTRUCTION or i < 0 or i >= regles.boutique.size():
 		return false
 	var lot: Lot = regles.boutique[i]
-	if lot.vague_min > vague_actuelle + 1 or not depenser(lot.prix):
+	if lot.vague_min > vague_actuelle + 1 or not autorise(lot.objet) or not depenser(lot.prix):
 		return false
 	reserve.ajouter(lot.objet, lot.quantite)
 	return true
 
 
 func _tirer_offre() -> void:
-	offre_coffre = vague_actuelle > 0 and vague_actuelle in regles.vagues_coffre
+	# Difficile : un coffre de plus (après la V5), le butin promis par le mode (P2-51).
+	offre_coffre = vague_actuelle > 0 and (vague_actuelle in regles.vagues_coffre
+			or (chapitre_difficile and vague_actuelle == regles.vague_coffre_difficile))
 	if offre_coffre:
 		# Chaque carte a son tirage pour que la rareté compte même avec trois modèles.
 		offre.clear()
-		var montres: Array = []
+		var montres: Array = _objets_interdits(regles.coffre)
 		for i: int in choix_par_draft:
 			var carte: Array[Lot] = Draft.tirer(regles.coffre, 1, vague_actuelle + 1, rng, montres, chance,
 					Vector2(regles.chance_rare, regles.chance_epique))
 			offre.append_array(carte)
 			for lot: Lot in carte:
 				montres.append(lot.objet)
-	else:
+	# Un coffre dont aucune tourelle n'est encore débloquée (début de campagne) devient un tirage ordinaire.
+	if offre_coffre and offre.is_empty():
+		offre_coffre = false
+	if not offre_coffre:
 		# Playtest 2 : la pioche a aussi ses raretés, et la chance agit dessus (plus seulement dans les coffres).
-		offre = Draft.tirer(regles.pioche, choix_par_draft, vague_actuelle + 1, rng, [], chance,
+		offre = Draft.tirer(regles.pioche, choix_par_draft, vague_actuelle + 1, rng, _objets_interdits(regles.pioche), chance,
 				Vector2(regles.chance_rare, regles.chance_epique))
 
 
@@ -365,6 +381,9 @@ func lancer_vague() -> void:
 func subir_degats(d: float) -> void:
 	if phase != Phase.VAGUE or d <= 0.0:
 		return
+	if bac_a_sable:
+		Events.horloge_touchee.emit(pv_horloge)  # l'horloge sonne, mais ne perd rien : on teste librement
+		return
 	pv_horloge = maxi(0, pv_horloge - ceili(d))
 	Events.horloge_touchee.emit(pv_horloge)
 	if pv_horloge == 0:
@@ -391,7 +410,7 @@ func terminer_vague() -> void:
 
 
 func _terminer_partie(victoire: bool) -> void:
-	if not defi_du_jour:
+	if not defi_du_jour and not bac_a_sable:
 		var vagues_tenues: int = vague_actuelle if victoire else maxi(0, vague_actuelle - 1)
 		Progression.noter_record(depart.nom, difficulte, vagues_tenues)
 		var gain: int = vagues_tenues * regles.engrenages_par_vague
@@ -399,6 +418,10 @@ func _terminer_partie(victoire: bool) -> void:
 			gain += regles.engrenages_victoire
 			if chapitre >= 0:
 				Progression.finir_chapitre(regles.chapitres[chapitre].id)
+				if chapitre_difficile:
+					Progression.finir_chapitre_difficile(regles.chapitres[chapitre].id)
+		if chapitre_difficile:
+			gain = ceili(gain * regles.butin_difficile)
 		if Progression.gagner(gain):
 			engrenages_gagnes = gain
 	changer_phase(Phase.FIN)
@@ -411,16 +434,62 @@ func choisir_depart(i: int) -> void:
 		depart = regles.departs[i]
 		chapitre = -1
 		defi_du_jour = false
+		_sortir_campagne()
+
+
+## Prépare une partie en bac à sable (P2-53) sur le plateau `i` : tout le contenu, ressources illimitées.
+func preparer_bac_a_sable(i: int) -> void:
+	choisir_depart(i)
+	bac_a_sable = true
+
+
+# Partie libre, défi du jour ou bac à sable : aucun cadenas de campagne, pas de mode Difficile.
+func _sortir_campagne() -> void:
+	chapitre_difficile = false
+	bac_a_sable = false
+	pieces_autorisees = []
+	nouveautes = []
 
 
 ## Sélectionne un diorama de campagne d'après son indice dans les règles.
-func preparer_chapitre(i: int) -> void:
+func preparer_chapitre(i: int, difficile: bool = false) -> void:
 	if i < 0 or i >= regles.chapitres.size() or i > Progression.chapitres_finis():
 		return
+	# Le Difficile ne s'ouvre qu'une fois le chapitre terminé (en Normal ou déjà en Difficile).
+	chapitre_difficile = difficile and i < Progression.chapitres_finis()
 	chapitre = i
 	depart = regles.chapitres[i].depart
 	difficulte = regles.chapitres[i].difficulte
 	defi_du_jour = false
+	bac_a_sable = false
+	pieces_autorisees = pieces_du_chapitre(i)
+	nouveautes = regles.chapitres[i].debloque.duplicate()
+
+
+## Pièces disponibles au chapitre `i` (cumul des déblocages des chapitres 1 à i+1). Vide si aucun chapitre ne
+## déclare de déblocage (anciennes données) : tout reste alors autorisé.
+func pieces_du_chapitre(i: int) -> Array[Resource]:
+	var pieces: Array[Resource] = []
+	for n: int in mini(i + 1, regles.chapitres.size()):
+		for piece: Resource in regles.chapitres[n].debloque:
+			if not pieces.has(piece):
+				pieces.append(piece)
+	return pieces
+
+
+## Indique si l'objet peut apparaître dans cette partie (tirage, coffre, boutique, recette). Les extensions de terrain
+## et les objets sans définition de pièce restent toujours permis.
+func autorise(objet: Resource) -> bool:
+	return pieces_autorisees.is_empty() or not objet is Plateau.PieceDef or pieces_autorisees.has(objet)
+
+
+# Objets interdits dans cette partie, pour les écarter des tirages (`Draft.tirer(..., exclus)`).
+func _objets_interdits(lots: Array[Lot]) -> Array:
+	var interdits: Array = []
+	for lot: Lot in lots:
+		if lot.objet != null and not autorise(lot.objet) and not interdits.has(lot.objet):
+			interdits.append(lot.objet)
+	return interdits
 
 
 ## Renvoie la graine commune aux parties jouées pour cette date.
@@ -434,6 +503,7 @@ func preparer_defi(date: String) -> void:
 	difficulte = 1
 	_graine_defi = graine_du_jour(date)
 	depart = regles.departs[posmod(_graine_defi, regles.departs.size())]
+	_sortir_campagne()
 	defi_du_jour = true
 
 
@@ -474,6 +544,16 @@ func reinitialiser() -> void:
 	revenu_extensions = 0
 	reserve.vider()
 	reserve.ajouter_lots(depart.reserve)
+	if chapitre_difficile:
+		ajouter_chance(regles.chance_difficile)
+	if bac_a_sable:
+		# Tout le contenu, en quantité, pour tester librement pièces, combos et niveaux.
+		var vus: Array = []
+		for lots: Array[Lot] in [regles.pioche, regles.coffre, regles.boutique]:
+			for lot: Lot in lots:
+				if lot.objet != null and not vus.has(lot.objet):
+					vus.append(lot.objet)
+					reserve.ajouter(lot.objet, 5)
 	_tirer_offre()
 	phase = Phase.DRAFT
 	Events.ressorts_changes.emit(ressorts)

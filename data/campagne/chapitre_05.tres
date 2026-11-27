@@ -3,6 +3,9 @@
 [ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
 [ext_resource type="Resource" path="res://data/departs/meandres.tres" id="depart"]
 
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_mortier.tres" id="deb_tourelle_mortier"]
+[ext_resource type="Resource" path="res://data/tuiles/pont.tres" id="deb_pont"]
+
 [resource]
 script = ExtResource("chapitre")
 id = 5
@@ -10,3 +13,4 @@ titre = "La Boîte à musique"
 recit = "Trois notes s’échappent de la boîte à musique. Le Grand Scarabée approche au pas de la mélodie, puis son ressort fatigué le fait ralentir."
 depart = ExtResource("depart")
 difficulte = 2
+debloque = Array[Resource]([ExtResource("deb_tourelle_mortier"), ExtResource("deb_pont")])

@@ -66,7 +66,8 @@ func _configurer() -> void:
 
 
 func _commencer(numero: int) -> void:
-	directeur.facteur_pv = Run.regles.difficultes_pv_ennemis[Run.difficulte]
+	directeur.facteur_pv = Run.regles.difficultes_pv_ennemis[Run.difficulte] \
+			* (Run.regles.facteur_pv_difficile if Run.chapitre_difficile else 1.0)
 	directeur.commencer(Run.vagues[numero - 1], _entrees, Run.regles.delai_premier_ennemi)
 	production.nouvelle_vague()
 

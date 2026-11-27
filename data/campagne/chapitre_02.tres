@@ -3,6 +3,9 @@
 [ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
 [ext_resource type="Resource" path="res://data/departs/meandres.tres" id="depart"]
 
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_t.tres" id="deb_engrenage_t"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_canon.tres" id="deb_tourelle_canon"]
+
 [resource]
 script = ExtResource("chapitre")
 id = 2
@@ -10,3 +13,4 @@ titre = "Les Tiroirs"
 recit = "Un tiroir entrouvert laisse passer une file de fourmis mécaniques. À chaque coude du sentier, leurs petites pattes battent la mesure du carillon."
 depart = ExtResource("depart")
 difficulte = 0
+debloque = Array[Resource]([ExtResource("deb_engrenage_t"), ExtResource("deb_tourelle_canon")])
