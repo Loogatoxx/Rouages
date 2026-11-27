@@ -37,6 +37,7 @@ func _piece_reprise(case: Vector2i, def: Resource) -> void:
 	var piece: Production.Plateau.PieceDef = def as Production.Plateau.PieceDef
 	if piece != null and piece.type == Production.Plateau.PieceDef.Type.ATELIER:
 		production.atelier_repris(case)
+		sim.rappeler(case)
 
 
 # Carte qui évolue (PT-60) : après certaines vagues, un tiroir s'ouvre et un sentier se pose seul (nouvelle entrée).

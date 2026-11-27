@@ -94,3 +94,16 @@ func test_sortie_un_par_un() -> String:
 	if sim.nombre(SwarmSim.ALLIE) < minimum or sim.nombre(SwarmSim.ALLIE) > plafond:
 		return "En 5,2 s, l'atelier doit sortir %d à %d jouets (obtenu %d)." % [minimum, plafond, sim.nombre(SwarmSim.ALLIE)]
 	return "" if maximum <= 1 else "Les jouets doivent sortir un par un, pas en rafale."
+
+
+## Un atelier repris en pleine vague rappelle ses jouets (relecture T13a) : son plafond ne se « recharge » pas en
+## le déplaçant, et les autres ateliers gardent les leurs.
+func test_rappel_atelier_repris() -> String:
+	var plateau: Plateau = _plateau()
+	var sim: SwarmSim = SwarmSim.new()
+	var production: Production = Production.new()
+	production.avancer(100.0, plateau, {Vector2i.ZERO: true, Vector2i.RIGHT: true}, sim, REGLES)
+	sim.rappeler(Vector2i.ZERO)
+	if sim.effectif(Vector2i.ZERO) != 0:
+		return "Les jouets de l'atelier repris doivent rentrer."
+	return "" if sim.effectif(Vector2i.RIGHT) == REGLES.plafond_allies_par_atelier else "Le voisin a perdu ses jouets."

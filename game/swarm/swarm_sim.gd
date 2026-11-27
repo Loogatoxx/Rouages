@@ -92,6 +92,8 @@ var _sources: Dictionary = {}
 # Pour chaque case de chemin, la case suivante vers l'ennemi le plus proche par la route :
 # [0] = ennemis au sol (jouets au corps à corps), [1] = tous (jouets à distance). Vide si aucun ennemi.
 var _pistes: Array[Dictionary] = [{}, {}]
+# Cases de chemin sur un trajet entrée → horloge (les autres sont des culs-de-sac).
+var _utiles: Dictionary = {}
 var _attente_piste: float = 0.0
 
 
@@ -103,6 +105,7 @@ func configurer(plateau: Plateau, ratio: float = 1.0) -> void:
 	var sources: Dictionary = ChampFlux.vers_chemin(plateau, _distances)
 	_sources = sources
 	var utiles: Dictionary = _cases_utiles(plateau)
+	_utiles = utiles
 	for objectifs: Dictionary in _objectifs:
 		objectifs.clear()
 	_branches.clear()
@@ -219,6 +222,15 @@ func nombre(camp: int) -> int:
 ## Renvoie le nombre de jouets vivants sortis de l'atelier posé sur `origine`.
 func effectif(origine: Vector2i) -> int:
 	return _camps[ALLIE].effectifs.get(origine, 0)
+
+
+## Rappelle les jouets d'un atelier repris en pleine vague (sans signal de mort) : sinon l'atelier reposé ailleurs
+## retrouverait tout son plafond, et une autre pièce posée à sa place hériterait de ses survivants (relecture T13a).
+func rappeler(origine: Vector2i) -> void:
+	var allies: Nuee = _camps[ALLIE]
+	for i: int in range(allies.lieux.size() - 1, -1, -1):
+		if allies.origines[i] == origine:
+			allies._retirer(i)
 
 
 ## Retire d'un coup toutes les unités d'un camp, sans signal de mort (les jouets rentrent à l'atelier).
@@ -426,7 +438,11 @@ func _objectif_flux(camp: int, lieu: Vector2, choix: int, melee: bool = false) -
 			var distance_pas: int = _distances.get(pas, -1)
 			if distance_pas <= limite or distance_pas < _distances[case]:
 				return Vector2(pas) * MAILLE
-	if camp == ALLIE and _distances.get(case, -1) > limite:
+			# Pas interdit (il sortirait du poste) : on tient la position. Sinon la patrouille pouvait l'envoyer
+			# sur l'autre branche d'une fourche, d'où la piste le ramenait : aller-retour sans fin (relecture T13a).
+			return lieu
+	# Au-delà du poste on s'arrête, sauf dans un cul-de-sac : on en ressort vers l'horloge (relecture T13a).
+	if camp == ALLIE and _distances.get(case, -1) > limite and _utiles.has(case):
 		return lieu
 	if camp == ALLIE and _branches.has(case):
 		var branches: PackedVector2Array = _branches[case]

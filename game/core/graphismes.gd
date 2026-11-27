@@ -120,8 +120,17 @@ func _regler_noeud(noeud: Node) -> void:
 			ambiance.ssao_enabled = ssao and ambiance.get_meta(&"ssao_origine")
 			ambiance.glow_enabled = lueur and ambiance.get_meta(&"lueur_origine")
 	elif noeud is GPUParticles3D or noeud is CPUParticles3D:
-		noeud.visible = particules
-		noeud.set(&"emitting", particules)
+		# On ne touche à un émetteur que pour le couper, puis pour le rendre tel qu'il était : un effet ponctuel
+		# éteint ne doit pas se déclencher à son entrée ni à chaque changement d'option (relecture T13a).
+		if not particules and not noeud.has_meta(&"coupe"):
+			noeud.set_meta(&"coupe", [noeud.visible, noeud.get(&"emitting")])
+			noeud.visible = false
+			noeud.set(&"emitting", false)
+		elif particules and noeud.has_meta(&"coupe"):
+			var origine: Array = noeud.get_meta(&"coupe")
+			noeud.remove_meta(&"coupe")
+			noeud.visible = origine[0]
+			noeud.set(&"emitting", origine[1])
 	elif noeud is SubViewport:
 		(noeud as SubViewport).msaa_3d = MSAA[msaa]
 

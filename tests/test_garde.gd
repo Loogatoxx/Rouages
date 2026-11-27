@@ -73,3 +73,24 @@ func test_cul_de_sac() -> String:
 	for pas: int in 30:
 		sim.avancer(1.0 / 30.0)
 	return "" if sim.positions(SwarmSim.ALLIE)[0].y < 4.0 else "Le jouet attend au bout d'un cul-de-sac."
+
+
+## Un cul-de-sac situé au-delà du poste ne fige pas le jouet : il en ressort vers l'horloge (relecture T13a).
+func test_cul_de_sac_au_dela_du_poste() -> String:
+	var plateau := Plateau.new()
+	plateau.ajouter_sol(Vector2i.ZERO, Plateau.Sol.HERBE)
+	plateau.poser(Vector2i.ZERO, HORLOGE)
+	for x: int in range(1, 9):
+		plateau.ajouter_sol(Vector2i(x, 0), Plateau.Sol.CHEMIN)
+	for y: int in range(1, 4):
+		plateau.ajouter_sol(Vector2i(6, y), Plateau.Sol.CHEMIN)
+	for herbe: Vector2i in [Vector2i(5, 1), Vector2i(7, 1), Vector2i(5, 2), Vector2i(7, 2), Vector2i(5, 3),
+			Vector2i(7, 3), Vector2i(6, 4)]:
+		plateau.ajouter_sol(herbe, Plateau.Sol.HERBE)
+	var sim := SwarmSim.new()
+	sim.configurer(plateau, REGLES.garde_ratio)
+	# Case (6, 3) : 9 pas de l'horloge, au-delà du poste (0,55 × 8 = 4,4).
+	sim.ajouter(SOLDAT, Vector2(12, 6))
+	for pas: int in 30:
+		sim.avancer(1.0 / 30.0)
+	return "" if sim.positions(SwarmSim.ALLIE)[0].y < 6.0 else "Le jouet reste figé au fond du cul-de-sac."
