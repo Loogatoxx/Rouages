@@ -23,8 +23,9 @@ var _boss: UniteDef
 var _boss_lache: bool = false
 
 
-## Prépare les modèles avec les PV propres à la vague.
-func commencer(vague: VagueDef, entrees: Array[Vector2i]) -> void:
+## Prépare les modèles avec les PV propres à la vague. `delai` = secondes avant le premier ennemi (le temps que les
+## ateliers, repartis de zéro, sortent leurs premiers jouets : playtest 2).
+func commencer(vague: VagueDef, entrees: Array[Vector2i], delai: float = 0.0) -> void:
 	_vague = vague
 	_unite = _modele_vague(vague.unite)
 	_renfort = _modele_vague(vague.renfort) if vague.renfort != null else null
@@ -37,7 +38,7 @@ func commencer(vague: VagueDef, entrees: Array[Vector2i]) -> void:
 	_progression_renfort = floori(_total_sol * 0.5)
 	_entrees = entrees.duplicate()
 	_apparues = 0
-	_delai = 0.0
+	_delai = delai
 	_boss = null
 	_boss_lache = vague.boss == null
 	if vague.boss != null:
@@ -51,7 +52,7 @@ func _modele_vague(source: UniteDef) -> UniteDef:
 	return modele
 
 
-## Fait arriver le premier scarabée dès le lancement, puis les suivants à intervalles réguliers.
+## Fait arriver le premier scarabée après le délai de lancement, puis les suivants à intervalles réguliers.
 func avancer(dt: float, sim: SwarmSim) -> void:
 	if _entrees.is_empty():
 		return

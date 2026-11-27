@@ -1,5 +1,5 @@
 extends Node
-## Fait avancer les ateliers, les arrivées et la simulation pendant une vague (remontage instantané entre les vagues).
+## Fait avancer les ateliers, les arrivées et la simulation pendant une vague (plateau vide entre les vagues).
 
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const UniteDef = preload("res://game/swarm/unite_def.gd")
@@ -21,6 +21,7 @@ func _ready() -> void:
 	Events.piece_reprise.connect(_piece_reprise)
 	Events.plateau_modifie.connect(_configurer)
 	Events.vague_commencee.connect(_commencer)
+	Events.vague_terminee.connect(_rentrer_jouets)
 	Events.vague_terminee.connect(_ouvrir_tiroir)
 	sim.ennemi_arrive.connect(Run.subir_degats)
 	sim.unite_morte.connect(_unite_morte)
@@ -51,6 +52,12 @@ func _ouvrir_tiroir(numero: int) -> void:
 		Sons.jouer(&"pose")
 
 
+# Playtest 2 : la vague tenue, les jouets survivants rentrent à leur atelier. La pause reste vide (on voit le
+# plateau pour réfléchir à ses placements) et la vague suivante repart de zéro.
+func _rentrer_jouets(_numero: int) -> void:
+	sim.vider(SwarmSim.ALLIE)
+
+
 func _configurer() -> void:
 	sim.configurer(_source.plateau, Run.regles.garde_ratio)
 	_entrees = ChampFlux.entrees(_source.plateau, ChampFlux.calculer(_source.plateau))
@@ -58,31 +65,24 @@ func _configurer() -> void:
 
 func _commencer(numero: int) -> void:
 	directeur.facteur_pv = Run.regles.difficultes_pv_ennemis[Run.difficulte]
-	directeur.commencer(Run.vagues[numero - 1], _entrees)
-	production.nouvelle_pause()
+	directeur.commencer(Run.vagues[numero - 1], _entrees, Run.regles.delai_premier_ennemi)
+	production.nouvelle_vague()
 
 
-## Fait vivre la vague. Entre les vagues (construction), la production est à l'arrêt : chaque atelier alimenté reçoit
-## d'un coup son « remontage », une seule fois par pause, et les jouets rejoignent leur poste (aucun ennemi).
-## Pourquoi (playtest 1) : les jouets s'accumulaient avant le lancement et on attendait passivement pour frapper plus fort ;
-## désormais attendre ne rapporte rien. Le remontage évite toujours la spirale de défaite (une vague ratée ne vide pas
-## l'armée de la suivante, mesuré au banc) et montre tout de suite qu'un atelier relié fonctionne.
+## Fait vivre la vague : les ateliers sortent leurs jouets un par un, les ennemis arrivent, les tourelles tirent.
+## Entre les vagues, rien ne bouge (playtest 1 : attendre ne rapporte rien ; playtest 2 : aucun jouet, pas de rafale
+## au lancement, chaque atelier repart de zéro).
 func _physics_process(delta: float) -> void:
-	var vague: bool = Run.phase == Run.Phase.VAGUE
-	if not vague and Run.phase != Run.Phase.CONSTRUCTION:
+	if Run.phase != Run.Phase.VAGUE:
 		return
 	var dt: float = delta * Run.vitesse
 	production.bonus_cadence = Run.bonus_cadence
 	var allies_avant: int = sim.nombre(SwarmSim.ALLIE)
-	if vague:
-		production.avancer(dt, _source.plateau, _source.alimentees, sim, Run.regles)
-	else:
-		production.remonter(Run.regles.remontage_lancement, _source.plateau, _source.alimentees, sim, Run.regles)
+	production.avancer(dt, _source.plateau, _source.alimentees, sim, Run.regles)
 	if sim.nombre(SwarmSim.ALLIE) > allies_avant:
 		Sons.jouer(&"jouet_sort", 0.08)  # anti-répétition gérée par Sons
-	if vague:
-		directeur.avancer(dt, sim)
-		tourelles.avancer(dt, _source.plateau, _source.alimentees, sim)
+	directeur.avancer(dt, sim)
+	tourelles.avancer(dt, _source.plateau, _source.alimentees, sim)
 	sim.avancer(dt)
 	if Run.phase == Run.Phase.VAGUE and directeur.est_terminee(sim):
 		Run.terminer_vague()

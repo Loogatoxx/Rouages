@@ -14,4 +14,4 @@ prix_amelioration = 10
 ports = 4
 transmet = false
 unite_produite = ExtResource("bille")
-cadence_production = 0.3
+cadence_production = 0.55

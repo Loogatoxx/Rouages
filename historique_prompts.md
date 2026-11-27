@@ -135,3 +135,16 @@
   débloqués au chapitre 3 (anciens joueurs épargnés), 3 difficultés, améliorations masquées ou cadenassées (T12a, Codex
   puis Claude après sa limite d'usage) ; Longue route (15 vagues) et tiroirs qui s'ouvrent ; paliers créatifs par
   extensions posées ; banc avec option Longue route. Gemini relancé une fois à 0 h 50 : quota toujours épuisé.
+
+## 2026-11-27 — Brief de playtest 2 (message de la session principale, texte intégral de Carlos)
+- **Demande** : intégrer 100 % du brief de playtest 2 à la roadmap (Court/Moyen/Long, priorités, responsables,
+  dépendances, table de vérification), cap « vrai puzzle tactique », reproduire les 3 captures manquantes, puis
+  exécuter en autonomie : bugs critiques et perf Windows (§1), UI/UX (§2), gameplay puzzle (§3), campagne et modes (§4),
+  PT encore ouverts.
+- **Fait (lot A)** : roadmap « Après playtest 2 » (P2-01 à P2-58, règle R8, vérification ligne à ligne) ; captures
+  « avant » dans `art_refs/playtest2/avant/` (elles ont révélé un plantage du coffre sur les cartes rares, corrigé) ;
+  jouets « plots » (pistes vers l'ennemi par la route, culs-de-sac ignorés) ; spawn progressif (pause vide, jouets un
+  par un, 5 s avant le premier ennemi, cadence revue au banc) ; plafond vraiment par atelier ; port mort de l'horloge
+  fermé ; réglages graphiques (images/s, synchro, ombres, effets, résolution 3D, préréglages) avec 60 images/s par défaut
+  et 15 en arrière-plan ; export Windows sans `.pck` embarqué, avec icône et métadonnées. 110 tests.
+- **Objectif** : un jeu stable et frais sur le PC Windows de Carlos, qui démarre chaque vague de zéro.

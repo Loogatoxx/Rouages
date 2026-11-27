@@ -24,15 +24,17 @@ func _plateau() -> Plateau:
 	return plateau
 
 
-## Un atelier tourné et alimenté produit six soldats en dix secondes par son port ouest.
+## Un atelier tourné et alimenté produit « cadence × 10 » soldats en dix secondes par son port ouest.
 func test_cadence_et_port() -> String:
 	var plateau: Plateau = _plateau()
 	var production: Production = Production.new()
 	var sim: SwarmSim = SwarmSim.new()
-	for i: int in 40:
+	# 41 pas de 0,25 s : la marge évite qu'une somme flottante (10,9999…) fasse perdre un jouet.
+	for i: int in 41:
 		production.avancer(0.25, plateau, {Vector2i.ZERO: true}, sim, _regles())
-	if sim.nombre(SwarmSim.ALLIE) != 6:
-		return "Un atelier alimenté doit produire 6 soldats en 10 s."
+	var attendu: int = floori(10.25 * ATELIER.cadence_production)
+	if sim.nombre(SwarmSim.ALLIE) != attendu:
+		return "Un atelier alimenté doit produire %d soldats en 10 s." % attendu
 	for position: Vector2 in sim.positions(SwarmSim.ALLIE):
 		if not position.is_equal_approx(Vector2.LEFT):
 			return "Le soldat doit apparaître sur le bord du port tourné."
@@ -49,39 +51,46 @@ func test_atelier_sans_energie() -> String:
 	return "" if sim.nombre(SwarmSim.ALLIE) == 0 else "L'atelier a produit sans énergie."
 
 
-## Seuls les ateliers alimentés contribuent au plafond commun de soldats.
-func test_plafond_partage() -> String:
+## Le plafond est individuel (playtest 2) : un atelier plein n'empêche pas son voisin de produire, et ne
+## reproduit que lorsque ses propres jouets tombent.
+func test_plafond_par_atelier() -> String:
 	var plateau: Plateau = _plateau()
 	var sim: SwarmSim = SwarmSim.new()
 	var production: Production = Production.new()
 	var alimentees: Dictionary = {Vector2i.ZERO: true}
 	production.avancer(100.0, plateau, alimentees, sim, REGLES)
-	if sim.nombre(SwarmSim.ALLIE) != REGLES.plafond_allies_par_atelier:
-		return "Un seul atelier alimenté doit compter pour le plafond."
+	if sim.effectif(Vector2i.ZERO) != REGLES.plafond_allies_par_atelier:
+		return "Un atelier doit s'arrêter à son propre plafond."
 	alimentees[Vector2i.RIGHT] = true
 	production.avancer(100.0, plateau, alimentees, sim, REGLES)
+	if sim.effectif(Vector2i.RIGHT) != REGLES.plafond_allies_par_atelier:
+		return "Le voisin d'un atelier plein doit pouvoir remplir son propre plafond."
 	if sim.nombre(SwarmSim.ALLIE) != 2 * REGLES.plafond_allies_par_atelier:
 		return "Plafond incorrect pour deux ateliers."
-	return ""
+	sim.vider(SwarmSim.ALLIE)
+	return "" if sim.effectif(Vector2i.ZERO) == 0 else "Vider le camp doit remettre les effectifs à zéro."
 
 
-## Vraie pause entre les vagues : le remontage verse 20 s de production d'un coup, une fois par pause, dans le plafond.
-func test_remontage_au_lancement() -> String:
+## Playtest 2 : au lancement, chaque atelier repart de zéro et sort ses jouets un par un (aucune rafale).
+func test_sortie_un_par_un() -> String:
 	var plateau: Plateau = _plateau()
 	var production: Production = Production.new()
 	var sim: SwarmSim = SwarmSim.new()
-	var alimentees: Dictionary = {Vector2i.ZERO: true, Vector2i.RIGHT: true}
-	var regles: Regles = _regles()
-	production.remonter(20.0, plateau, alimentees, sim, regles)
-	var attendu: int = mini(2 * floori(20.0 * ATELIER.cadence_production), 2 * REGLES.plafond_allies_par_atelier)
-	if sim.nombre(SwarmSim.ALLIE) != attendu:
-		return "Le remontage doit sortir %d jouets (obtenu %d)." % [attendu, sim.nombre(SwarmSim.ALLIE)]
-	var avant: int = sim.nombre(SwarmSim.ALLIE)
-	production.remonter(20.0, plateau, alimentees, sim, regles)
-	if sim.nombre(SwarmSim.ALLIE) != avant:
-		return "Un atelier n'est remonté qu'une fois par pause : attendre ne rapporte rien."
-	production.nouvelle_pause()
-	production.remonter(20.0, plateau, alimentees, sim, regles)
-	if sim.nombre(SwarmSim.ALLIE) > 2 * REGLES.plafond_allies_par_atelier:
-		return "Le remontage ne doit jamais dépasser le plafond."
-	return ""
+	var alimentees: Dictionary = {Vector2i.ZERO: true}
+	production.avancer(30.0, plateau, alimentees, sim, REGLES)
+	sim.vider(SwarmSim.ALLIE)
+	production.nouvelle_vague()
+	production.avancer(0.0, plateau, alimentees, sim, REGLES)
+	if REGLES.avance_lancement < 1.0 and sim.nombre(SwarmSim.ALLIE) != 0:
+		return "Aucun jouet ne doit être prêt à l'instant du lancement."
+	var maximum: int = 0
+	for pas: int in 310:
+		var avant: int = sim.nombre(SwarmSim.ALLIE)
+		production.avancer(1.0 / 60.0, plateau, alimentees, sim, REGLES)
+		maximum = maxi(maximum, sim.nombre(SwarmSim.ALLIE) - avant)
+	# Cadence de base ± bonus de placement (encombrement, arrière-garde).
+	var minimum: int = floori(310.0 / 60.0 * ATELIER.cadence_production * 0.5)
+	var plafond: int = ceili(310.0 / 60.0 * ATELIER.cadence_production * 1.3)
+	if sim.nombre(SwarmSim.ALLIE) < minimum or sim.nombre(SwarmSim.ALLIE) > plafond:
+		return "En 5,2 s, l'atelier doit sortir %d à %d jouets (obtenu %d)." % [minimum, plafond, sim.nombre(SwarmSim.ALLIE)]
+	return "" if maximum <= 1 else "Les jouets doivent sortir un par un, pas en rafale."

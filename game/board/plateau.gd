@@ -6,6 +6,8 @@ signal modifie
 const PieceDef = preload("res://game/board/piece_def.gd")
 
 enum Sol { HERBE, CHEMIN }
+## Ordre des ports (bits N, E, S, O), comme `PieceDef.ports`.
+const DIRECTIONS: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 
 var _sols: Dictionary[Vector2i, Sol] = {}
 var _pieces: Dictionary[Vector2i, PieceDef] = {}
@@ -109,9 +111,18 @@ func rotation_de(coord: Vector2i) -> int:
 
 
 ## Calcule les ports de la pièce dans son orientation actuelle.
+## L'horloge n'a pas de port du côté d'une route (playtest 2) : c'est sa porte, pas une prise d'engrenage, et un
+## engrenage ne peut pas être posé sur la route. Traverser une route est le rôle du Pont.
 func ports_de(coord: Vector2i) -> int:
 	var piece: PieceDef = piece_de(coord)
-	return PieceDef.tourner_ports(piece.ports, rotation_de(coord)) if piece != null else 0
+	if piece == null:
+		return 0
+	var ports: int = PieceDef.tourner_ports(piece.ports, rotation_de(coord))
+	if piece.type == PieceDef.Type.HORLOGE:
+		for i: int in DIRECTIONS.size():
+			if sol_de(coord + DIRECTIONS[i]) == Sol.CHEMIN:
+				ports &= ~(1 << i)
+	return ports
 
 
 ## Liste les cases occupées par une pièce.

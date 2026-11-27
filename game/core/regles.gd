@@ -51,10 +51,14 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var prix_deplacement: int = 3
 @export var prix_deplacement_pas: int = 2
 @export var pv_horloge: int
+## Plafond de jouets vivants **par atelier** (playtest 2 : individuel, plus partagé).
 @export var plafond_allies_par_atelier: int
-## Secondes de production versées d'un coup à chaque atelier alimenté, une fois par pause entre les vagues
-## (« remontage »). La production elle-même est arrêtée entre les vagues : attendre ne rapporte rien (playtest 1).
-@export var remontage_lancement: float = 20.0
+## Avance de production de chaque atelier au lancement d'une vague (0 = il repart de zéro, 1 = premier jouet
+## immédiat). Playtest 2 : aucun jouet entre les vagues, puis sortie progressive, un par un.
+@export_range(0.0, 1.0) var avance_lancement: float = 0.0
+## Secondes entre le lancement d'une vague et le premier ennemi : les jouets sortent un par un pendant ce temps et
+## tiennent leur poste quand les tiroirs s'ouvrent (sinon ils arriveraient un à un dans la mêlée et tomberaient seuls).
+@export var delai_premier_ennemi: float = 5.0
 @export var multiplicateur_acceleration: float
 @export var ressorts_depart: int
 @export var recompense_vague: int

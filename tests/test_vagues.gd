@@ -26,9 +26,9 @@ class SimulationTemoin extends SwarmSim:
 	var unite_recue: UniteDef
 
 	## Mémorise le modèle puis laisse la simulation enregistrer l'unité.
-	func ajouter(def: UniteDef, position: Vector2) -> bool:
+	func ajouter(def: UniteDef, position: Vector2, origine: Vector2i = SANS_ORIGINE) -> bool:
 		unite_recue = def
-		return super.ajouter(def, position)
+		return super.ajouter(def, position, origine)
 
 
 ## Vérifie les types et les valeurs des ressources utilisées par la partie.

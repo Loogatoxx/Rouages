@@ -53,3 +53,16 @@ func test_definitions_des_tuiles() -> String:
 			return "définition ou identifiant incorrect pour " + fichier
 		attendues.erase(fichier.get_basename())
 	return "" if attendues.is_empty() else "tuiles manquantes : " + str(attendues)
+
+
+## Playtest 2 : l'horloge n'a pas de port du côté de la route (connexion morte supprimée), mais garde les autres.
+func test_horloge_sans_port_cote_route() -> String:
+	var plateau := Plateau.new()
+	plateau.ajouter_sol(Vector2i.ZERO, Plateau.Sol.HERBE)
+	plateau.poser(Vector2i.ZERO, load("res://data/tuiles/horloge.tres"))
+	plateau.ajouter_sol(Vector2i.RIGHT, Plateau.Sol.CHEMIN)
+	plateau.ajouter_sol(Vector2i.LEFT, Plateau.Sol.HERBE)
+	var ports: int = plateau.ports_de(Vector2i.ZERO)
+	if ports & 2:
+		return "Le port côté route (est) devrait être fermé."
+	return "" if ports == 13 else "Les ports nord, sud et ouest doivent rester ouverts (obtenu %d)." % ports

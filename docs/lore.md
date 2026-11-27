@@ -80,3 +80,5 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 - 2026-11-26 : relecture par Codex (cohérence avec les règles, `taches/revues/T11e_relecture_lore.md`) : 7 remarques
   intégrées (ressort visible réservé au cuirassé, pause = un tour de clé par atelier, chantiers d'Anselme, réglages
   défaits au démontage, défi du jour préparé à l'avance, révélation réservée aux auteurs, easter egg au clic).
+| Pause vide, jouets qui sortent un par un | Quand le carillon se tait, les jouets rentrent se reposer dans leurs ateliers ; au coup suivant, l'Horloge les remonte un à un, et les tiroirs attendent cinq tic-tac avant de s'ouvrir. |
+| Porte de l'horloge sans engrenage | La porte de l'Horloge-Mère est réservée au retour d'Anselme : aucun rouage ne doit la bloquer. |

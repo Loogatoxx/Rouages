@@ -130,3 +130,123 @@ Le relecteur n'est jamais le producteur (Claude relit Codex et Gemini ; Codex ou
 PT-01→05 (commit) · PT-04/31 · PT-14/16/12 · PT-40/41 · PT-30/32 · PT-17 · PT-10 (Gemini, en parallèle) → PT-11/13 ·
 PT-20/21 (Gemini, en parallèle) → PT-15/18 · PT-34 → PT-35/36/37/38 · PT-33 · puis moyen terme (PT-50 → 51/52/53, 54, 55).
 Ce qui exige Carlos : validation des images avant toute génération Hyper3D (une seule demande groupée), test Windows, ressenti.
+
+---
+
+# Après playtest 2 (brief de Carlos du 2026-11-27)
+
+**Cap game design (règle R8, prioritaire sur toutes les autres)** : *Rouages devient un vrai puzzle / casse-tête
+tactique où chaque placement et chaque synergie comptent. Fini le spam sans réfléchir.* Chaque tâche ci-dessous est
+jugée à cette aune : une mécanique qui récompense le nombre plutôt que la réflexion est à revoir.
+
+**Lecture** : identifiant `P2-xx` (repris dans les fiches et les commits), priorité (**P0** bloquant, **P1** court terme,
+**P2** moyen terme, **P3** long terme), responsable, dépendances, état. Responsables : **Claude** (architecture, logique,
+game design, équilibrage, relecture) · **Codex** (code délégué par fiche) · **Gemini** (= Antigravity, Gemini 4 Neon :
+icônes, DA, Blender, décor, borné à `assets/` et `art_refs/`) · **Hyper3D** (modèles et animations, via Carlos sur le
+site) · **Carlos** (test Windows, validation d'images, ressenti). Le relecteur n'est jamais le producteur.
+Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces écrans (`art_refs/playtest2/`).
+
+## Court terme — §1. Bugs critiques, perf Windows, mécaniques (P0)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P2-01 | **Jouets « plots » dans les virages des cartes en S** : des jouets restent immobiles loin de la sortie. Causes : la garde (`garde_ratio` 0,55) gèle tout jouet posé au-delà, même quand les ennemis l'ont dépassé ; les culs-de-sac du chemin (anciennes entrées fermées par une extension) attirent des jouets qui n'y croisent jamais personne ; les jouets au corps à corps ignorent les volants sans bouger. Correctif : pendant une vague, un jouet sans cible marche **par la route** vers l'ennemi qu'il peut frapper le plus proche (il ne dépasse sa garde que pour revenir vers l'horloge) ; les embranchements ne mènent qu'aux routes qui ont une entrée. | P0 | Claude | `swarm_sim.gd`, `champ_flux.gd`, tests || ✅ pistes vers l'ennemi + culs-de-sac (tests garde) |
+| P2-02 | **Spawn progressif** : rejet du « remontage » en rafale. Pause = zéro jouet, zéro production ; au lancement, chaque atelier repart de zéro et sort ses jouets **un par un** (les survivants rentrent à l'atelier à la fin de la vague). Rééquilibrage au banc. | P0 | Claude | `partie.gd`, `production.gd`, `banc_equilibrage.gd`, `regles.tres` || ✅ cadence ×1,83, 5 s avant le 1er ennemi ; banc moyen V5-V8, parfait 0-2 PV |
+| P2-03 | **Connexion morte devant l'horloge** : le port de l'horloge qui donne sur la route est fermé (la porte n'est pas une prise d'engrenage) ; la traversée d'une route devient le rôle du Pont (P2-47). | P0 | Claude | `plateau.gd` (ports de l'horloge), visuel des dents || ✅ port fermé (test plateau) |
+| P2-04 | **Surchauffe Windows** : profil CPU/GPU (FPS non bridés, VSync, ombres temps réel, SSAO, draw calls, boucles lourdes) ; correctifs par défaut (cap à 60 FPS, VSync active, pas de rendu inutile dans les menus). | P0 | Claude | `project.godot`, `ambiance_plateau.gd`, `nuee_visuel.gd` || ✅ 60 images/s par défaut, 15 en arrière-plan ; mesuré : goulot processeur (~8 ms/image) |
+| P2-05 | **Options graphiques / performance** : cap de FPS (30 / 60 / 120 / illimité), VSync, qualité des ombres, effets (SSAO, lueur, particules), échelle de rendu ; appliqués au lancement et en direct, enregistrés dans `reglages.cfg`. | P0 | Claude | P2-04, `options.gd/.tscn`, autoload `Fenetre` || ✅ onglet Graphismes + 3 préréglages |
+| P2-06 | **Faux positifs antivirus Windows** : `.pck` séparé de l'`.exe` (pas embarqué), métadonnées d'export (éditeur, version, description, copyright), icône `.ico`, pas de console ; note de test pour Carlos (SmartScreen sans signature de code reste possible : expliquer pourquoi). | P0 | Claude → Carlos (test PC) | `export_presets.cfg`, `assets/icone.ico` || ✅ export prêt ; **test PC Carlos** |
+| P2-07 | **Coffre qui plantait** dès qu'une carte rare sortait (style lu hors de l'arbre de scène → seule 1 carte sur 3 affichée), découvert en reproduisant les captures. | P0 | Claude | `hud.gd` | ✅ |
+
+## Court terme — §2. UI / UX et retours visuels précis (P1)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P2-10 | **Ruban des titres** : police plus petite, centrage vertical calculé sur la bande rouge (pas sur l'image entière), vérifié par capture sur chaque écran et chaque langue. | P1 | Claude | `theme_rouages.tres`, `ruban_petit.png` | |
+| P2-11 | **Écran titre refait** : composition nettement plus aboutie (colonne de boutons homogène, hiérarchie Jouer > reste, liens du bas en boutons icône, vitrine de l'horloge mieux posée). | P1 | Claude (+ Gemini si un asset manque) | P2-10, P2-12 | |
+| P2-12 | **Bouton Établi** de la même largeur que les autres, compteur d'engrenages d'or **dans** le bouton. | P1 | Claude | icône monnaie méta (PT ouvert) | |
+| P2-13 | **Réassignation des touches** dans les Options (liste des actions, clic puis touche, réinitialiser), enregistrée dans `reglages.cfg`. | P1 | Claude → Codex | InputMap, `options.gd` | |
+| P2-14 | **Réserve (bas gauche) plus fine** : bordures lourdes remplacées par un cadre fin (liseré laiton ou fond papier léger), cases plus petites. | P1 | Claude | `reserve_ui.gd/.tscn`, thème | |
+| P2-15 | **Vignettes alignées et non rognées** dans la réserve (l'atelier était plus bas et coupé) : même cadre, même centrage pour toutes. | P1 | Claude | P2-14, `assets/ui/vignettes/` | |
+| P2-16 | **Pastille de quantité** = simple rectangle aux bords arrondis (bois/laiton, sans double bordure), dessinée en `StyleBoxFlat` : nette à toute taille, zéro rendu générique. | P1 | Claude | thème | |
+| P2-17 | **Choix d'items (tirages, coffres)** : seulement le nom (et la rareté par la couleur du cadre) ; tout le détail en infobulle au survol. | P1 | Claude | `hud.gd` (cartes) | |
+| P2-18 | **Images des cartes non rognées** : l'image occupe tout le cadre en gardant ses proportions (`KEEP_ASPECT_CENTERED`). | P1 | Claude | P2-17 | |
+| P2-19 | **Zéro défilement** : quand il y a beaucoup de choix, la grille se recalcule (colonnes et taille des cartes) pour tout faire tenir dans la fenêtre. | P1 | Claude | P2-17 | |
+| P2-20 | **Panneau contextuel en icônes** : cap d'unités, dégâts, vitesse, prix de revente en icône + valeur ; détails au survol des icônes. | P1 | Claude | icônes existantes (`REGISTRE.md`), P2-33 | |
+| P2-21 | **Portée visible** des tourelles (et des jouets à distance) : anneau au sol à la pose, à la sélection et au survol. | P1 | Claude | `pose_controleur.gd`, `plateau_visuel.gd` | |
+| P2-22 | **Chasse au texte continue** + distinction des éléments du plateau (silhouettes, couleurs de toit par famille, socles). | P1 | Claude + Gemini (icônes) | P2-17, P2-20 | |
+
+## Moyen terme — §3. Gameplay puzzle, anti-spam, craft, nouvelles pièces (P1-P2)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P2-30 | **Lance-billes rééquilibrés** (fin du « tout lance-billes ») : moins de PV et de cadence, plus chers, et contrés par la carapace (P2-31). | P1 | Claude (banc) | P2-02, P2-31 | |
+| P2-31 | **Armure fixe** : `UniteDef.armure` retire un montant fixe à chaque coup (plancher 1) ; le cuirassé devient « à carapace » (moins de PV, grosse armure) : il punit les tirs faibles et nombreux, et récompense mortier, canon et corps à corps améliorés. Affiché en icône (bouclier) dans l'aperçu de vague. | P1 | Claude | `unite_def.gd`, `swarm_sim.gd`, `tourelles.gd`, banc | |
+| P2-32 | **Variété d'ennemis** : au moins 2 ennemis-énigmes de plus (ex. fouisseur qui passe sous les jouets ; porte-bouclier qui protège ses voisins des tirs ; kamikaze qui éclate sur les groupes serrés), chacun avec un contre lisible. | P2 | Claude (design) → Codex | P2-31 | |
+| P2-33 | **Plafond par bâtiment** : vérifier puis rendre le plafond vraiment individuel (aujourd'hui 15 × ateliers, partagé) ; affiché dans le panneau (P2-20). | P1 | Claude | `production.gd`, `swarm_sim.gd` (origine des jouets) || ✅ plafond individuel (`SwarmSim.effectif`) |
+| P2-34 | **Animations des tourelles** : visée qui pivote vers la cible, recul au tir, ressort qui se comprime (procédural en attendant Hyper3D, R1 exception (c) notée). | P1 | Claude | `plateau_visuel.gd`, PT-53 | |
+| P2-35 | **Revente depuis la réserve** : bouton/icône « revendre » visible sur chaque pièce de la réserve (prix affiché), plus seulement le clic droit caché. | P1 | Claude | `reserve_ui.gd`, `Run.demonter` | |
+| P2-36 | **Rareté dans les tirages** (pas seulement les coffres) + **la chance agit sur ces tirages** ; cadre coloré par rareté. | P1 | Claude | `draft.gd`, `regles.tres` (pioche) | |
+| P2-37 | **Craft utile** : boutique moins rentable, recettes plus rentables et **objets exclusifs au craft** (introuvables en boutique), dont le Pont et le Générateur. | P1 | Claude | P2-38, P2-39, `data/recettes/` | |
+| P2-38 | **Le Pont** (Épique, exclusif tirage/coffre/craft) : posé sur une case de route, il fait passer l'énergie par-dessus, vers l'herbe d'en face (ex. îlot vert isolé de la carte 3). | P1 | Claude (logique) + Gemini (modèle) | `plateau.gd`, `energie.gd`, `pose_controleur.gd` | |
+| P2-39 | **Le Générateur autonome** (Rare) : alimente une zone sans lien avec l'horloge, mais limité à N pièces (2 au niveau 1, +1 par amélioration). | P1 | Claude (logique) + Gemini (modèle) | `energie.gd`, P2-50 améliorations | |
+| P2-40 | **Beaucoup plus de contenu à débloquer** : nouvelles pièces (Pont, Générateur, + 3 à 5 pièces de synergie), nouvelles améliorations d'Établi, cosmétiques de plateau ; plan de déblocage par chapitre. | P2 | Claude (design) → Codex + Gemini (vignettes) | P2-50 | |
+
+## Moyen / long terme — §4. Campagne, modes, maps, tutoriel, lore BD (P2-P3)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P2-50 | **Bâtiments débloqués par chapitre** : pool de départ réduit (soldats + engrenages simples), chaque chapitre ajoute un bâtiment, annoncé clairement au début du chapitre (« Nouveau : … » avec vignette). | P1 | Claude | `ChapitreDef`, `Progression`, `draft.gd`, boutique | |
+| P2-51 | **Difficile optionnel par chapitre** : finir un chapitre en Normal débloque son mode Difficile (plus de loot : engrenages d'or ×1,5, coffre en plus) ; aucun blocage pour passer au chapitre suivant. | P1 | Claude | `Progression`, menu de campagne | |
+| P2-52 | **Mode libre conservé** avec tous les bâtiments (test libre). | P1 | Claude | P2-50 | |
+| P2-53 | **Bac à sable / test infini** : tout débloqué, ressources infinies, vagues à la demande, aucun effet sur la progression. | P1 | Claude | `Run`, menu | |
+| P2-54 | **Pas de carte répétée après le chapitre 3** : nouvelles cartes (au moins 3) et nouveaux ennemis par chapitre. | P2 | Claude (dessin des cartes) | P2-32, P2-55 | |
+| P2-55 | **Cartes plus grandes, détaillées et vivantes** (décor par chapitre, animations d'ambiance, budget de perf respecté). | P2 | Gemini (décor) + Claude (intégration) + Hyper3D | PT-54, P2-04 | |
+| P2-56 | **Chemins qui évoluent par segments** : extensions de formes variées (segments longs, L, boucles), au-delà du bloc 3×3 posé un par un. | P3 | Claude (design + `Extension`) | P2-54 | |
+| P2-57 | **Tutoriel réintégré au bon moment** : il était masqué chez Carlos (`tutoriel.vu`), il démarre désormais au chapitre 1 de la campagne (et reste accessible depuis l'aide). | P1 | Claude | `tutoriel.gd`, campagne | |
+| P2-58 | **Lore en BD** (façon Plants vs. Zombies) : 3 à 4 cases illustrées au début de chaque chapitre, très peu de texte (bulles courtes). | P3 | Claude (scénario, cases) → Gemini (images) | `docs/lore.md`, quota Gemini | |
+
+## Restes du playtest 1 (toujours ouverts)
+| ID | Tâche | Qui | Bloqué par |
+|---|---|---|---|
+| PT-51 | Modèles Hyper3D des paliers d'évolution | Hyper3D + Gemini | PT-52 |
+| PT-52 | 7 images de référence du lot 1 (`art_refs/hyper3d/DEMANDE_LOT1.md`) → validation Carlos → génération | Gemini → Carlos → Hyper3D | quota Gemini |
+| PT-53 | Animations générées (marche, tir, ateliers, horloge) | Hyper3D + Gemini | PT-52 |
+| PT-54 | Micro-décors 3D | Gemini | quota Gemini |
+| PT-11b | 2 icônes : monnaie méta (engrenage d'or ≠ réseau), « assembler » | Gemini | quota Gemini |
+
+## Vérification ligne à ligne (brief 2 → tâches)
+| Brief | Point | Tâche(s) |
+|---|---|---|
+| Directive | Lire 2-3 fois, 100 % des points, Court/Moyen/Long, priorités, responsables, captures | cette section, `art_refs/playtest2/` |
+| Cap | Vrai puzzle / casse-tête, chaque placement et synergie comptent, fin du spam | R8, P2-30 à P2-40 |
+| §1 | Pathfinding / IA bloquée sur cartes en S, jouets « plots » dans les virages éloignés | P2-01 |
+| §1 | Spawn : pas de rafale au lancement · temps mort sans spawn · départ de zéro, un par un | P2-02 |
+| §1 | Connexion morte devant l'horloge : supprimer ou mécanique utile | P2-03 (+ P2-38) |
+| §1 | Surchauffe Windows : profiler CPU/GPU (FPS, VSync, ombres, draw calls, boucles) | P2-04 |
+| §1 | Options : cap FPS 30/60/120/illimité, VSync, ombres, effets | P2-05 |
+| §1 | Antivirus : `.pck` séparé, métadonnées, icône d'export | P2-06 |
+| §2 | Ruban : texte trop grand, mal centré | P2-10 |
+| §2 | Écran titre plus abouti et pro · Établi même taille + compteur dans le bouton | P2-11 · P2-12 |
+| §2 | Remapping des touches | P2-13 |
+| §2 | Réserve : bordures trop massives · vignettes alignées, atelier coupé | P2-14 · P2-15 |
+| §2 | Pastille : rectangle arrondi simple, DA artisanale, pas d'« AI slop » | P2-16 |
+| §2 | Choix d'items : nom seul + infobulle · images non rognées · zéro scroll | P2-17 · P2-18 · P2-19 |
+| §2 | Panneau d'amélioration : icônes + valeurs (cap, dégâts, vitesse, revente), détail au survol | P2-20 |
+| §2 | Portée visible (pose, sélection, survol) | P2-21 |
+| §2 | Chasse au texte, distinction visuelle du plateau | P2-22 |
+| §3 | Trop de spam, répétitif (manque de maps et d'ennemis) | R8, P2-32, P2-54 |
+| §3 | Lance-billes trop forts · ennemi à carapace (réduction fixe par coup) | P2-30 · P2-31 |
+| §3 | Cap d'unités par bâtiment · animations des tours | P2-33 · P2-34 |
+| §3 | Revente depuis l'inventaire | P2-35 |
+| §3 | Rareté sur les choix de tirage · chance qui agit dessus | P2-36 |
+| §3 | Craft : boutique trop rentable, recettes rentables et exclusives | P2-37 |
+| §3 | Pont (Épique/Légendaire, non achetable) · Générateur autonome (limite stricte, améliorable) | P2-38 · P2-39 |
+| §3 | Beaucoup plus de contenu / loot | P2-40 |
+| §4 | Bâtiments débloqués par chapitre, annoncés · pool de départ réduit | P2-50 |
+| §4 | Difficile débloqué par le Normal, plus de loot, 100 % optionnel | P2-51 |
+| §4 | Mode libre conservé · bac à sable infini | P2-52 · P2-53 |
+| §4 | Pas de carte répétée après ch. 3, plus d'ennemis · cartes plus grandes et vivantes · chemins par segments | P2-54 · P2-55 · P2-56 |
+| §4 | Tutoriel réintégré · lore en BD, très peu de texte | P2-57 · P2-58 |
+| Restes | PT-51 à 54, 2 icônes | tableau « Restes du playtest 1 » |
+
+## Ordre d'exécution (autonomie)
+Lot A (§1) : P2-01, 02, 03, 33 → banc → P2-04, 05, 06 → commit · Lot B (§2) : P2-10, 14, 15, 16, 17, 18, 19 → P2-12, 11,
+20, 21, 35 → P2-13 · Lot C (§3) : P2-31, 30, 36, 37, 38, 39, 34 → banc · Lot D (§4) : P2-50, 51, 53, 52, 57 → P2-54, 32,
+40 → P2-56, 55, 58 · PT ouverts dès que le quota Gemini revient. Builds Mac/Windows à la fin des lots A, B et C.

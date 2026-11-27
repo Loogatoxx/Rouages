@@ -3,7 +3,19 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-26 tard le soir, autonomie totale)
+## État (mis à jour le 2026-11-27 midi, autonomie totale)
+- **Après playtest 2** : roadmap `docs/roadmap.md` § « Après playtest 2 » (P2-01 à P2-58, règle R8 « vrai puzzle
+  tactique », table de vérification brief → tâches). Captures de référence : `art_refs/playtest2/avant/`.
+  **Lot A fait** (§1) : jouets « plots », spawn progressif (pause vide), plafond par atelier, port de l'horloge,
+  plantage du coffre, réglages graphiques (autoload `Graphismes`), export Windows (`.pck` séparé, icône `.ico`).
+  Ordre de la suite : lot B (UI §2) → lot C (puzzle §3) → lot D (campagne §4) → PT ouverts (Gemini/Hyper3D).
+- **Banc depuis le playtest 2** : plus de remontage ; pause vide ; cadence ateliers ×1,83 ; 5 s avant le 1er ennemi.
+  Repères : moyen meurt V5-V8, parfait 0-2 PV. Variables d'essai `CADENCE`, `DELAI`, `AVANCE`.
+- **Captures** : `Graphismes` passe à 15 images/s quand la fenêtre n'a pas le focus (fenêtre de capture souvent en
+  arrière-plan) → pour mesurer, `Graphismes._arriere_plan = false` puis `_appliquer_fps()`. Ne jamais appeler
+  `Graphismes.prereglage()`/`enregistrer()` dans une capture (écrit `reglages.cfg` de Carlos).
+
+## État précédent (2026-11-26 tard le soir)
 - **Après playtest 1** : la roadmap `docs/roadmap.md` § « Après playtest 1 » liste 100 % du brief de Carlos (PT-01 à PT-65,
   règles R1-R7, table de vérification brief → tâches). **Faits et commités** (2026-11-27, ~0 h 55) : tous les PT sauf
   ceux qui attendent Hyper3D ou Gemini — PT-51 (modèles de paliers), 52 (images du lot 1), 53 (animations générées),

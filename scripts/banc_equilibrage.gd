@@ -29,6 +29,8 @@ const BILLES = preload("res://data/tuiles/atelier_billes.tres")
 const SENTIER = preload("res://data/extensions/sentier.tres")
 const DT := 1.0 / 30.0
 
+## Variables d'environnement d'essai (sans toucher aux données) : CADENCE (multiplie la cadence des ateliers),
+## DELAI (secondes avant le premier ennemi), AVANCE (avance de production au lancement, 0 à 1).
 ## Chaque étape ajoute un atelier alimenté : [x, y, "A" atelier de soldats | "B" lance-billes | "X" croix, rotation].
 ## Par défaut le banc joue « mixte » (les étapes 3 et 5 posent des lance-billes, comme un joueur qui répond aux
 ## libellules) ; 4e argument `soldats` pour l'ancien banc tout soldats.
@@ -53,11 +55,12 @@ func _initialize() -> void:
 	# 5e argument `longue` : Longue route (15 vagues, PT-60).
 	var longue: bool = args.size() > 4 and args[4] == "longue"
 	var regles: Regles = load("res://data/regles.tres")
-	var remontage: float = float(OS.get_environment("REMONTAGE")) if OS.get_environment("REMONTAGE") != "" else regles.remontage_lancement
 	var depart: DepartDef = load("res://data/depart.tres")
 	var plateau: Plateau = depart.creer_plateau()
 	var sim := SwarmSim.new()
 	var production := Production.new()
+	if OS.get_environment("CADENCE") != "":
+		production.bonus_cadence = float(OS.get_environment("CADENCE"))
 	var directeur := DirecteurVagues.new()
 	var fuites: Array[float] = [0.0]
 	sim.ennemi_arrive.connect(func(d: float) -> void: fuites[0] += d)
@@ -79,19 +82,21 @@ func _initialize() -> void:
 		sim.configurer(plateau, regles.garde_ratio)
 		var entrees: Array[Vector2i] = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau))
 		var t: float = 0.0
-		# Même règle que le jeu : production à l'arrêt entre les vagues, remontage instantané une fois par pause,
-		# puis les jouets rejoignent leur poste (20 s de marche simulées, sans ennemi).
-		production.remonter(remontage, plateau, alimentees, sim, regles)
-		while t < 20.0:
-			sim.avancer(DT)
-			t += DT
-		production.nouvelle_pause()
-		directeur.commencer(vagues[i], entrees)
+		# Même règle que le jeu (playtest 2) : les jouets survivants rentrent à la fin de la vague, la pause est vide
+		# et chaque atelier repart de zéro au lancement (sortie un par un).
+		sim.vider(SwarmSim.ALLIE)
+		production.nouvelle_vague()
+		if OS.get_environment("DELAI") != "":
+			regles.delai_premier_ennemi = float(OS.get_environment("DELAI"))
+		if OS.get_environment("AVANCE") != "":
+			regles.avance_lancement = float(OS.get_environment("AVANCE"))
+		directeur.commencer(vagues[i], entrees, regles.delai_premier_ennemi)
 		fuites[0] = 0.0
-		var allies: int = sim.nombre(SwarmSim.ALLIE)
+		var allies: int = 0
 		t = 0.0
 		while t < 400.0 and not directeur.est_terminee(sim):
 			production.avancer(DT, plateau, alimentees, sim, regles)
+			allies = maxi(allies, sim.nombre(SwarmSim.ALLIE))
 			directeur.avancer(DT, sim)
 			sim.avancer(DT)
 			t += DT

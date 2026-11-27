@@ -215,3 +215,34 @@ Carillon de chantier,Carillon de chantier,Site chime,Carrilhão de obra
 "Un carillon offert, rangé dans ta réserve.","Un carillon offert, rangé dans ta réserve.","A free chime, stored in your reserve.","Um carrilhão oferecido, guardado na tua reserva."
 Grande ouverture,Grande ouverture,Grand opening,Grande abertura
 +3 chance : les tiroirs ouverts laissent tomber de belles pièces.,+3 chance : les tiroirs ouverts laissent tomber de belles pièces.,+3 luck: open drawers drop fine pieces.,+3 sorte: as gavetas abertas deixam cair boas peças.
+Général,Général,General,Geral
+Graphismes,Graphismes,Graphics,Gráficos
+Choisis « Économie » si l’ordinateur chauffe ou ventile fort.,Choisis « Économie » si l’ordinateur chauffe ou ventile fort.,Pick “Economy” if the computer runs hot or loud.,Escolhe «Económico» se o computador aquecer ou fizer muito barulho.
+Nombre maximal d’images calculées par seconde : moins = moins de chauffe.,Nombre maximal d’images calculées par seconde : moins = moins de chauffe.,Maximum frames drawn per second: fewer = less heat.,Número máximo de imagens por segundo: menos = menos aquecimento.
+Cale les images sur l’écran : évite les déchirures et les images inutiles.,Cale les images sur l’écran : évite les déchirures et les images inutiles.,"Syncs frames to the screen: no tearing, no wasted frames.",Sincroniza as imagens com o ecrã: sem cortes nem imagens inúteis.
+Ombres du soleil sur le plateau : l’effet le plus coûteux.,Ombres du soleil sur le plateau : l’effet le plus coûteux.,Sun shadows on the board: the most expensive effect.,Sombras do sol no tabuleiro: o efeito mais pesado.
+Ombres douces dans les recoins (occlusion ambiante).,Ombres douces dans les recoins (occlusion ambiante).,Soft shadows in corners (ambient occlusion).,Sombras suaves nos cantos (oclusão ambiente).
+Léger halo autour des parties brillantes.,Léger halo autour des parties brillantes.,Soft glow around shiny parts.,Ligeiro brilho à volta das partes reluzentes.
+Poussière dorée et pétales qui flottent au-dessus du plateau.,Poussière dorée et pétales qui flottent au-dessus du plateau.,Golden dust and petals floating over the board.,Pó dourado e pétalas a flutuar sobre o tabuleiro.
+Lisse les bords des objets 3D (anticrénelage).,Lisse les bords des objets 3D (anticrénelage).,Smooths the edges of 3D objects (anti-aliasing).,Suaviza as arestas dos objetos 3D (antisserrilhado).
+Résolution de la scène 3D : plus basse = beaucoup moins de calcul.,Résolution de la scène 3D : plus basse = beaucoup moins de calcul.,3D scene resolution: lower = much less work.,Resolução da cena 3D: mais baixa = muito menos cálculo.
+Préréglage : %s,Préréglage : %s,Preset: %s,Predefinição: %s
+Économie,Économie,Economy,Económico
+Équilibré,Équilibré,Balanced,Equilibrado
+Qualité,Qualité,Quality,Qualidade
+Personnalisé,Personnalisé,Custom,Personalizado
+Images/s : %s,Images/s : %s,Frames/s: %s,Imagens/s: %s
+illimité,illimité,unlimited,ilimitado
+Synchro verticale : %s,Synchro verticale : %s,V-Sync: %s,Sincronização vertical: %s
+Ombres : %s,Ombres : %s,Shadows: %s,Sombras: %s
+aucune,aucune,none,nenhuma
+basses,basses,low,baixas
+hautes,hautes,high,altas
+Occlusion : %s,Occlusion : %s,Occlusion: %s,Oclusão: %s
+Lueur : %s,Lueur : %s,Glow: %s,Brilho: %s
+Particules : %s,Particules : %s,Particles: %s,Partículas: %s
+Anticrénelage : %s,Anticrénelage : %s,Anti-aliasing: %s,Antisserrilhado: %s
+aucun,aucun,none,nenhum
+Résolution 3D : %d %%,Résolution 3D : %d %%,3D resolution: %d %%,Resolução 3D: %d %%
+oui,oui,on,sim
+non,non,off,não

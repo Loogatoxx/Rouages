@@ -235,3 +235,37 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   `Partie._ouvrir_tiroir` écoute `vague_terminee`. Les 10 premières vagues ne changent pas (banc inchangé).
 - **Paliers d'extension** (PT-61, `PalierExtensionDef`, `data/paliers_extension/`) : 1re extension = +1 carte par tirage,
   2e = −25 % sur les améliorations, 3e = carillon offert, 4e = +3 chance ; annoncés par `message_joueur`.
+
+## Après playtest 2 — lot A (bugs critiques, spawn, perf Windows)
+- **Spawn progressif** (P2-02) : plus de « remontage » en rafale. `Production.avancer` sort les jouets un par un pendant
+  la vague ; `nouvelle_vague()` remet chaque atelier à zéro (`Regles.avance_lancement`, 0 par défaut). À la fin d'une
+  vague, `Partie._rentrer_jouets` vide le camp allié (`SwarmSim.vider`) : la pause est vide, on voit le plateau pour
+  réfléchir. `Regles.delai_premier_ennemi` (5 s) laisse sortir les premiers jouets avant l'ouverture des tiroirs
+  (`DirecteurVagues.commencer(..., delai)`). → Sans délai ni cadence revue, les jouets arrivaient un à un dans la mêlée
+  et tombaient seuls (banc : V2 perdue). Cadence des ateliers ×1,83 (soldats 1,1/s, lance-billes 0,55/s), mesurée au
+  banc (moyen meurt V5-V8, parfait 0-2 PV, comme avant). Le banc accepte `CADENCE`, `DELAI`, `AVANCE` en variables
+  d'environnement pour essayer sans toucher aux données.
+- **Plafond par atelier** (P2-33) : `SwarmSim.ajouter(def, position, origine)` mémorise l'atelier d'origine
+  (`Nuee.origines`, `Nuee.effectifs`) ; `SwarmSim.effectif(case)` ; `Production.plafond(...)` = base + bonus de
+  placement/niveau. → Avant, le plafond était un total partagé (15 × ateliers) : un atelier pouvait « prendre » les
+  places des autres.
+- **Jouets « plots »** (P2-01) : `SwarmSim._tracer_pistes` (toutes les 0,2 s) fait un parcours en largeur sur les cases
+  de chemin depuis les ennemis (une piste pour les jouets au corps à corps, qui ignorent les volants ; une pour les
+  tireurs). Un jouet sans cible marche vers l'ennemi le plus proche **par la route**, sans dépasser son poste de garde
+  sauf pour revenir vers l'horloge. `_cases_utiles` : les embranchements ne mènent qu'aux routes qui ont une entrée ;
+  un jouet dans un cul-de-sac revient vers l'horloge. Coût mesuré : `test_performance` inchangé (~3,7 ms/pas à 300 contre 300).
+- **Horloge** (P2-03) : `Plateau.ports_de` ferme le port de l'horloge du côté d'une route (la porte), donc plus de dent
+  de laiton morte devant elle.
+- **Graphismes** (P2-04/05, autoload `Graphismes`, `game/core/graphismes.gd`) : plafond d'images/s (30/60/120/illimité,
+  60 par défaut, 15 quand la fenêtre n'a pas le focus), synchro verticale, ombres (aucune/basses/hautes, taille de
+  l'atlas), SSAO, lueur, particules, MSAA, échelle de rendu 3D (FSR 1 sous 100 %), 3 préréglages. Appliqués à chaque
+  nœud qui entre dans l'arbre (`node_added`) avec mémoire de la valeur d'origine en méta : aucune scène ne connaît
+  l'autoload. Onglets « Général / Graphismes » dans `options.gd`. Mesure sur le Mac (vague 8, Méandres) : ~8 ms/image
+  quel que soit le préréglage → le goulot est le processeur (scripts), pas la carte graphique ; plafonner les images/s
+  est donc le vrai remède à la chauffe (un écran 144 Hz faisait calculer 2,4× plus d'images).
+- **Export Windows** (P2-06) : `.pck` séparé (un exécutable qui contient une archive est un motif classique de faux
+  positif), pas de lanceur console, ressources de l'exécutable modifiées (icône `assets/icone.ico` multi-tailles,
+  version 0.9, éditeur, description, copyright), `builds/*` exclu des exports (l'ancien `.app` Mac partait dans le
+  `.pck`). SmartScreen peut encore avertir : seul un certificat de signature de code (payant) le supprime.
+- **Coffre** (P2-07) : le style de la pastille de rareté était lu avant l'entrée de la carte dans l'arbre (style vide
+  → plantage dès qu'une carte rare sortait) ; lu désormais dans le thème lui-même (`THEME_UI`).

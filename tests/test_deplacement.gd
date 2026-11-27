@@ -76,8 +76,8 @@ func test_refus_reprise() -> String:
 	return "" if refus else "Une reprise interdite a modifié la partie."
 
 
-## Un atelier remonté garde son remontage après déplacement, jusqu’à la pause suivante.
-func test_remontage_apres_deplacement() -> String:
+## Un atelier déplacé repart de zéro : sa production en cours ne le suit pas (pas de jouet gagné en le bougeant).
+func test_atelier_deplace_repart_de_zero() -> String:
 	var plateau := Plateau.new()
 	var production := Production.new()
 	var sim := Production.SwarmSim.new()
@@ -86,19 +86,10 @@ func test_remontage_apres_deplacement() -> String:
 	plateau.ajouter_sol(depart, Plateau.Sol.HERBE)
 	plateau.ajouter_sol(arrivee, Plateau.Sol.HERBE)
 	plateau.poser(depart, Atelier)
-	# Un seul jouet par remontage laisse de la place pour détecter une double production.
-	var secondes: float = 1.5 / Atelier.cadence_production
-	production.remonter(secondes, plateau, {depart: true}, sim, ReglesJeu)
-	if sim.nombre(Production.SwarmSim.ALLIE) != 1:
-		return "Le premier remontage doit produire un jouet."
+	# Presque un jouet de prêt (90 %).
+	production.avancer(0.9 / Atelier.cadence_production, plateau, {depart: true}, sim, ReglesJeu)
 	plateau.retirer(depart)
 	production.atelier_repris(depart)
 	plateau.poser(arrivee, Atelier)
-	production.remonter(secondes, plateau, {arrivee: true}, sim, ReglesJeu)
-	production.remonter(secondes, plateau, {arrivee: true}, sim, ReglesJeu)
-	if sim.nombre(Production.SwarmSim.ALLIE) != 1:
-		return "Déplacer un atelier remonté a produit un jouet supplémentaire."
-	production.atelier_repris(arrivee)
-	production.nouvelle_pause()
-	production.remonter(secondes, plateau, {arrivee: true}, sim, ReglesJeu)
-	return "" if sim.nombre(Production.SwarmSim.ALLIE) == 2 else "La nouvelle pause doit autoriser le remontage."
+	production.avancer(0.2 / Atelier.cadence_production, plateau, {arrivee: true}, sim, ReglesJeu)
+	return "" if sim.nombre(Production.SwarmSim.ALLIE) == 0 else "Déplacer un atelier ne doit pas garder sa production."

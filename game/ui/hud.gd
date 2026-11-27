@@ -6,6 +6,7 @@ const Lot = preload("res://game/core/lot.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
 const Reperes = preload("res://game/ui/reperes.gd")
 const Astuces = preload("res://game/ui/astuces.gd")
+const THEME_UI: Theme = preload("res://game/ui/theme_rouages.tres")
 const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
 const ICONE_RESSORT: Texture2D = preload("res://assets/ui/icones/ressort.png")
@@ -492,8 +493,14 @@ class Carte extends Button:
 			badge.text = NOMS_RARETE[piece.rarete]
 			# Pastille teintée par rareté (audit UI 8.3) : la rareté se lit à la couleur, sans lire le mot.
 			if piece.rarete != PieceDef.Rarete.COMMUNE:
-				var pastille: StyleBoxTexture = badge.get_theme_stylebox(&"normal").duplicate()
-				pastille.modulate_color = Color("#BFD7F0") if piece.rarete == PieceDef.Rarete.RARE else Color("#F3D27A")
+				# Lu dans le thème lui-même : la carte n'est pas encore dans l'arbre, `get_theme_stylebox` y rendait
+				# un style vide (plantage du coffre dès qu'une carte rare sortait, vu au playtest 2).
+				var teinte: Color = Color("#BFD7F0") if piece.rarete == PieceDef.Rarete.RARE else Color("#F3D27A")
+				var pastille: StyleBox = THEME_UI.get_stylebox(&"normal", &"Badge").duplicate()
+				if pastille is StyleBoxTexture:
+					(pastille as StyleBoxTexture).modulate_color = teinte
+				elif pastille is StyleBoxFlat:
+					(pastille as StyleBoxFlat).bg_color = teinte
 				badge.add_theme_stylebox_override(&"normal", pastille)
 		else:
 			badge.text = "×%d" % lot.quantite

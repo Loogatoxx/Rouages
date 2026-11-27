@@ -14,6 +14,10 @@ const PORTEE_DISTANCE := 1.0
 const POURSUITE := 6.0
 const ALLIE := UniteDef.Camp.ALLIE
 const ENNEMI := UniteDef.Camp.ENNEMI
+## Origine des unités qui ne sortent d'aucun atelier (ennemis, tests).
+const SANS_ORIGINE := Vector2i(-99999, -99999)
+## Intervalle (secondes de simulation) entre deux recalculs du chemin vers les ennemis.
+const RECALCUL_PISTE := 0.2
 
 
 ## Une cellule de deux mètres conserve les indices locaux et son rectangle occupé.
@@ -32,6 +36,9 @@ class Nuee:
 	var recharges := PackedFloat32Array()
 	var choix := PackedInt64Array()
 	var modeles: Array[UniteDef] = []
+	## Atelier d'où sort chaque unité, et effectif vivant par atelier (plafond par bâtiment, playtest 2).
+	var origines: Array[Vector2i] = []
+	var effectifs: Dictionary[Vector2i, int] = {}
 	var suivants := PackedVector2Array()
 	var grille: Dictionary[Vector2i, Cellule] = {}
 	var influence: Dictionary[Vector2i, Array] = {}
@@ -47,6 +54,9 @@ class Nuee:
 		recharges[i] = recharges[fin]
 		choix[i] = choix[fin]
 		modeles[i] = modeles[fin]
+		var origine: Vector2i = origines[i]
+		effectifs[origine] = effectifs.get(origine, 1) - 1
+		origines[i] = origines[fin]
 		lieux.resize(fin)
 		angles.resize(fin)
 		vies.resize(fin)
@@ -54,6 +64,20 @@ class Nuee:
 		recharges.resize(fin)
 		choix.resize(fin)
 		modeles.pop_back()
+		origines.pop_back()
+
+	func _vider() -> void:
+		lieux.clear()
+		angles.clear()
+		vies.clear()
+		touches.clear()
+		recharges.clear()
+		choix.clear()
+		modeles.clear()
+		origines.clear()
+		effectifs.clear()
+		grille.clear()
+		influence.clear()
 
 
 ## Fraction du chemin que les alliés peuvent parcourir sans cible.
@@ -63,6 +87,12 @@ var _camps: Array[Nuee] = [Nuee.new(), Nuee.new()]
 var _distances: Dictionary = {}
 var _objectifs: Array[Dictionary] = [{}, {}]
 var _branches: Dictionary[Vector2i, PackedVector2Array] = {}
+# Case de chemin la plus proche de chaque case de sol (pour situer un ennemi hors de la route).
+var _sources: Dictionary = {}
+# Pour chaque case de chemin, la case suivante vers l'ennemi le plus proche par la route :
+# [0] = ennemis au sol (jouets au corps à corps), [1] = tous (jouets à distance). Vide si aucun ennemi.
+var _pistes: Array[Dictionary] = [{}, {}]
+var _attente_piste: float = 0.0
 
 
 ## Recalcule les cartes et les prochains centres à viser, sans déplacer les unités.
@@ -71,9 +101,13 @@ func configurer(plateau: Plateau, ratio: float = 1.0) -> void:
 	_distance_max = 0
 	_distances = ChampFlux.calculer(plateau)
 	var sources: Dictionary = ChampFlux.vers_chemin(plateau, _distances)
+	_sources = sources
+	var utiles: Dictionary = _cases_utiles(plateau)
 	for objectifs: Dictionary in _objectifs:
 		objectifs.clear()
 	_branches.clear()
+	for piste: Dictionary in _pistes:
+		piste.clear()
 	for case: Vector2i in sources:
 		var source: Vector2i = sources[case]
 		_objectifs[ALLIE][case] = Vector2(source) * MAILLE
@@ -87,22 +121,48 @@ func configurer(plateau: Plateau, ratio: float = 1.0) -> void:
 		for direction: Vector2i in ChampFlux.VOISINS:
 			var voisin: Vector2i = case + direction
 			var suivante: int = _distances.get(voisin, -1)
-			if suivante > distance:
+			# Playtest 2 : une branche sans entrée au bout (cul-de-sac laissé par une extension) n'attire plus
+			# de jouets, qui y attendaient « comme des plots » sans jamais croiser d'ennemi.
+			if suivante > distance and utiles.has(voisin):
 				branches.append(Vector2(voisin) * MAILLE)
 			elif suivante >= 0 and suivante < distance and retour == case:
 				retour = voisin
 		_objectifs[ENNEMI][case] = Vector2(retour) * MAILLE
-		if branches.size() == 1:
+		if not utiles.has(case):
+			_objectifs[ALLIE][case] = Vector2(retour) * MAILLE
+		elif branches.size() == 1:
 			_objectifs[ALLIE][case] = branches[0]
 		elif branches.size() > 1:
 			_branches[case] = branches
 
 
+# Cases de chemin situées sur un trajet entrée → horloge (en remontant les distances décroissantes depuis
+# chaque entrée). Les autres sont des culs-de-sac où aucun ennemi ne passe.
+func _cases_utiles(plateau: Plateau) -> Dictionary:
+	var utiles: Dictionary = {}
+	var file: Array[Vector2i] = ChampFlux.entrees(plateau, _distances)
+	for case: Vector2i in file:
+		utiles[case] = true
+	var tete: int = 0
+	while tete < file.size():
+		var case: Vector2i = file[tete]
+		tete += 1
+		for direction: Vector2i in ChampFlux.VOISINS:
+			var voisin: Vector2i = case + direction
+			if not utiles.has(voisin) and _distances.has(voisin) and _distances[voisin] == _distances[case] - 1:
+				utiles[voisin] = true
+				file.append(voisin)
+	return utiles
+
+
 ## Ajoute une unité prête à frapper tant qu'il reste une place dans son camp.
-func ajouter(def: UniteDef, position: Vector2) -> bool:
+## `origine` = case de l'atelier qui l'a produite (sert au plafond par bâtiment).
+func ajouter(def: UniteDef, position: Vector2, origine: Vector2i = SANS_ORIGINE) -> bool:
 	var nuee: Nuee = _camps[def.camp]
 	if nuee.lieux.size() >= CAPACITE:
 		return false
+	nuee.origines.append(origine)
+	nuee.effectifs[origine] = nuee.effectifs.get(origine, 0) + 1
 	nuee.lieux.append(position)
 	nuee.angles.append(0.0)
 	nuee.vies.append(def.pv)
@@ -156,6 +216,16 @@ func nombre(camp: int) -> int:
 	return _camps[camp].lieux.size()
 
 
+## Renvoie le nombre de jouets vivants sortis de l'atelier posé sur `origine`.
+func effectif(origine: Vector2i) -> int:
+	return _camps[ALLIE].effectifs.get(origine, 0)
+
+
+## Retire d'un coup toutes les unités d'un camp, sans signal de mort (les jouets rentrent à l'atelier).
+func vider(camp: int) -> void:
+	_camps[camp]._vider()
+
+
 ## Renvoie les positions en mètres dans le plan horizontal.
 func positions(camp: int) -> PackedVector2Array:
 	return _camps[camp].lieux
@@ -185,6 +255,10 @@ func avancer(dt: float) -> void:
 		_verifier_arrivee(ennemis, i)
 	for nuee: Nuee in _camps:
 		_indexer(nuee, dt)
+	_attente_piste -= dt
+	if _attente_piste <= 0.0:
+		_attente_piste = RECALCUL_PISTE
+		_tracer_pistes()
 	for camp: int in [ALLIE, ENNEMI]:
 		var nuee: Nuee = _camps[camp]
 		var adverse: Nuee = _camps[1 - camp]
@@ -197,6 +271,7 @@ func avancer(dt: float) -> void:
 			var cibles: Array = adverse.influence.get(case, [])
 			for i: int in cellule.indices:
 				_decider(camp, i, [] if camp == ENNEMI and nuee.modeles[i].volant else cibles, dt)
+
 	for nuee: Nuee in _camps:
 		_separer(nuee, dt)
 		nuee.lieux = nuee.suivants
@@ -306,15 +381,52 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 	if cible >= 0 and meilleur < POURSUITE * POURSUITE:
 		destination = adverse.lieux[cible]
 	else:
-		destination = _objectif_flux(camp, lieu, nuee.choix[i])
+		destination = _objectif_flux(camp, lieu, nuee.choix[i], melee)
 	if destination != lieu:
 		nuee.suivants[i] = lieu.move_toward(destination, modele.vitesse * dt)
 		nuee.angles[i] = (destination - lieu).angle()
 
 
-func _objectif_flux(camp: int, lieu: Vector2, choix: int) -> Vector2:
+# Playtest 2 (jouets « plots ») : chaque case de chemin connaît la case suivante vers l'ennemi le plus proche
+# par la route (parcours en largeur depuis les cases occupées par des ennemis). Recalculé toutes les 0,2 s.
+func _tracer_pistes() -> void:
+	var ennemis: Nuee = _camps[ENNEMI]
+	for k: int in 2:
+		var piste: Dictionary = _pistes[k]
+		piste.clear()
+		var file: Array[Vector2i] = []
+		for i: int in ennemis.lieux.size():
+			if k == 0 and ennemis.modeles[i].volant:
+				continue
+			var case := Vector2i((ennemis.lieux[i] / MAILLE).round())
+			if not _distances.has(case):
+				case = _sources.get(case, SANS_ORIGINE)
+			if case != SANS_ORIGINE and not piste.has(case):
+				piste[case] = case
+				file.append(case)
+		var tete: int = 0
+		while tete < file.size():
+			var case: Vector2i = file[tete]
+			tete += 1
+			for direction: Vector2i in ChampFlux.VOISINS:
+				var voisin: Vector2i = case + direction
+				if not piste.has(voisin) and _distances.has(voisin):
+					piste[voisin] = case
+					file.append(voisin)
+
+
+func _objectif_flux(camp: int, lieu: Vector2, choix: int, melee: bool = false) -> Vector2:
 	var case := Vector2i((lieu / MAILLE).round())
-	if camp == ALLIE and _distances.get(case, -1) > garde_ratio * _distance_max:
+	var limite: float = garde_ratio * _distance_max
+	if camp == ALLIE and _distances.has(case):
+		# Un ennemi frappable existe : on marche vers lui par la route, sans dépasser le poste de garde,
+		# sauf pour revenir vers l'horloge (les ennemis qui ont dépassé un jouet isolé ne le laissent plus planté).
+		var pas: Vector2i = _pistes[0 if melee else 1].get(case, case)
+		if pas != case:
+			var distance_pas: int = _distances.get(pas, -1)
+			if distance_pas <= limite or distance_pas < _distances[case]:
+				return Vector2(pas) * MAILLE
+	if camp == ALLIE and _distances.get(case, -1) > limite:
 		return lieu
 	if camp == ALLIE and _branches.has(case):
 		var branches: PackedVector2Array = _branches[case]
