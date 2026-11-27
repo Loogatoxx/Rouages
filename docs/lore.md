@@ -98,3 +98,6 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Scarabées par paquets | Les scarabées sortent des tiroirs par nichées : ceux d'un même tiroir ont été remontés ensemble, ils marchent ensemble. |
 | Carillon qui ralentit | Ses clochettes sonnent la berceuse de la boîte à musique : les scarabées qui l'entendent traînent la patte, à moitié endormis. |
 | Coup de carillon | L'Horloge-Mère peut sonner un grand coup quand on le lui demande : tous les scarabées à portée restent figés, comme quand Anselme tapait sur l'établi pour faire taire l'atelier. Puis elle doit reprendre son souffle. |
+| Décors du plateau (bosquets, parterres, mare, caisses) | Les petits arbres et les parterres sont collés à la maquette depuis toujours : Anselme refusait qu'on y touche. Les caisses, elles, contiennent les pièces de ses agrandissements jamais finis. |
+| La Serre (îlot et rigole) | La maquette de la serre du jardin : Lise y avait creusé une vraie rigole pour arroser ses graines. L'eau arrête les rouages comme les jouets ; il faut un pont. |
+| Le Quai (marée) | La maquette du port où Anselme est parti. Un mécanisme caché sous la table fait monter et descendre l'eau à chaque sonnerie : une jetée sur deux disparaît. |

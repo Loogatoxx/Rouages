@@ -439,3 +439,22 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   retours à la ligne). Une cellule CSV à plusieurs lignes s'écrit entre guillemets avec de vrais retours.
   `tests/test_traductions.gd` : lignes d'aide traduites en EN et PT, aide qui change avec la langue, aucune clé
   avec `\n` littéral.
+
+## Après playtest 3 — lot 5 (sensation de vide, cartes à mécaniques)
+- **Cadrage** (P3-41) : `CameraPlateau._cadrer_plateau` (au lancement) centre la caméra sur le terrain et choisit
+  le cadre qui le fait tenir en hauteur (profondeur × 1,02, ou largeur × 0,64 si la carte est large).
+- **Eau et décors** (P3-42, P3-46) : `Plateau.Sol.EAU` (on n'y pose qu'un Pont), `Plateau.ajouter_decor` /
+  `decor_de` / `coords_decors` (herbe où l'on ne pose rien) ; `DepartDef.eau`, `decors` (case → nom du modèle),
+  appliqués par `creer_plateau`. `SwarmSim._tracer_couloirs` les ajoute aux cases occupées (les jouets contournent),
+  `Extension` ne pave pas un raccord à travers un décor. Modèles du kit (`assets/final/kit_v2/decor_*`, `tuile_eau`,
+  faits par Gemini dans Blender). `PlateauVisuel._actualiser` pose tuiles d'eau et décors.
+- **Palette par carte** (P3-50) : `DepartDef.teinte_herbe`, `teinte_route`, `teinte_table`, `lumiere` ;
+  `PlateauVisuel._teinter` (copie du matériau par couple matériau/teinte), table et soleil teintés.
+- **Marée** (P3-47) : `DepartDef.maree` ; `Partie.entrees_de_la_vague(numero)` ne garde qu'une entrée, à tour de
+  rôle ; `PlateauVisuel._montrer_maree` couvre d'un voile d'eau les routes fermées et annonce l'entrée ouverte.
+- **Cartes** : `serre.tres` (La Serre : îlot de l'Horloge ceinturé d'eau, longue allée, 2 Ponts) et `quai.tres`
+  (Le Quai : deux jetées, marée, 1 Pont, +1 dent), ajoutées à la partie libre (8 cartes). Toutes les cartes ont
+  leurs décors et leur palette.
+- **Impacts** (P3-44) : `PlateauVisuel._onde(point, rayon, couleur)` : boulet, obus, carillon, coup de carillon.
+- **Joueur automatique** : suit la marée (`_suivre_la_maree`) ; La Serre gagnée 1 fois sur 2 sans Pont ; Le Quai
+  perdu en V5 (il faudrait un Pont pour s'installer entre les deux jetées) : cartes de « casse-tête », à faire jouer.

@@ -54,8 +54,9 @@ static func raccord(plateau: Plateau, def: ExtensionDef, centre: Vector2i, rotat
 					trace.append(case)
 					case = precedent[case]
 				return trace
+			# Un raccord se pave dans l'herbe libre : ni pièce, ni décor (playtest 3), ni case collée à l'horloge.
 			if plateau.sol_de(voisin) == Plateau.Sol.HERBE and plateau.piece_de(voisin) == null \
-					and not _touche_horloge(reseau, voisin):
+					and plateau.decor_de(voisin) == &"" and not _touche_horloge(reseau, voisin):
 				precedent[voisin] = case
 				file.append(voisin)
 	return []

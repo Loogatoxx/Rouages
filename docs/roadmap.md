@@ -305,16 +305,16 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
 | P3-40 | **Diagnostic du vide** : 7 causes classées, vues sur captures. | P0 | Fable | — | ✅ `docs/game_design_p3.md` § 6 |
-| P3-41 | **Cadrage serré** : plateau à ~60 % de l'écran, léger zoom automatique vers le front pendant la vague (option). | P1 | Fable | `camera_plateau.gd` | |
-| P3-42 | **Plateau qui raconte** : cases de décor non constructibles par carte (bosquet, mare, rocher, barrière), teintes d'herbe par zones, bordure plus épaisse. | P1 | Fable (logique) + Gemini (modèles) | PT-54, quota Gemini | |
+| P3-41 | **Cadrage serré** : plateau à ~60 % de l'écran, léger zoom automatique vers le front pendant la vague (option). | P1 | Fable | `camera_plateau.gd` | ✅ la caméra se centre sur le terrain et le fait tenir à ~80 % de la hauteur de l'écran, quelle que soit la carte ; reste : zoom automatique vers le front (option) |
+| P3-42 | **Plateau qui raconte** : cases de décor non constructibles par carte (bosquet, mare, rocher, barrière), teintes d'herbe par zones, bordure plus épaisse. | P1 | Fable (logique) + Gemini (modèles) | PT-54, quota Gemini | ✅ cases de décor non constructibles (`DepartDef.decors`), 5 modèles de Gemini (bosquet, rocher, parterre, mare, caisses), posés sur les 8 cartes ; reste : teintes d'herbe par zones, bordure plus épaisse |
 | P3-43 | **Pause qui respire et vie ambiante** : clés et cheminées des ateliers, balancier de l'Horloge, drapeaux, oiseau mécanique ; aucun jouet dehors (règle du playtest 2). | P1 | Fable + Gemini | P3-41 | |
-| P3-44 | **Impacts et récompenses visibles** : ressort qui roule vers le compteur, poussière d'obus, onde du carillon, recul de l'ennemi touché. | P1 | Fable | P3-29 | |
+| P3-44 | **Impacts et récompenses visibles** : ressort qui roule vers le compteur, poussière d'obus, onde du carillon, recul de l'ennemi touché. | P1 | Fable | P3-29 | 🟡 ondes au sol (boulet, obus, carillon, coup de carillon), ennemis ralentis teintés ; reste : ressort qui roule vers le compteur, recul de l'ennemi touché |
 | P3-45 | **L'établi autour** : grands objets d'horloger au bord de l'image, tache de soleil qui glisse. | P2 | Gemini (modèles) + Fable | quota Gemini | |
-| P3-46 | **Carte « La Serre »** (menthe et rose) : rigoles d'eau qui coupent l'herbe en îlots. | P2 | Fable | P3-22, P3-42 | |
-| P3-47 | **Carte « Le Quai »** (bleu ardoise et sable) : marée, une route sur deux inondée une vague sur deux. | P2 | Fable | P3-25 | |
+| P3-46 | **Carte « La Serre »** (menthe et rose) : rigoles d'eau qui coupent l'herbe en îlots. | P2 | Fable | P3-22, P3-42 | ✅ `data/departs/serre.tres` : l'Horloge sur un îlot ceinturé d'eau (`Sol.EAU`, modèle `tuile_eau`), 2 Ponts en réserve, palette menthe et rose |
+| P3-47 | **Carte « Le Quai »** (bleu ardoise et sable) : marée, une route sur deux inondée une vague sur deux. | P2 | Fable | P3-25 | ✅ `data/departs/quai.tres` : deux jetées, `DepartDef.maree` (une seule entrée par vague, voile d'eau sur l'autre, bandeau d'annonce), palette ardoise et sable ; **à faire jouer par Carlos** (le joueur automatique ne pose pas de Pont) |
 | P3-48 | **Carte « Le Manège »** (crème, cerise, or) : plaque tournante qui change les entrées toutes les 2 vagues. | P3 | Fable | P3-47 | |
 | P3-49 | **Carte « Le Rail »** (ocre, vert bouteille) : petit train qui repousse tout ce qui est sur la voie. | P3 | Fable + Hyper3D (train) | P3-48 | |
-| P3-50 | **Palette par carte** : teintes de sol, de route, de lumière et de table propres à chaque plateau (`DepartDef`). | P1 | Fable | P3-42 | |
+| P3-50 | **Palette par carte** : teintes de sol, de route, de lumière et de table propres à chaque plateau (`DepartDef`). | P1 | Fable | P3-42 | ✅ `DepartDef.teinte_herbe` / `teinte_route` / `teinte_table` / `lumiere`, appliquées aux dalles, à la table et au soleil ; une palette par carte |
 
 ## Restes du playtest 2 (toujours ouverts)
 | ID | Tâche | Qui | État / bloqué par |

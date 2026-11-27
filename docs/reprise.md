@@ -15,6 +15,10 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
   **Attend Carlos** : valider `art_refs/hyper3d/lot2/tourelle_carillon.png` et `tourelle_mortier.png` avant la
   génération Hyper3D ; tester les builds (Windows surtout) ; jouer Boîte à musique et Grand atelier (le joueur
   automatique ne sait pas poser de Pont).
+- **GitHub** (demande de Carlos, 2026-11-27) : dépôt privé `https://github.com/Loogatoxx/Rouages`, distant `origin`,
+  branche `main`. **Pousser après chaque lot commité et testé** (`git push`), jamais de `--force`. Avant un push :
+  `git ls-files | grep -iE "\.env|keystore|\.jks|\.apk|\.aab"` doit rester vide. Ses carrés verts comptent (e-mail de
+  l'IPT relié au compte) ; pour les voir sur son profil public, c'est à lui d'activer « Private contributions ».
 - **Joueur automatique** (le juge de l'équilibrage) : sans fenêtre
   `Godot --headless --path . --script res://scripts/joueur_auto.gd -- --fenetre <dossier> <plateau 0-5> <spam|tactique> <graine> 0`
   (30 s par partie ; styles `spam`, `masse`, `moyen`, `tactique` ; `CARTE=1` pour le plan du plateau) ; avec captures :

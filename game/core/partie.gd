@@ -81,9 +81,17 @@ func _commencer(numero: int) -> void:
 	directeur.facteur_pv = Run.regles.difficultes_pv_ennemis[Run.difficulte] \
 			* (Run.regles.facteur_pv_difficile if Run.chapitre_difficile else 1.0)
 	var speciaux: Array[Resource] = Run.depart.ennemis_speciaux if numero >= Run.depart.vague_speciaux else ([] as Array[Resource])
-	directeur.commencer(Run.vagues[numero - 1], _entrees, Run.regles.delai_premier_ennemi, speciaux, Run.depart.part_speciaux)
+	directeur.commencer(Run.vagues[numero - 1], entrees_de_la_vague(numero), Run.regles.delai_premier_ennemi, speciaux,
+			Run.depart.part_speciaux)
 	production.nouvelle_vague()
 	carillon_attente = 0.0
+
+
+## Entrées par où arrive la vague `numero`. Carte à marée : une seule, à tour de rôle (les autres sont sous l'eau).
+func entrees_de_la_vague(numero: int) -> Array[Vector2i]:
+	if Run.depart.maree and _entrees.size() > 1:
+		return [_entrees[(numero - 1) % _entrees.size()]]
+	return _entrees
 
 
 ## Coup de carillon du joueur (pilier 4) : étourdit les ennemis autour de `point` (mètres). Faux s'il n'est pas prêt

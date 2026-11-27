@@ -184,3 +184,10 @@
   Gemini revenu : images du carillon et du mortier générées (à valider par Carlos), icônes « poste » et
   « légendaire ». 137 tests.
 - **Objectif** : on gagne en plaçant mieux, plus en ayant plus ; l'écran montre des escouades rangées, pas une cohue.
+
+## 2026-11-27 (soir) — « Peux-tu ajouter le projet sur GitHub pour avoir les carrés verts d'activité ? » (Carlos)
+- **Demande** : mettre le projet sur GitHub correctement et pousser à chaque changement utile.
+- **Fait** : vérification des secrets (fichiers et historique : rien), dépôt privé `Loogatoxx/Rouages` créé, 71 commits
+  poussés ; GitHub relie bien les commits au compte (les carrés comptent). Règle notée : un push après chaque lot
+  commité. À faire par Carlos : activer « Private contributions » sur son profil, ou demander un dépôt public.
+- **Objectif** : que l'activité de Carlos se voie sur son profil GitHub.

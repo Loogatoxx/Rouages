@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="DepartDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/depart_def.gd" id="depart"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="coude"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="croix"]
+[ext_resource type="Resource" path="res://data/tuiles/pont.tres" id="pont"]
+
+[sub_resource type="Resource" id="lot_atelier"]
+script = ExtResource("lot")
+objet = ExtResource("atelier")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_droit"]
+script = ExtResource("lot")
+objet = ExtResource("droit")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_coude"]
+script = ExtResource("lot")
+objet = ExtResource("coude")
+quantite = 1
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_croix"]
+script = ExtResource("lot")
+objet = ExtResource("croix")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_pont"]
+script = ExtResource("lot")
+objet = ExtResource("pont")
+quantite = 1
+poids = 1.0
+
+[resource]
+script = ExtResource("depart")
+nom = "Le Quai"
+description = "Deux jetées, l’une au nord, l’autre à l’est. La marée n’en laisse qu’une à sec à chaque vague : déplace tes fanions d’une jetée à l’autre, ou jette un Pont pour t’installer entre les deux."
+terrain = Rect2i(-5, -5, 11, 11)
+chemins = Array[Vector2i]([Vector2i(0, -5), Vector2i(0, -4), Vector2i(0, -3), Vector2i(0, -2), Vector2i(0, -1), Vector2i(1, 0), Vector2i(2, 0), Vector2i(3, 0), Vector2i(4, 0), Vector2i(5, 0)])
+horloge = Vector2i(0, 0)
+reserve = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_croix"), SubResource("lot_pont")])
+eau = Array[Vector2i]([Vector2i(-5, -5), Vector2i(-5, -4), Vector2i(-5, -3), Vector2i(-5, -2), Vector2i(-5, -1), Vector2i(-5, 0), Vector2i(-5, 1), Vector2i(-5, 2), Vector2i(-5, 3), Vector2i(-5, 4), Vector2i(-5, 5), Vector2i(-4, 5), Vector2i(-3, 5), Vector2i(-2, 5), Vector2i(-1, 5), Vector2i(0, 5), Vector2i(1, 5), Vector2i(2, 5), Vector2i(3, 5), Vector2i(4, 5), Vector2i(5, 5)])
+decors = Dictionary[Vector2i, StringName]({Vector2i(-4, -5): &"decor_caisses", Vector2i(-4, 4): &"decor_caisses", Vector2i(-3, 4): &"decor_rocher", Vector2i(4, 4): &"decor_rocher", Vector2i(5, -5): &"decor_bosquet", Vector2i(4, -4): &"decor_parterre", Vector2i(-2, -3): &"decor_mare", Vector2i(3, 3): &"decor_bosquet", Vector2i(-4, 0): &"decor_rocher"})
+maree = true
+teinte_herbe = Color(1.22, 1.03, 0.78, 1)
+teinte_route = Color(0.74, 0.82, 0.96, 1)
+teinte_table = Color(0.82, 0.9, 1.0, 1)
+lumiere = Color(0.96, 0.99, 1.0, 1)
+dents_bonus = 1

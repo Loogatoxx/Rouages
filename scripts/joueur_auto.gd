@@ -103,6 +103,8 @@ func _jouer() -> void:
 				_acheter(run)
 				_poser_reserve(run, noeud.plateau)
 				_ameliorer(run, noeud.plateau)
+				if run.depart.maree and _style == "tactique":
+					_suivre_la_maree(run, noeud.plateau, partie)
 				await _attendre(2)
 				if _captures and run.vague_actuelle in [0, 4, 9]:
 					await _capturer("V%02d_pause" % (run.vague_actuelle + 1))
@@ -470,6 +472,37 @@ func _poser_reserve(run: Node, plateau) -> void:
 			return
 
 
+# Carte à marée : avant chaque vague, « tactique » replante chaque fanion sur la route par où la vague arrivera
+# (la case à portée la plus éloignée de l'Horloge sur ce trajet : on se bat le plus loin possible).
+func _suivre_la_maree(run: Node, plateau, partie: Node) -> void:
+	var ChampFlux: GDScript = load("res://game/swarm/champ_flux.gd")
+	var distances: Dictionary = ChampFlux.calculer(plateau)
+	var trajet: Dictionary = {}
+	for entree: Vector2i in partie.entrees_de_la_vague(run.vague_actuelle + 1):
+		var case: Vector2i = entree
+		var garde_fou: int = 0
+		while distances.get(case, 0) > 0 and garde_fou < 300:
+			trajet[case] = true
+			var suivante: Vector2i = case
+			for d: Vector2i in [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]:
+				if distances.get(case + d, 99999) < distances[suivante]:
+					suivante = case + d
+			if suivante == case:
+				break
+			case = suivante
+			garde_fou += 1
+	for a: Vector2i in plateau.coords_pieces():
+		if plateau.piece_de(a).type != PieceDef.Type.ATELIER:
+			continue
+		var meilleur: Vector2i = Vector2i(9999, 9999)
+		for route: Vector2i in trajet:
+			if plateau.poste_possible(a, route) and distances[route] >= 2 \
+					and (meilleur.x == 9999 or distances[route] > distances[meilleur]):
+				meilleur = route
+		if meilleur.x != 9999:
+			plateau.definir_poste(a, meilleur)
+
+
 # « tactique » déplace le drapeau de chaque atelier vers la case de route la plus passante à sa portée.
 func _planter_drapeaux(plateau) -> void:
 	if _style != "tactique":
@@ -703,6 +736,13 @@ func _score_case(plateau, piece, c: Vector2i, contexte: Dictionary) -> float:
 				return -INF
 			var mon_poste: Vector2i = _poste_probable(plateau, c, contexte["passage"], contexte["trajets"], postes)
 			score = 10.0 + 8.0 * contexte["passage"].get(mon_poste, 0.0)
+			if root.get_node("Run").depart.maree and _style == "tactique":
+				# Carte à marée : l'atelier idéal peut planter son fanion sur chacune des routes, à tour de rôle.
+				for trajet: Dictionary in contexte["trajets"]:
+					for route: Vector2i in trajet:
+						if plateau.poste_possible(c, route) and absi(route.x - _horloge.x) + absi(route.y - _horloge.y) >= 2:
+							score += 14.0
+							break
 			# Une entrée de plus gardée vaut plus que tout le reste.
 			for trajet: Dictionary in contexte["trajets"]:
 				if trajet.has(mon_poste):

@@ -31,7 +31,11 @@ var _rotors: Array[Node3D] = []
 var _insignes: Dictionary[Vector2i, Node3D] = {}
 var _pieces: Node3D
 ## Sol affiché par case (vrai = chemin) et dalle correspondante : une case d'herbe pavée par un raccord est reconstruite.
-var _cases_construites: Dictionary[Vector2i, bool] = {}
+var _cases_construites: Dictionary[Vector2i, int] = {}
+## Décors posés (playtest 3), matériaux teintés par la palette de la carte, voile de marée sur les routes inondées.
+var _decors_poses: Dictionary[Vector2i, Node3D] = {}
+var _teintes: Dictionary = {}
+var _voile_maree: Node3D
 var _dalles: Dictionary[Vector2i, Node3D] = {}
 var _bords: Dictionary[Vector3i, Node3D] = {}
 var _poteaux: Dictionary[Vector2i, MeshInstance3D] = {}
@@ -48,6 +52,7 @@ func _ready() -> void:
 	_regler_lumiere.call_deferred()
 	Events.horloge_touchee.connect(_sur_horloge_touchee)
 	Events.carillon_sonne.connect(_sur_carillon)
+	Events.phase_changee.connect(_montrer_maree)
 	Events.plateau_modifie.connect(_actualiser)
 	Events.energie_recalculee.connect(_energie)
 	_poser_table()
@@ -78,6 +83,14 @@ func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
 	var precedent: Tween = _tirs_tourelles.get(case)
 	if precedent != null and precedent.is_valid():
 		precedent.kill()
+	# Impact visible selon la tourelle : onde bleue du carillon, souffle de l'obus, étincelle du boulet.
+	var piece: PieceDef = _source.plateau.piece_de(case)
+	if piece != null and piece.ralentissement > 0.0:
+		_onde(arrivee, maxf(1.0, piece.zone_tir), Color(0.55, 0.78, 1.0, 0.75))
+	elif piece != null and piece.zone_tir > 0.0:
+		_onde(arrivee, piece.zone_tir, Color(1.0, 0.9, 0.7, 0.85), 0.35)
+	else:
+		_onde(arrivee, 0.5, Color(1.0, 0.95, 0.8, 0.9), 0.2)
 	var tete: Node3D = modele.find_child("Tete", true, false) as Node3D
 	var mobile: Node3D = tete if tete != null else modele
 	var repos: Vector3 = mobile.get_meta(&"echelle_repos", mobile.scale)
@@ -157,6 +170,12 @@ func _poser_table() -> void:
 	# Bois procédural (PT-56) : planches, joints, fil et nœuds calculés dans l'espace du monde (`table_bois.gdshader`).
 	var bois := ShaderMaterial.new()
 	bois.shader = preload("res://game/board/table_bois.gdshader")
+	# Palette de la carte : le bois de la table prend la teinte du plateau choisi.
+	var teinte: Color = Run.depart.teinte_table
+	if teinte != Color.WHITE:
+		bois.set_shader_parameter(&"miel", Vector3(0.70, 0.46, 0.25) * Vector3(teinte.r, teinte.g, teinte.b))
+		bois.set_shader_parameter(&"noyer", Vector3(0.50, 0.30, 0.15) * Vector3(teinte.r, teinte.g, teinte.b))
+		bois.set_shader_parameter(&"clair", Vector3(0.80, 0.58, 0.36) * Vector3(teinte.r, teinte.g, teinte.b))
 	var plateau_table := BoxMesh.new()
 	plateau_table.size = Vector3(140, 1, 140)
 	_ajouter_forme(self, plateau_table, Vector3(0, -0.75, 0), bois)
@@ -170,7 +189,7 @@ func _regler_lumiere() -> void:
 	var soleil := scene.find_child("SoleilBas", true, false) as DirectionalLight3D
 	if soleil != null:
 		soleil.rotation.x = deg_to_rad(-35.0)
-		soleil.light_color = Color("#FFF0D4")
+		soleil.light_color = Color("#FFF0D4") * Run.depart.lumiere
 		soleil.light_angular_distance = 1.5
 		soleil.shadow_blur = 1.2
 	var ambiance: Environment = get_world_3d().environment
@@ -246,20 +265,33 @@ func _actualiser() -> void:
 		add_child(_sol)
 	var nouvelles: Array[Vector2i] = []
 	for c: Vector2i in _source.plateau.coords_sols():
-		var chemin: bool = _source.plateau.sol_de(c) == _source.Plateau.Sol.CHEMIN
+		var sol: int = _source.plateau.sol_de(c)
+		var chemin: bool = sol == _source.Plateau.Sol.CHEMIN
+		var eau: bool = sol == _source.Plateau.Sol.EAU
 		if _cases_construites.has(c):
-			if _cases_construites[c] == chemin:
+			if _cases_construites[c] == sol:
 				continue
 			if is_instance_valid(_dalles.get(c)):
 				_dalles[c].queue_free()
-			_dalles[c] = _creer_sol(_sol, c, chemin)
-			_cases_construites[c] = chemin
+			_dalles[c] = _creer_sol(_sol, c, chemin, eau)
+			_cases_construites[c] = sol
 			continue
-		_dalles[c] = _creer_sol(_sol, c, chemin)
-		_cases_construites[c] = chemin
+		_dalles[c] = _creer_sol(_sol, c, chemin, eau)
+		_cases_construites[c] = sol
 		nouvelles.append(c)
 	for c: Vector2i in nouvelles:
 		_actualiser_bords(c)
+	# Décors de la carte (bosquet, rocher, mare…) : posés une fois, tournés d'un quart de tour choisi par la case.
+	for c: Vector2i in _source.plateau.coords_decors():
+		if _decors_poses.has(c):
+			continue
+		var decor: Node3D = _instancier(_source.plateau.decor_de(c))
+		if decor == null:
+			continue
+		_sol.add_child(decor)
+		decor.position = GrilleMonde.vers_monde(c)
+		decor.rotation.y = (hash(c) % 4) * PI / 2.0
+		_decors_poses[c] = decor
 	var entrees: Array[Vector2i] = ChampFlux.entrees(_source.plateau, ChampFlux.calculer(_source.plateau))
 	for case: Vector2i in _poteaux.keys():
 		if case not in entrees:
@@ -342,10 +374,20 @@ func _actualiser_bords(case: Vector2i) -> void:
 		_bords[Vector3i(case.x, case.y, i)] = bord
 
 
-func _creer_sol(parent: Node3D, case: Vector2i, chemin: bool) -> Node3D:
+func _creer_sol(parent: Node3D, case: Vector2i, chemin: bool, eau: bool = false) -> Node3D:
 	var variante: bool = (hash(case) & 1) != 0
 	var nom: StringName = &"tuile_chemin" if chemin else (&"tuile_herbe_b" if variante else &"tuile_herbe")
+	if eau:
+		nom = &"tuile_eau"
 	var dalle: Node3D = _instancier(nom)
+	if dalle == null and eau:
+		# Repli : une plaque d'émail bleu, un peu plus basse que l'herbe (en attendant le modèle `tuile_eau`).
+		var email := StandardMaterial3D.new()
+		email.albedo_color = Color("#8FC3E8")
+		email.roughness = 0.12
+		email.metallic = 0.15
+		return _boite(parent, Vector3(1.98, 0.14, 1.98) * ECHELLE_PLATEAU,
+				GrilleMonde.vers_monde(case) + Vector3.DOWN * 0.2 * ECHELLE_PLATEAU, email)
 	if dalle == null:
 		var couleur: String = "pierre_creme" if chemin else ("herbe_sombre" if variante else "herbe")
 		return _boite(parent, Vector3(1.94, 0.2, 1.94) * ECHELLE_PLATEAU,
@@ -354,7 +396,30 @@ func _creer_sol(parent: Node3D, case: Vector2i, chemin: bool) -> Node3D:
 	dalle.scale = Vector3.ONE * ECHELLE_PLATEAU
 	# Le coussin d'herbe et le haut des pavés sont à 0,29 m ; les fleurs dépassent.
 	dalle.position = GrilleMonde.vers_monde(case) + Vector3.DOWN * 0.29 * ECHELLE_PLATEAU
+	if not eau:
+		_teinter(dalle, Run.depart.teinte_route if chemin else Run.depart.teinte_herbe)
 	return dalle
+
+
+# Palette de la carte (playtest 3) : multiplie la couleur des matériaux de la dalle par la teinte de la carte.
+# Une copie par couple (matériau, teinte), gardée en mémoire : des centaines de dalles partagent quelques matériaux.
+func _teinter(noeud: Node, teinte: Color) -> void:
+	if teinte == Color.WHITE:
+		return
+	if noeud is MeshInstance3D and (noeud as MeshInstance3D).mesh != null:
+		var maille: MeshInstance3D = noeud
+		for i: int in maille.mesh.get_surface_count():
+			var origine := maille.get_active_material(i) as StandardMaterial3D
+			if origine == null:
+				continue
+			var cle: Array = [origine, teinte]
+			if not _teintes.has(cle):
+				var copie := origine.duplicate() as StandardMaterial3D
+				copie.albedo_color = origine.albedo_color * teinte
+				_teintes[cle] = copie
+			maille.set_surface_override_material(i, _teintes[cle])
+	for enfant: Node in noeud.get_children():
+		_teinter(enfant, teinte)
 
 
 func _superposer(noeud: Node, teinte: Material) -> void:
@@ -489,29 +554,87 @@ func _reconstruire() -> void:
 				_rotors.append(rotor)
 
 
-# Coup de carillon : une onde dorée part du point visé et s'élargit jusqu'au rayon d'effet, l'Horloge tressaute.
-func _sur_carillon(point: Vector2) -> void:
+# Onde au sol qui s'élargit puis s'efface (playtest 3, « des impacts qui se sentent ») : coup de carillon, tourelle
+# carillon, obus de mortier, boulet de canon. Un anneau plat, sans ombre ni éclairage.
+var _tore_onde: TorusMesh
+
+func _onde(point: Vector2, rayon: float, couleur: Color, duree: float = 0.45) -> void:
+	if _tore_onde == null:
+		_tore_onde = TorusMesh.new()
+		_tore_onde.inner_radius = 0.84
+		_tore_onde.outer_radius = 1.0
+		_tore_onde.rings = 48
+		_tore_onde.ring_segments = 6
 	var onde := MeshInstance3D.new()
-	var tore := TorusMesh.new()
-	tore.inner_radius = 0.82
-	tore.outer_radius = 1.0
-	tore.rings = 64
-	tore.ring_segments = 6
-	onde.mesh = tore
-	var or_pale := StandardMaterial3D.new()
-	or_pale.albedo_color = Color(1.0, 0.84, 0.36, 0.9)
-	or_pale.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	or_pale.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	onde.material_override = or_pale
+	onde.mesh = _tore_onde
+	var voile := StandardMaterial3D.new()
+	voile.albedo_color = couleur
+	voile.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	voile.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	onde.material_override = voile
 	onde.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	onde.position = Vector3(point.x, 0.12, point.y)
-	onde.scale = Vector3(0.2, 0.25, 0.2)
+	onde.scale = Vector3(rayon * 0.2, 0.25, rayon * 0.2)
 	add_child(onde)
-	var rayon: float = Run.regles.carillon_rayon
 	var animation: Tween = onde.create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	animation.tween_property(onde, "scale", Vector3(rayon, 0.25, rayon), 0.45)
-	animation.tween_property(or_pale, "albedo_color:a", 0.0, 0.6)
+	animation.tween_property(onde, "scale", Vector3(rayon, 0.25, rayon), duree)
+	animation.tween_property(voile, "albedo_color:a", 0.0, duree * 1.3)
 	animation.chain().tween_callback(onde.queue_free)
+
+
+# Marée (carte « Le Quai ») : les routes par où la prochaine vague n'arrivera PAS sont recouvertes d'un voile d'eau,
+# et un bandeau dit par où elle vient. Recalculé à chaque changement de phase.
+func _montrer_maree(phase: int) -> void:
+	if _voile_maree != null:
+		_voile_maree.queue_free()
+		_voile_maree = null
+	if not Run.depart.maree or phase == Run.Phase.FIN:
+		return
+	var partie: Node = get_tree().get_first_node_in_group(&"partie")
+	if partie == null:
+		return
+	var numero: int = Run.vague_actuelle if phase == Run.Phase.VAGUE else Run.vague_actuelle + 1
+	var ouvertes: Array[Vector2i] = partie.entrees_de_la_vague(numero)
+	var distances: Dictionary = ChampFlux.calculer(_source.plateau)
+	var seches: Dictionary = {}
+	var inondees: Dictionary = {}
+	for entree: Vector2i in ChampFlux.entrees(_source.plateau, distances):
+		var case: Vector2i = entree
+		var garde_fou: int = 0
+		while distances.get(case, 0) > 0 and garde_fou < 400:
+			if entree in ouvertes:
+				seches[case] = true
+			else:
+				inondees[case] = true
+			var suivante: Vector2i = case
+			for direction: Vector2i in VOISINS:
+				if distances.get(case + direction, 1 << 30) < distances[suivante]:
+					suivante = case + direction
+			if suivante == case:
+				break
+			case = suivante
+			garde_fou += 1
+	_voile_maree = Node3D.new()
+	add_child(_voile_maree)
+	var eau := StandardMaterial3D.new()
+	eau.albedo_color = Color(0.42, 0.68, 0.9, 0.55)
+	eau.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	eau.roughness = 0.1
+	var nappe := BoxMesh.new()
+	nappe.size = Vector3(GrilleMonde.TAILLE_CASE, 0.06, GrilleMonde.TAILLE_CASE)
+	for case: Vector2i in inondees:
+		if not seches.has(case):
+			var flaque: MeshInstance3D = _ajouter_forme(_voile_maree, nappe, GrilleMonde.vers_monde(case) + Vector3.UP * 0.06, eau)
+			flaque.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if phase == Run.Phase.CONSTRUCTION and not ouvertes.is_empty():
+		var ecart: Vector2i = ouvertes[0] - Run.depart.horloge
+		var cote: String = ("l’est" if ecart.x > 0 else "l’ouest") if absi(ecart.x) >= absi(ecart.y) else ("le sud" if ecart.y > 0 else "le nord")
+		Events.message_joueur.emit(tr("Marée : la vague %d arrivera par %s.") % [numero, tr(cote)])
+
+
+# Coup de carillon : une onde dorée part du point visé et s'élargit jusqu'au rayon d'effet, l'Horloge tressaute.
+func _sur_carillon(point: Vector2) -> void:
+	_onde(point, Run.regles.carillon_rayon, Color(1.0, 0.84, 0.36, 0.9), 0.5)
 	Sons.jouer(&"carillon")
 	if _horloge != null:
 		var saut: Tween = _horloge.create_tween().set_trans(Tween.TRANS_SINE)

@@ -191,6 +191,12 @@ func _tracer_couloirs(plateau: Plateau) -> void:
 	for case: Vector2i in plateau.coords_pieces():
 		if not _distances.has(case):
 			_occupees[case] = true
+	# Décors et eau : les jouets les contournent comme des bâtiments.
+	for case: Vector2i in plateau.coords_decors():
+		_occupees[case] = true
+	for case: Vector2i in plateau.coords_sols():
+		if plateau.sol_de(case) == Plateau.Sol.EAU:
+			_occupees[case] = true
 	var demi: float = MAILLE / 2.0
 	var file: Array[Vector2i] = []
 	for case: Vector2i in _distances:

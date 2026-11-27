@@ -25,6 +25,30 @@ func _ready() -> void:
 	Events.horloge_touchee.connect(_sur_horloge_touchee)
 	near = 0.5
 	_appliquer_vue()
+	_cadrer_plateau.call_deferred()
+
+
+# Playtest 3 (« le jeu paraît vide ») : le plateau n'occupait qu'un tiers de l'écran. Au lancement, la caméra se
+# centre sur le terrain et choisit le cadre qui le fait tenir en hauteur (environ 80 % de l'écran), quelle que soit
+# la taille de la carte. Le joueur garde ensuite la main (zoom, déplacement).
+func _cadrer_plateau() -> void:
+	var noeud: Node = get_tree().get_first_node_in_group(&"plateau_noeud")
+	if noeud == null or noeud.plateau == null:
+		return
+	var mini := Vector2i(1 << 20, 1 << 20)
+	var maxi := Vector2i(-(1 << 20), -(1 << 20))
+	for case: Vector2i in noeud.plateau.coords_sols():
+		mini = mini.min(case)
+		maxi = maxi.max(case)
+	if mini.x > maxi.x:
+		return
+	var taille: Vector2 = Vector2(maxi - mini + Vector2i.ONE) * 2.0
+	var centre: Vector2 = Vector2(mini + maxi) * 1.0
+	# En vue inclinée, la profondeur du plateau est vue en raccourci ; la largeur doit aussi tenir (écran 16:9).
+	_cadre_vise = clampf(maxf(taille.y * 1.02, taille.x * 0.64), CADRE_MIN, CADRE_MAX)
+	_cadre = _cadre_vise
+	_cible = Vector3(centre.x, 0, centre.y + 0.6)
+	_appliquer_vue()
 
 
 func _process(delta: float) -> void:

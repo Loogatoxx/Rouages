@@ -195,3 +195,40 @@ func test_dents_gagnees_par_les_vagues_tenues() -> String:
 	var apres_defaite: int = Run.dents
 	Run.reinitialiser()
 	return "" if apres_defaite == depart + 1 else "Une vague perdue ne doit pas remonter l'Horloge."
+
+
+## Cartes à mécaniques : l'eau ne reçoit qu'un Pont, un décor ne reçoit rien, et les jouets les contournent.
+func test_eau_et_decors() -> String:
+	const PONT = preload("res://data/tuiles/pont.tres")
+	var plateau: Plateau = _plateau()
+	plateau.ajouter_sol(Vector2i(3, -2), Plateau.Sol.EAU)
+	plateau.ajouter_decor(Vector2i(4, -1), &"decor_rocher")
+	if plateau.peut_poser(Vector2i(3, -2), ATELIER) or not plateau.peut_poser(Vector2i(3, -2), PONT):
+		return "Sur l'eau, on ne pose qu'un Pont."
+	if plateau.peut_poser(Vector2i(4, -1), ATELIER) or plateau.peut_poser(Vector2i(4, -1), PONT):
+		return "Sur un décor, on ne pose rien."
+	if plateau.dupliquer().decor_de(Vector2i(4, -1)) != &"decor_rocher":
+		return "La copie du plateau doit garder ses décors."
+	# Atelier en (3,-3) : au sud l'eau, il doit sortir ses jouets par une case libre et contourner.
+	plateau.poser(Vector2i(3, -3), ATELIER, 0)
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	var sortie: Vector2 = sim.sortie_atelier(Vector2i(3, -3))
+	var case_sortie := Vector2i((sortie / SwarmSim.MAILLE).round())
+	return "" if sortie != Vector2.INF and plateau.sol_de(case_sortie) == Plateau.Sol.HERBE \
+			else "L'atelier doit sortir ses jouets dans l'herbe libre, pas dans l'eau (%s)." % case_sortie
+
+
+## Toutes les cartes des règles respectent leurs propres contraintes : décors et eau hors de la route, palette valide.
+func test_cartes_a_mecaniques() -> String:
+	for depart: Resource in REGLES.departs:
+		var plateau: Plateau = depart.creer_plateau()
+		for case: Vector2i in depart.eau:
+			if case in depart.chemins or case == depart.horloge:
+				return "%s : une case d'eau recouvre la route ou l'horloge (%s)." % [depart.nom, case]
+		for case: Vector2i in depart.decors:
+			if plateau.decor_de(case) == &"":
+				return "%s : le décor de la case %s n'a pas pu être posé (route, eau ou hors terrain)." % [depart.nom, case]
+			if not ResourceLoader.exists("res://assets/final/kit_v2/%s/%s.glb" % [depart.decors[case], depart.decors[case]]):
+				return "%s : modèle de décor introuvable (%s)." % [depart.nom, depart.decors[case]]
+	return ""

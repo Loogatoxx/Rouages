@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="DepartDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/depart_def.gd" id="depart"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="coude"]
+[ext_resource type="Resource" path="res://data/tuiles/pont.tres" id="pont"]
+
+[sub_resource type="Resource" id="lot_atelier"]
+script = ExtResource("lot")
+objet = ExtResource("atelier")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_droit"]
+script = ExtResource("lot")
+objet = ExtResource("droit")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_coude"]
+script = ExtResource("lot")
+objet = ExtResource("coude")
+quantite = 1
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_pont"]
+script = ExtResource("lot")
+objet = ExtResource("pont")
+quantite = 2
+poids = 1.0
+
+[resource]
+script = ExtResource("depart")
+nom = "La Serre"
+description = "L’Horloge est sur un îlot, ceinturé par la rigole d’arrosage. L’allée fait un grand tour avant d’y entrer : pour défendre plus loin, il faut jeter des Ponts par-dessus l’eau."
+terrain = Rect2i(-5, -5, 11, 11)
+chemins = Array[Vector2i]([Vector2i(5, -4), Vector2i(4, -4), Vector2i(3, -4), Vector2i(2, -4), Vector2i(1, -4), Vector2i(0, -4), Vector2i(-1, -4), Vector2i(-2, -4), Vector2i(-3, -4), Vector2i(-4, -4), Vector2i(-4, -3), Vector2i(-4, -2), Vector2i(-4, -1), Vector2i(-4, 0), Vector2i(-4, 1), Vector2i(-4, 2), Vector2i(-4, 3), Vector2i(-4, 4), Vector2i(-3, 4), Vector2i(-2, 4), Vector2i(-1, 4), Vector2i(0, 4), Vector2i(0, 3), Vector2i(0, 2), Vector2i(0, 1)])
+horloge = Vector2i(0, 0)
+reserve = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_pont")])
+eau = Array[Vector2i]([Vector2i(-2, -2), Vector2i(-2, -1), Vector2i(-2, 0), Vector2i(-2, 1), Vector2i(-2, 2), Vector2i(-1, -2), Vector2i(-1, 2), Vector2i(0, -2), Vector2i(1, -2), Vector2i(1, 2), Vector2i(2, -2), Vector2i(2, -1), Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2)])
+decors = Dictionary[Vector2i, StringName]({Vector2i(5, 5): &"decor_bosquet", Vector2i(4, 5): &"decor_parterre", Vector2i(5, 2): &"decor_bosquet", Vector2i(5, -1): &"decor_rocher", Vector2i(3, 1): &"decor_parterre", Vector2i(-5, -5): &"decor_bosquet", Vector2i(-5, 5): &"decor_caisses", Vector2i(2, 5): &"decor_mare", Vector2i(-3, -1): &"decor_parterre", Vector2i(3, -3): &"decor_bosquet"})
+teinte_herbe = Color(0.84, 1.0, 0.96, 1)
+teinte_route = Color(1.0, 0.88, 0.9, 1)
+teinte_table = Color(0.9, 1.0, 0.92, 1)
+lumiere = Color(1.0, 0.99, 0.96, 1)

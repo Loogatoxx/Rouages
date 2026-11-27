@@ -5,7 +5,9 @@ signal modifie
 
 const PieceDef = preload("res://game/board/piece_def.gd")
 
-enum Sol { HERBE, CHEMIN }
+## EAU (playtest 3, cartes à mécaniques) : rigole ou bassin. On n'y pose rien, sauf un Pont ; ni jouet ni énergie
+## ne la traversent autrement.
+enum Sol { HERBE, CHEMIN, EAU }
 ## Ordre des ports (bits N, E, S, O), comme `PieceDef.ports`.
 const DIRECTIONS: Array[Vector2i] = [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 
@@ -17,6 +19,8 @@ var _rotations: Dictionary[Vector2i, int] = {}
 ## dernier qui reste éteinte, jamais une pièce déjà en marche.
 var _ordres: Dictionary[Vector2i, int] = {}
 var _prochain_ordre: int = 0
+## Cases de décor (bosquet, rocher, mare…) : de l'herbe où l'on ne pose rien. Le nom choisit le modèle affiché.
+var _decors: Dictionary[Vector2i, StringName] = {}
 ## Poste de garde choisi par le joueur pour un atelier (case de route) ; absent = poste par défaut, devant l'atelier.
 var _postes: Dictionary[Vector2i, Vector2i] = {}
 ## Valeur de `poste_de` quand le joueur n'a rien choisi.
@@ -51,6 +55,7 @@ func dupliquer() -> Plateau:
 	copie._rotations = _rotations.duplicate()
 	copie._niveaux = _niveaux.duplicate()
 	copie._ordres = _ordres.duplicate()
+	copie._decors = _decors.duplicate()
 	copie._postes = _postes.duplicate()
 	copie._prochain_ordre = _prochain_ordre
 	return copie
@@ -73,7 +78,12 @@ func peut_poser(coord: Vector2i, def: PieceDef) -> bool:
 	# Pièce unique (le Générateur légendaire) : une seule sur le plateau.
 	if def.unique and _pieces.values().has(def):
 		return false
-	return sol_de(coord) == (Sol.CHEMIN if def.sur_route else Sol.HERBE)
+	if _decors.has(coord):
+		return false
+	# Le Pont enjambe une route ou une rigole d'eau ; tout le reste se pose sur l'herbe.
+	if def.sur_route:
+		return sol_de(coord) == Sol.CHEMIN or sol_de(coord) == Sol.EAU
+	return sol_de(coord) == Sol.HERBE
 
 
 ## Pose une pièce sur une case libre qui lui convient (voir `peut_poser`).
@@ -130,6 +140,23 @@ func tourner(coord: Vector2i) -> bool:
 ## Rang de pose de la pièce (plus petit = posée plus tôt) ; une case libre a le rang le plus récent.
 func ordre_de(coord: Vector2i) -> int:
 	return _ordres.get(coord, _prochain_ordre)
+
+
+## Plante un décor sur une case d'herbe libre (elle ne pourra plus recevoir de pièce).
+func ajouter_decor(coord: Vector2i, nom: StringName) -> void:
+	if sol_de(coord) == Sol.HERBE and not _pieces.has(coord):
+		_decors[coord] = nom
+		modifie.emit()
+
+
+## Nom du décor de la case, ou &"" s'il n'y en a pas.
+func decor_de(coord: Vector2i) -> StringName:
+	return _decors.get(coord, &"")
+
+
+## Cases qui portent un décor.
+func coords_decors() -> Array[Vector2i]:
+	return _decors.keys()
 
 
 ## Poste de garde choisi pour l'atelier de `coord` (case de route), ou `SANS_POSTE`.
