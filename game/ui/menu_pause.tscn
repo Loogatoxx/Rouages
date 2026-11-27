@@ -60,11 +60,13 @@ autowrap_mode = 3
 alignment = 1
 theme_override_constants/separation = 28
 
-[node name="MenuTitre" type="LinkButton" parent="Voile/Centre/Panneau/Colonne/Liens"]
+[node name="MenuTitre" type="Button" parent="Voile/Centre/Panneau/Colonne/Liens"]
+theme_type_variation = &"Lien"
 unique_name_in_owner = true
 text = "Menu titre"
 
-[node name="QuitterJeu" type="LinkButton" parent="Voile/Centre/Panneau/Colonne/Liens"]
+[node name="QuitterJeu" type="Button" parent="Voile/Centre/Panneau/Colonne/Liens"]
+theme_type_variation = &"Lien"
 unique_name_in_owner = true
 text = "Quitter le jeu"
 

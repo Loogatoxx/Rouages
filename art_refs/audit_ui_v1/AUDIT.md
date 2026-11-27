@@ -161,5 +161,7 @@
 - ✅ Top 3 : chiffres du HUD en Nunito, mot « Vague » remplacé par l'icône (texte en infobulle), vitesse « ×1 / ×2 » écrite.
 - ✅ Top 5 (partiel) : curseurs des options en retrait, état du plein écran écrit, titre « Rouages » masqué derrière
   options et établi, repère d'entrée redressé + flèche de laiton.
-- ⏳ Reste : devise dans les pastilles de prix et coûts inabordables grisés (avec PT-15), icône de monnaie méta distincte
-  d'`engrenage_or.png`, réserve et boutique en icônes (PT-15/18), gabarit commun tirage/coffre, liens en cartouches.
+- ✅ Devise (icône ressort) à côté des prix, tuiles inabordables grisées, réserve et boutique en vignettes (PT-15/18).
+- ✅ Gabarit commun tirage/coffre (le panneau épouse ses cartes), liens soulignés remplacés par de petits boutons de laiton,
+  pastilles de rareté teintées (rare bleu, épique or).
+- ⏳ Reste (Gemini) : icône de monnaie méta distincte d'`engrenage_or.png`, icône « assembler » pour le craft.

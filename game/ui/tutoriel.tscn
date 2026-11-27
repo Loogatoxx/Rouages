@@ -40,7 +40,8 @@ autowrap_mode = 3
 unique_name_in_owner = true
 text = "Compris"
 
-[node name="Passer" type="LinkButton" parent="Panneau/Colonne/Actions"]
+[node name="Passer" type="Button" parent="Panneau/Colonne/Actions"]
+theme_type_variation = &"Lien"
 unique_name_in_owner = true
 text = "Passer le tutoriel"
 size_flags_vertical = 4

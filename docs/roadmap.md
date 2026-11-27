@@ -47,7 +47,7 @@ Le relecteur n'est jamais le producteur (Claude relit Codex et Gemini ; Codex ou
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
 | PT-10 | **Audit UI strict écran par écran** (titre, établi, options, HUD, draft, coffre, boutique, réserve, pause, fin, tutoriel, infobulles) : liste de défauts avec captures, règle « s'il y a un doute, il n'y a pas de doute ». | P1 | Gemini (audit) → Claude (tri) | captures fournies par Claude (Gemini ne lance pas le jeu) | ✅ (`art_refs/audit_ui_v1/AUDIT.md`, 63 défauts) |
-| PT-11 | Corrections de l'audit : **textes alignés sur leurs fonds**, boutons bien placés, aucune régression visuelle (captures avant/après). | P1 | Codex (scènes) + Claude (relecture) | PT-10, PT-05 | 🟡 top 1-3 faits, suivi dans AUDIT.md |
+| PT-11 | Corrections de l'audit : **textes alignés sur leurs fonds**, boutons bien placés, aucune régression visuelle (captures avant/après). | P1 | Codex (scènes) + Claude (relecture) | PT-10, PT-05 | ✅ (reste 2 icônes pour Gemini, voir AUDIT.md) |
 | PT-12 | **Boutons en bas à gauche contenus dans leur panneau** (marges internes du 9-patch respectées, plus de chevauchement de la bordure). | P1 | Claude | `reserve_ui.tscn`, `theme_rouages.tres` | ✅ |
 | PT-13 | **Badge de quantité des choix redessiné** (abandon de l'étiquette à pointe gauche) + revue de chaque asset couplé à du texte. | P1 | Gemini (asset) + Claude (intégration) | PT-10 | ✅ |
 | PT-14 | **Boutique repliable** : bouton ouvrir/fermer (fermée par défaut pendant les vagues). | P1 | Claude | `hud.gd` | ✅ |

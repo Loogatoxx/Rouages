@@ -442,9 +442,13 @@ func _dimensionner_tirage() -> void:
 	if not $Draft.visible:
 		return
 	var largeur: float = get_viewport().get_visible_rect().size.x
-	# Les cartes de coffre portent un médaillon et une étiquette de rareté : elles sont plus larges.
-	var par_carte: float = 345.0 if Run.offre_coffre else 300.0
-	var retrait: float = maxf(0, (largeur * 0.92 - (Run.offre.size() * par_carte + 110)) / 2)
+	# Gabarit commun au tirage et au coffre : le panneau épouse ses cartes (audit UI 8.2 : le coffre laissait ~290 px
+	# de bois vide). Largeur = cartes + écarts + bords + marges du panneau.
+	var cartes: float = 0.0
+	for carte: Control in %Lots.get_children():
+		cartes += carte.get_combined_minimum_size().x
+	cartes += 16.0 * maxi(0, %Lots.get_child_count() - 1) + 18.0 + 56.0 + 24.0
+	var retrait: float = maxf(0.0, (largeur * 0.88 - cartes) / 2.0)
 	$Draft.offset_left = retrait
 	$Draft.offset_right = -retrait
 	_ajuster_hauteur()
@@ -482,6 +486,11 @@ class Carte extends Button:
 			medaillon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			insigne.add_child(medaillon)
 			badge.text = NOMS_RARETE[piece.rarete]
+			# Pastille teintée par rareté (audit UI 8.3) : la rareté se lit à la couleur, sans lire le mot.
+			if piece.rarete != PieceDef.Rarete.COMMUNE:
+				var pastille: StyleBoxTexture = badge.get_theme_stylebox(&"normal").duplicate()
+				pastille.modulate_color = Color("#BFD7F0") if piece.rarete == PieceDef.Rarete.RARE else Color("#F3D27A")
+				badge.add_theme_stylebox_override(&"normal", pastille)
 		else:
 			badge.text = "×%d" % lot.quantite
 		insigne.add_child(badge)

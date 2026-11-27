@@ -106,7 +106,8 @@ mouse_filter = 2
 unique_name_in_owner = true
 theme_type_variation = &"Petit"
 
-[node name="Tutoriel" type="LinkButton" parent="Centre/Ensemble/Panneau/Colonne"]
+[node name="Tutoriel" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
+theme_type_variation = &"Lien"
 unique_name_in_owner = true
 text = "Revoir le tutoriel"
 size_flags_horizontal = 4
@@ -115,11 +116,13 @@ size_flags_horizontal = 4
 alignment = 1
 theme_override_constants/separation = 26
 
-[node name="Options" type="LinkButton" parent="Centre/Ensemble/Panneau/Colonne/Navigation"]
+[node name="Options" type="Button" parent="Centre/Ensemble/Panneau/Colonne/Navigation"]
+theme_type_variation = &"Lien"
 unique_name_in_owner = true
 text = "Options"
 
-[node name="Quitter" type="LinkButton" parent="Centre/Ensemble/Panneau/Colonne/Navigation"]
+[node name="Quitter" type="Button" parent="Centre/Ensemble/Panneau/Colonne/Navigation"]
+theme_type_variation = &"Lien"
 unique_name_in_owner = true
 text = "Quitter"
 
