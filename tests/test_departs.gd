@@ -11,8 +11,10 @@ func test_plateaux_raccordes() -> String:
 	var noms: Array[String] = ["Prairie", "Méandres", "Fourche"]
 	var entrees: Array = [
 		[Vector2i(4, -4), Vector2i(4, 4)], [Vector2i(3, -4)], [Vector2i(-2, 4), Vector2i(2, -4)]]  # Fourche : chemins en coude (Claude)
-	if REGLES.departs.size() != noms.size():
-		return "Trois plateaux de départ sont attendus."
+	# Les trois premiers plateaux ; les suivants (playtest 2 : un plateau par chapitre) sont vérifiés par
+	# `test_plateaux_jouables`.
+	if REGLES.departs.size() < noms.size():
+		return "Au moins trois plateaux de départ sont attendus."
 	for i: int in noms.size():
 		var depart: DepartDef = REGLES.departs[i]
 		if depart.nom != noms[i] or depart.description.is_empty():
@@ -89,3 +91,23 @@ func test_prix_rotation() -> String:
 	Run.ressorts = solde
 	Run.vague_actuelle = vague
 	return "" if valide else "La rotation doit débiter deux ressorts uniquement en cas de succès."
+
+
+## Chaque plateau est jouable : toute la route rejoint l'horloge, au moins une entrée, et chaque chapitre a le sien.
+func test_plateaux_jouables() -> String:
+	var ChampFlux = load("res://game/swarm/champ_flux.gd")
+	var regles = load("res://data/regles.tres")
+	for depart in regles.departs:
+		var plateau = depart.creer_plateau()
+		var distances: Dictionary = ChampFlux.calculer(plateau)
+		for case: Vector2i in depart.chemins:
+			if not distances.has(case):
+				return "%s : la case %s de la route n'atteint pas l'horloge." % [depart.nom, case]
+		if ChampFlux.entrees(plateau, distances).is_empty():
+			return "%s : aucune entrée pour les ennemis." % depart.nom
+	var vus: Array = []
+	for chapitre in regles.chapitres:
+		if vus.has(chapitre.depart):
+			return "Le plateau %s sert à deux chapitres." % chapitre.depart.nom
+		vus.append(chapitre.depart)
+	return ""

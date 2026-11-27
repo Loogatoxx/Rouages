@@ -38,7 +38,8 @@ func _campagne(partie: Partie) -> String:
 		return "Un saut de chapitre ou une défaite a avancé le récit."
 	for i: int in REGLES.chapitres.size():
 		partie.preparer_chapitre(i)
-		if partie.chapitre != i or partie.depart != REGLES.departs[i % 3] or partie.difficulte != floori(i / 2.0):
+		# Playtest 2 : plus de carte répétée après le chapitre 3 (un plateau par chapitre).
+		if partie.chapitre != i or partie.depart != REGLES.departs[i] or partie.difficulte != floori(i / 2.0):
 			return "Le chapitre %d ne prépare pas le bon diorama." % (i + 1)
 		partie.reinitialiser()
 		for vague: int in partie.nb_vagues:

@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="DepartDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/depart_def.gd" id="depart"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier_soldats"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="engrenage_droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="engrenage_coude"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_t.tres" id="engrenage_t"]
+
+[sub_resource type="Resource" id="lot_0"]
+script = ExtResource("lot")
+objet = ExtResource("atelier_soldats")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_1"]
+script = ExtResource("lot")
+objet = ExtResource("engrenage_droit")
+quantite = 3
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_2"]
+script = ExtResource("lot")
+objet = ExtResource("engrenage_coude")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_3"]
+script = ExtResource("lot")
+objet = ExtResource("engrenage_t")
+quantite = 1
+poids = 1.0
+
+[resource]
+script = ExtResource("depart")
+nom = "Grand atelier"
+description = "La plus grande maquette de l'établi : trois routes, du nord, de l'ouest et de l'est, convergent vers l'horloge."
+terrain = Rect2i(-6, -6, 13, 13)
+chemins = Array[Vector2i]([Vector2i(0, -6), Vector2i(0, -5), Vector2i(0, -4), Vector2i(0, -3), Vector2i(0, -2), Vector2i(0, -1), Vector2i(-6, 0), Vector2i(-5, 0), Vector2i(-4, 0), Vector2i(-3, 0), Vector2i(-2, 0), Vector2i(-1, 0), Vector2i(6, 4), Vector2i(5, 4), Vector2i(4, 4), Vector2i(3, 4), Vector2i(2, 4), Vector2i(2, 3), Vector2i(2, 2), Vector2i(2, 1), Vector2i(1, 1), Vector2i(1, 0)])
+horloge = Vector2i(0, 0)
+reserve = Array[ExtResource("lot")]([SubResource("lot_0"), SubResource("lot_1"), SubResource("lot_2"), SubResource("lot_3")])

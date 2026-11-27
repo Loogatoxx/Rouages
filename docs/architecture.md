@@ -327,3 +327,7 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - **Bac à sable** (P2-53) : `Run.preparer_bac_a_sable(i)` : 5 exemplaires de tout, `depenser` toujours vrai, horloge
   invincible, aucun record ni engrenage. Troisième valeur du bouton « Mode » de la partie libre (P2-52 inchangée).
 - **Tutoriel** (P2-57) : affiché au chapitre 1 tant que ce chapitre n'est pas terminé, même s'il a déjà été vu.
+- **Cartes** (P2-54) : `data/departs/jardin_hiver.tres` (ch4, longue allée en zigzag + courte au sud),
+  `boite_musique.tres` (ch5, route en anneau autour de l'horloge : l'extérieur ne s'atteint que par Pont ou
+  Générateur ; un Pont en réserve), `retour_lise.tres` (ch6, 13×13, trois entrées). Ajoutées à la partie libre.
+  `test_plateaux_jouables` vérifie chaque plateau (route reliée, entrées, un plateau par chapitre).

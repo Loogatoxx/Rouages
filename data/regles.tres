@@ -12,6 +12,9 @@
 [ext_resource type="Resource" path="res://data/depart.tres" id="prairie"]
 [ext_resource type="Resource" path="res://data/departs/meandres.tres" id="meandres"]
 [ext_resource type="Resource" path="res://data/departs/fourche.tres" id="fourche"]
+[ext_resource type="Resource" path="res://data/departs/jardin_hiver.tres" id="jardin_hiver"]
+[ext_resource type="Resource" path="res://data/departs/boite_musique.tres" id="boite_musique"]
+[ext_resource type="Resource" path="res://data/departs/retour_lise.tres" id="retour_lise"]
 [ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
 [ext_resource type="Resource" path="res://data/tuiles/tourelle_canon.tres" id="canon"]
 [ext_resource type="Resource" path="res://data/tuiles/tourelle_carillon.tres" id="carillon"]
@@ -186,7 +189,7 @@ difficultes_pv_ennemis = Array[float]([0.8, 1.0, 1.3])
 difficultes_pv_horloge = Array[int]([10, 0, -5])
 engrenages_par_vague = 1
 engrenages_victoire = 5
-departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("meandres"), ExtResource("fourche")])
+departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("meandres"), ExtResource("fourche"), ExtResource("jardin_hiver"), ExtResource("boite_musique"), ExtResource("retour_lise")])
 garde_ratio = 0.55
 prix_rotation = 2
 gain_niveau_atelier = 0.2

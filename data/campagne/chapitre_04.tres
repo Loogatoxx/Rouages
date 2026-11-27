@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ChapitreDef" format=3]
 
 [ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
-[ext_resource type="Resource" path="res://data/depart.tres" id="depart"]
+[ext_resource type="Resource" path="res://data/departs/jardin_hiver.tres" id="depart"]
 
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="deb_engrenage_croix"]
 [ext_resource type="Resource" path="res://data/tuiles/generateur.tres" id="deb_generateur"]
