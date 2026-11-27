@@ -18,6 +18,7 @@ var _entrees: Array[Vector2i] = []
 
 
 func _ready() -> void:
+	add_to_group(&"partie")
 	Events.piece_reprise.connect(_piece_reprise)
 	Events.plateau_modifie.connect(_configurer)
 	Events.vague_commencee.connect(_commencer)

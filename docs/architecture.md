@@ -269,3 +269,14 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   `.pck`). SmartScreen peut encore avertir : seul un certificat de signature de code (payant) le supprime.
 - **Coffre** (P2-07) : le style de la pastille de rareté était lu avant l'entrée de la carte dans l'arbre (style vide
   → plantage dès qu'une carte rare sortait) ; lu désormais dans le thème lui-même (`THEME_UI`).
+
+## Après playtest 2 — lot B (UI)
+- Ruban : marges 9/21 (la bande rouge n'occupe que les lignes 7-47 de l'image de 64 px), titres 36/26 px.
+- Cartes de tirage : `Carte` = vignette entière + nom (2 lignes max), détail en infobulle, cadre teinté par rareté ;
+  `_dimensionner_tirage` choisit colonnes et taille pour tout faire tenir (défilement désactivé).
+- Vignettes : cadrage sur les 8 coins de la boîte vus par la caméra (`generer_vignettes.gd`).
+- Pastille = `StyleBoxFlat` arrondi ; réserve = style `CaseReserve` (liseré fin), quantité en coin, « revendre » au survol.
+- Titre : `_composer_colonne` (filets, Établi + pastille d'or `monnaie_or.png`, rangée du bas homogène).
+- Panneau de pièce : statistiques icône + valeur (`plafond_jouets`, `cadence`, `degats`, `portee`, `revendre`),
+  actions en icônes avec prix ; groupes `plateau_noeud` et `partie` pour lire énergie et effectifs.
+- Portée : disque + liseré au sol (`PoseControleur._afficher_portee`) à la pose, sélection et survol d'une tourelle.

@@ -18,6 +18,9 @@ var _fantome: Node3D
 var _teinte := StandardMaterial3D.new()
 var _case: Vector2i
 var _rotations_valides: Dictionary[Vector2i, int] = {}
+## Anneau de portée au sol (P2-21) : à la pose d'une tourelle, sur la tourelle choisie ou survolée.
+var _portee: Node3D = Node3D.new()
+var _rayon_portee: float = -1.0
 
 
 func _ready() -> void:
@@ -25,6 +28,8 @@ func _ready() -> void:
 	couche.layer = 6
 	add_child(couche)
 	couche.add_child(_panneau)
+	add_child(_portee)
+	_portee.hide()
 	_teinte.no_depth_test = true
 	_teinte.render_priority = 1
 	_teinte.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
@@ -143,6 +148,7 @@ func _survoler() -> bool:
 
 
 func _process(_delta: float) -> void:
+	_afficher_portee()
 	if _fantome == null:
 		return
 	_fantome.visible = _pose_autorisee(Run.phase) and _survoler()
@@ -158,6 +164,65 @@ func _process(_delta: float) -> void:
 		_fantome.position = GrilleMonde.vers_monde(_case) + Vector3.UP * 0.05
 		# L'aperçu d'extension est déjà construit dans son orientation (raccord compris).
 		_fantome.rotation.y = 0.0 if _choix is ExtensionDef else -_rotation * PI / 2
+
+
+# Montre la portée de la tourelle concernée : celle qu'on pose, sinon celle du panneau ouvert, sinon celle survolée.
+func _afficher_portee() -> void:
+	var piece: PieceDef = null
+	var case: Vector2i
+	if _fantome != null and _fantome.visible and _choix is PieceDef:
+		piece = _choix
+		case = _case
+	elif _panneau.visible and _source.plateau.piece_de(_panneau._case) != null:
+		piece = _source.plateau.piece_de(_panneau._case)
+		case = _panneau._case
+	elif _choix == null and _survoler():
+		piece = _source.plateau.piece_de(_case)
+		case = _case
+	if piece == null or piece.type != PieceDef.Type.TOURELLE or piece.portee_tir <= 0.0:
+		_portee.hide()
+		return
+	if not is_equal_approx(_rayon_portee, piece.portee_tir):
+		_construire_portee(piece.portee_tir)
+	_portee.position = GrilleMonde.vers_monde(case) + Vector3.UP * 0.12
+	_portee.show()
+
+
+# Disque translucide + liseré : lisible en vue de dessus comme en vue inclinée, sans masquer les unités.
+func _construire_portee(rayon: float) -> void:
+	_rayon_portee = rayon
+	for ancien: Node in _portee.get_children():
+		ancien.queue_free()
+	var disque := MeshInstance3D.new()
+	var cylindre := CylinderMesh.new()
+	cylindre.top_radius = rayon
+	cylindre.bottom_radius = rayon
+	cylindre.height = 0.02
+	cylindre.radial_segments = 64
+	disque.mesh = cylindre
+	var voile := StandardMaterial3D.new()
+	voile.albedo_color = Color(1, 0.93, 0.7, 0.16)
+	voile.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	voile.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	voile.cull_mode = BaseMaterial3D.CULL_DISABLED
+	disque.material_override = voile
+	disque.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_portee.add_child(disque)
+	var bord := MeshInstance3D.new()
+	var tore := TorusMesh.new()
+	tore.inner_radius = rayon - 0.07
+	tore.outer_radius = rayon
+	tore.rings = 96
+	tore.ring_segments = 6
+	bord.mesh = tore
+	var laiton := StandardMaterial3D.new()
+	laiton.albedo_color = Color(0.83, 0.66, 0.29, 0.85)
+	laiton.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	laiton.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	bord.material_override = laiton
+	bord.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	bord.scale = Vector3(1, 0.15, 1)
+	_portee.add_child(bord)
 
 
 func _unhandled_input(event: InputEvent) -> void:

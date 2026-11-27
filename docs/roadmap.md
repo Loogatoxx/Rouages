@@ -160,18 +160,18 @@ Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces �
 ## Court terme — §2. UI / UX et retours visuels précis (P1)
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
-| P2-10 | **Ruban des titres** : police plus petite, centrage vertical calculé sur la bande rouge (pas sur l'image entière), vérifié par capture sur chaque écran et chaque langue. | P1 | Claude | `theme_rouages.tres`, `ruban_petit.png` | |
-| P2-11 | **Écran titre refait** : composition nettement plus aboutie (colonne de boutons homogène, hiérarchie Jouer > reste, liens du bas en boutons icône, vitrine de l'horloge mieux posée). | P1 | Claude (+ Gemini si un asset manque) | P2-10, P2-12 | |
-| P2-12 | **Bouton Établi** de la même largeur que les autres, compteur d'engrenages d'or **dans** le bouton. | P1 | Claude | icône monnaie méta (PT ouvert) | |
+| P2-10 | **Ruban des titres** : police plus petite, centrage vertical calculé sur la bande rouge (pas sur l'image entière), vérifié par capture sur chaque écran et chaque langue. | P1 | Claude | `theme_rouages.tres`, `ruban_petit.png` || ✅ |
+| P2-11 | **Écran titre refait** : composition nettement plus aboutie (colonne de boutons homogène, hiérarchie Jouer > reste, liens du bas en boutons icône, vitrine de l'horloge mieux posée). | P1 | Claude (+ Gemini si un asset manque) | P2-10, P2-12 || ✅ (vitrine à revoir) |
+| P2-12 | **Bouton Établi** de la même largeur que les autres, compteur d'engrenages d'or **dans** le bouton. | P1 | Claude | icône monnaie méta (PT ouvert) || ✅ |
 | P2-13 | **Réassignation des touches** dans les Options (liste des actions, clic puis touche, réinitialiser), enregistrée dans `reglages.cfg`. | P1 | Claude → Codex | InputMap, `options.gd` | |
-| P2-14 | **Réserve (bas gauche) plus fine** : bordures lourdes remplacées par un cadre fin (liseré laiton ou fond papier léger), cases plus petites. | P1 | Claude | `reserve_ui.gd/.tscn`, thème | |
-| P2-15 | **Vignettes alignées et non rognées** dans la réserve (l'atelier était plus bas et coupé) : même cadre, même centrage pour toutes. | P1 | Claude | P2-14, `assets/ui/vignettes/` | |
-| P2-16 | **Pastille de quantité** = simple rectangle aux bords arrondis (bois/laiton, sans double bordure), dessinée en `StyleBoxFlat` : nette à toute taille, zéro rendu générique. | P1 | Claude | thème | |
-| P2-17 | **Choix d'items (tirages, coffres)** : seulement le nom (et la rareté par la couleur du cadre) ; tout le détail en infobulle au survol. | P1 | Claude | `hud.gd` (cartes) | |
-| P2-18 | **Images des cartes non rognées** : l'image occupe tout le cadre en gardant ses proportions (`KEEP_ASPECT_CENTERED`). | P1 | Claude | P2-17 | |
-| P2-19 | **Zéro défilement** : quand il y a beaucoup de choix, la grille se recalcule (colonnes et taille des cartes) pour tout faire tenir dans la fenêtre. | P1 | Claude | P2-17 | |
-| P2-20 | **Panneau contextuel en icônes** : cap d'unités, dégâts, vitesse, prix de revente en icône + valeur ; détails au survol des icônes. | P1 | Claude | icônes existantes (`REGISTRE.md`), P2-33 | |
-| P2-21 | **Portée visible** des tourelles (et des jouets à distance) : anneau au sol à la pose, à la sélection et au survol. | P1 | Claude | `pose_controleur.gd`, `plateau_visuel.gd` | |
+| P2-14 | **Réserve (bas gauche) plus fine** : bordures lourdes remplacées par un cadre fin (liseré laiton ou fond papier léger), cases plus petites. | P1 | Claude | `reserve_ui.gd/.tscn`, thème || ✅ |
+| P2-15 | **Vignettes alignées et non rognées** dans la réserve (l'atelier était plus bas et coupé) : même cadre, même centrage pour toutes. | P1 | Claude | P2-14, `assets/ui/vignettes/` || ✅ vignettes recadrées |
+| P2-16 | **Pastille de quantité** = simple rectangle aux bords arrondis (bois/laiton, sans double bordure), dessinée en `StyleBoxFlat` : nette à toute taille, zéro rendu générique. | P1 | Claude | thème || ✅ |
+| P2-17 | **Choix d'items (tirages, coffres)** : seulement le nom (et la rareté par la couleur du cadre) ; tout le détail en infobulle au survol. | P1 | Claude | `hud.gd` (cartes) || ✅ |
+| P2-18 | **Images des cartes non rognées** : l'image occupe tout le cadre en gardant ses proportions (`KEEP_ASPECT_CENTERED`). | P1 | Claude | P2-17 || ✅ |
+| P2-19 | **Zéro défilement** : quand il y a beaucoup de choix, la grille se recalcule (colonnes et taille des cartes) pour tout faire tenir dans la fenêtre. | P1 | Claude | P2-17 || ✅ |
+| P2-20 | **Panneau contextuel en icônes** : cap d'unités, dégâts, vitesse, prix de revente en icône + valeur ; détails au survol des icônes. | P1 | Claude | icônes existantes (`REGISTRE.md`), P2-33 || ✅ |
+| P2-21 | **Portée visible** des tourelles (et des jouets à distance) : anneau au sol à la pose, à la sélection et au survol. | P1 | Claude | `pose_controleur.gd`, `plateau_visuel.gd` || ✅ tourelles |
 | P2-22 | **Chasse au texte continue** + distinction des éléments du plateau (silhouettes, couleurs de toit par famille, socles). | P1 | Claude + Gemini (icônes) | P2-17, P2-20 | |
 
 ## Moyen terme — §3. Gameplay puzzle, anti-spam, craft, nouvelles pièces (P1-P2)
@@ -182,7 +182,7 @@ Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces �
 | P2-32 | **Variété d'ennemis** : au moins 2 ennemis-énigmes de plus (ex. fouisseur qui passe sous les jouets ; porte-bouclier qui protège ses voisins des tirs ; kamikaze qui éclate sur les groupes serrés), chacun avec un contre lisible. | P2 | Claude (design) → Codex | P2-31 | |
 | P2-33 | **Plafond par bâtiment** : vérifier puis rendre le plafond vraiment individuel (aujourd'hui 15 × ateliers, partagé) ; affiché dans le panneau (P2-20). | P1 | Claude | `production.gd`, `swarm_sim.gd` (origine des jouets) || ✅ plafond individuel (`SwarmSim.effectif`) |
 | P2-34 | **Animations des tourelles** : visée qui pivote vers la cible, recul au tir, ressort qui se comprime (procédural en attendant Hyper3D, R1 exception (c) notée). | P1 | Claude | `plateau_visuel.gd`, PT-53 | |
-| P2-35 | **Revente depuis la réserve** : bouton/icône « revendre » visible sur chaque pièce de la réserve (prix affiché), plus seulement le clic droit caché. | P1 | Claude | `reserve_ui.gd`, `Run.demonter` | |
+| P2-35 | **Revente depuis la réserve** : bouton/icône « revendre » visible sur chaque pièce de la réserve (prix affiché), plus seulement le clic droit caché. | P1 | Claude | `reserve_ui.gd`, `Run.demonter` || ✅ bouton au survol |
 | P2-36 | **Rareté dans les tirages** (pas seulement les coffres) + **la chance agit sur ces tirages** ; cadre coloré par rareté. | P1 | Claude | `draft.gd`, `regles.tres` (pioche) | |
 | P2-37 | **Craft utile** : boutique moins rentable, recettes plus rentables et **objets exclusifs au craft** (introuvables en boutique), dont le Pont et le Générateur. | P1 | Claude | P2-38, P2-39, `data/recettes/` | |
 | P2-38 | **Le Pont** (Épique, exclusif tirage/coffre/craft) : posé sur une case de route, il fait passer l'énergie par-dessus, vers l'herbe d'en face (ex. îlot vert isolé de la carte 3). | P1 | Claude (logique) + Gemini (modèle) | `plateau.gd`, `energie.gd`, `pose_controleur.gd` | |
@@ -206,10 +206,10 @@ Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces �
 | ID | Tâche | Qui | Bloqué par |
 |---|---|---|---|
 | PT-51 | Modèles Hyper3D des paliers d'évolution | Hyper3D + Gemini | PT-52 |
-| PT-52 | 7 images de référence du lot 1 (`art_refs/hyper3d/DEMANDE_LOT1.md`) → validation Carlos → génération | Gemini → Carlos → Hyper3D | quota Gemini |
+| PT-52 | 7 images de référence du lot 1 → validation Carlos → génération | Gemini → Carlos → Hyper3D | images prêtes (`art_refs/hyper3d/lot1_planche.jpg`) : **validation Carlos** |
 | PT-53 | Animations générées (marche, tir, ateliers, horloge) | Hyper3D + Gemini | PT-52 |
 | PT-54 | Micro-décors 3D | Gemini | quota Gemini |
-| PT-11b | 2 icônes : monnaie méta (engrenage d'or ≠ réseau), « assembler » | Gemini | quota Gemini |
+| PT-11b | 2 icônes : monnaie méta, « assembler » | Gemini | ✅ livrées (+ 6 icônes de stats) |
 
 ## Vérification ligne à ligne (brief 2 → tâches)
 | Brief | Point | Tâche(s) |

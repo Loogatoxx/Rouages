@@ -247,3 +247,15 @@ Résolution 3D : %d %%,Résolution 3D : %d %%,3D resolution: %d %%,Resolução 3
 oui,oui,on,sim
 non,non,off,não
 Revendre : +%d ressorts,Revendre : +%d ressorts,Sell: +%d springs,Vender: +%d molas
+Niv. %d/%d,Niv. %d/%d,Lv. %d/%d,Nív. %d/%d
+Niveau maximal,Niveau maximal,Max level,Nível máximo
+Jouets en jeu / plafond de cet atelier,Jouets en jeu / plafond de cet atelier,Toys in play / this workshop's cap,Brinquedos em jogo / limite desta oficina
+%s/s,%s/s,%s/s,%s/s
+Jouets remontés par seconde,Jouets remontés par seconde,Toys wound up per second,Brinquedos com corda por segundo
+Dégâts par coup d’un jouet,Dégâts par coup d’un jouet,Damage per hit of one toy,Dano por golpe de um brinquedo
+%s m,%s m,%s m,%s m
+Portée de tir des jouets,Portée de tir des jouets,Toys' firing range,Alcance de tiro dos brinquedos
+Dégâts par tir,Dégâts par tir,Damage per shot,Dano por tiro
+Tirs par seconde,Tirs par seconde,Shots per second,Tiros por segundo
+Portée de tir,Portée de tir,Firing range,Alcance de tiro
+Valeur de revente (en ressorts) une fois reprise,Valeur de revente (en ressorts) une fois reprise,Resale value (in springs) once picked up,Valor de revenda (em molas) depois de retirada

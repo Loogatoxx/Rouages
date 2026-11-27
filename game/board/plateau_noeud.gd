@@ -9,6 +9,7 @@ var alimentees: Dictionary = {}
 
 
 func _ready() -> void:
+	add_to_group(&"plateau_noeud")
 	plateau = Run.depart.creer_plateau()
 	plateau.modifie.connect(_actualiser)
 	_actualiser()

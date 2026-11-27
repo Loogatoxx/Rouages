@@ -8,7 +8,7 @@ const Lot = preload("res://game/core/lot.gd")
 
 ## Côté d'une case de la réserve, en pixels.
 const TAILLE_CASE := 72
-const ICONE_REVENDRE: Texture2D = preload("res://assets/ui/icones/ressort.png")
+const ICONE_REVENDRE: Texture2D = preload("res://assets/ui/icones/revendre.png")
 
 var _actions: Dictionary[RecetteDef, Button] = {}
 var _boutons: Dictionary[StringName, Button] = {}
@@ -16,6 +16,12 @@ var _selection: StringName = &""
 
 
 func _ready() -> void:
+	# Icône « assembler » (Gemini, registre v3) : le mot passe dans l'infobulle (chasse au texte, P2-22).
+	%Assembler.text = ""
+	%Assembler.icon = preload("res://assets/ui/icones/assembler.png")
+	%Assembler.expand_icon = true
+	%Assembler.custom_minimum_size = Vector2(TAILLE_CASE, TAILLE_CASE)
+	%Assembler.tooltip_text = tr("Assembler")
 	Interface.preparer_bouton(%Assembler)
 	%Assembler.toggled.connect(%Fiche.set_visible)
 	for recette: RecetteDef in Run.regles.recettes:
