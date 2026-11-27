@@ -191,3 +191,11 @@
   poussés ; GitHub relie bien les commits au compte (les carrés comptent). Règle notée : un push après chaque lot
   commité. À faire par Carlos : activer « Private contributions » sur son profil, ou demander un dépôt public.
 - **Objectif** : que l'activité de Carlos se voie sur son profil GitHub.
+
+## 2026-11-27 (soir) — suite de « continue le reste » : lots 3, 4 et 5
+- **Fait** : lot 3 (carillon qui ralentit, coup de carillon à la souris ou touche C, 8 remarques de la relecture
+  Codex traitées) ; lot 4 (écrans « Partie libre » et « Chapitres » en liste avec aperçu, « Aide et commandes »
+  enfin traduite — la clé contenait « \n » en toutes lettres) ; lot 5 (caméra qui cadre le plateau, décors et
+  palettes par carte, objets d'établi géants, cartes « La Serre » et « Le Quai »). Kits de décors et d'objets faits
+  par Gemini dans Blender. 146 tests, builds réexportés, tout poussé sur GitHub.
+- **Objectif** : un plateau habité, des cartes qui ne se ressemblent pas, une interface claire dans les trois langues.

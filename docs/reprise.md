@@ -3,18 +3,23 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-27, 20 h, après playtest 3, autonomie totale)
-- **Après playtest 3** : cap « Tenir la ligne » (`docs/game_design_p3.md`, § 9 pour les réglages retenus et les
-  mesures), roadmap § « Après playtest 3 » (P3-xx).
-  **Lots 1 et 2 faits et commités** : chemins stricts, Pont, têtes de tourelles, Générateur légendaire ; énergie de
-  l'Horloge en dents, postes de garde (fanions, choix à la souris), ateliers à 0,5 jouet/s, vagues par paquets,
-  joueur automatique à 4 styles, banc refait. 137 tests.
-  **Suite** : lot 3 = P3-26 (carillon qui ralentit, icônes de rôle), P3-27 (coup de carillon), P3-29 (impacts),
-  P3-28 (film d'une vague, durée des vagues : 85 s en V4, 130 s en V10) ; lot 4 = P3-30 (menu en liste + aperçu),
-  P3-31 (aide traduite) ; lot 5 = cadrage, décor, vie ambiante, cartes à mécaniques.
-  **Attend Carlos** : valider `art_refs/hyper3d/lot2/tourelle_carillon.png` et `tourelle_mortier.png` avant la
-  génération Hyper3D ; tester les builds (Windows surtout) ; jouer Boîte à musique et Grand atelier (le joueur
-  automatique ne sait pas poser de Pont).
+## État (mis à jour le 2026-11-27, 21 h 40, après playtest 3, autonomie totale)
+- **Après playtest 3** : cap « Tenir la ligne » (`docs/game_design_p3.md` : § 9 réglages et mesures, § 10 « établi
+  habité »), roadmap § « Après playtest 3 » (P3-xx). **Lots 1 à 5 faits, commités et poussés** :
+  1. chemins stricts, Pont praticable, têtes de tourelles, Générateur légendaire et surcharge inversée ;
+  2. énergie de l'Horloge en dents, postes de garde (fanions), ateliers à 0,5 jouet/s, vagues par paquets ;
+  3. carillon qui ralentit, coup de carillon du joueur (touche C), corrections de la relecture Codex ;
+  4. écrans « Partie libre » et « Chapitres » (liste + aperçu), aide traduite ;
+  5. cadrage serré, décors et palettes par carte, objets d'établi, cartes « La Serre » (eau) et « Le Quai » (marée).
+  146 tests. Builds Mac et Windows réexportés à 21 h 34 (Mac relancé).
+  **Reste (par ordre)** : P3-28 (film d'une vague, durée des vagues : 85 s en V4, 130 s en V10) · P3-29 / P3-44
+  (ressort qui roule vers le compteur, recul des ennemis) · P3-43 (vie ambiante : demande des modèles animés) ·
+  P3-48, P3-49 (cartes Le Manège et Le Rail) · P3-32 (balayage des textes non traduits) · icônes de rôle (P3-26) ·
+  restes du playtest 2 (P2-40 contenu, P2-58 BD, P2-56 chemins par segments).
+  **Attend Carlos** : (1) valider `art_refs/hyper3d/lot2/tourelle_carillon.png` et `tourelle_mortier.png` avant la
+  génération Hyper3D (1 crédit) ; (2) jouer une partie : le jeu a changé de nature (peu de bâtiments, escouades
+  au poste, coup de carillon) ; (3) jouer Boîte à musique, Grand atelier, La Serre et Le Quai, que le joueur
+  automatique ne sait pas juger (il ne pose pas de Pont) ; (4) test Windows.
 - **GitHub** (demande de Carlos, 2026-11-27) : dépôt privé `https://github.com/Loogatoxx/Rouages`, distant `origin`,
   branche `main`. **Pousser après chaque lot commité et testé** (`git push`), jamais de `--force`. Avant un push :
   `git ls-files | grep -iE "\.env|keystore|\.jks|\.apk|\.aab"` doit rester vide. Ses carrés verts comptent (e-mail de
