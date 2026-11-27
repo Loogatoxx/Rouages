@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="PalierExtensionDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/palier_extension_def.gd" id="palier"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_carillon.tres" id="carillon"]
+
+[resource]
+script = ExtResource("palier")
+seuil = 3
+titre = "Carillon de chantier"
+description = "Un carillon offert, rangé dans ta réserve."
+effet = &"piece"
+objet = ExtResource("carillon")

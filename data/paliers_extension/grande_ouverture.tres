@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PalierExtensionDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/palier_extension_def.gd" id="palier"]
+
+[resource]
+script = ExtResource("palier")
+seuil = 4
+titre = "Grande ouverture"
+description = "+3 chance : les tiroirs ouverts laissent tomber de belles pièces."
+effet = &"chance"
+valeur = 3.0

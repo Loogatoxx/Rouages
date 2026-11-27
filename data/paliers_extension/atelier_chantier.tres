@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="PalierExtensionDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/palier_extension_def.gd" id="palier"]
+
+[resource]
+script = ExtResource("palier")
+seuil = 2
+titre = "Atelier de chantier"
+description = "Les améliorations coûtent 25 % de moins pour le reste de la partie."
+effet = &"remise_amelioration"
+valeur = 0.25
