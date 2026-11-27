@@ -157,3 +157,6 @@
   rééquilibrés, raretés et chance dans les tirages, boutique renchérie, Pont et Générateur (modèles Gemini) avec
   recettes exclusives, tourelles animées, banc avec tourelles des coffres. 115 tests.
 - **Objectif** : un vrai puzzle tactique où l'armure, les ponts et les générateurs obligent à réfléchir aux placements.
+- **Suite (même demande)** : touches réassignables ; lot D (bâtiments débloqués par chapitre avec fiche « Nouveau ! »,
+  Difficile optionnel, bac à sable, tutoriel au chapitre 1) ; 3 nouvelles cartes (Jardin d'hiver, Boîte à musique où
+  le Pont devient une énigme, Grand atelier) ; taupe fouisseuse et porte-bouclier. 122 tests, builds réexportés.

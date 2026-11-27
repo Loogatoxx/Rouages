@@ -3,17 +3,26 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-27 midi, autonomie totale)
-- **Après playtest 2** : roadmap `docs/roadmap.md` § « Après playtest 2 » (P2-01 à P2-58, règle R8 « vrai puzzle
-  tactique », table de vérification brief → tâches). Captures de référence : `art_refs/playtest2/avant/`.
-  **Lot A fait** (§1) : jouets « plots », spawn progressif (pause vide), plafond par atelier, port de l'horloge,
-  plantage du coffre, réglages graphiques (autoload `Graphismes`), export Windows (`.pck` séparé, icône `.ico`).
-  Ordre de la suite : lot B (UI §2) → lot C (puzzle §3) → lot D (campagne §4) → PT ouverts (Gemini/Hyper3D).
-- **Banc depuis le playtest 2** : plus de remontage ; pause vide ; cadence ateliers ×1,83 ; 5 s avant le 1er ennemi.
-  Repères : moyen meurt V5-V8, parfait 0-2 PV. Variables d'essai `CADENCE`, `DELAI`, `AVANCE`.
-- **Captures** : `Graphismes` passe à 15 images/s quand la fenêtre n'a pas le focus (fenêtre de capture souvent en
-  arrière-plan) → pour mesurer, `Graphismes._arriere_plan = false` puis `_appliquer_fps()`. Ne jamais appeler
-  `Graphismes.prereglage()`/`enregistrer()` dans une capture (écrit `reglages.cfg` de Carlos).
+## État (mis à jour le 2026-11-27 après-midi, autonomie totale)
+- **Après playtest 2** : roadmap `docs/roadmap.md` § « Après playtest 2 » (P2-01 à P2-58, règle R8). Faits et commités :
+  lots A (bugs, spawn progressif, perf, export), B (UI : ruban, cartes, réserve, titre, panneau en icônes, portée),
+  C (armure, Pont, Générateur, craft exclusif, raretés des tirages, tourelles animées), D (bâtiments par chapitre,
+  Difficile optionnel, bac à sable, tutoriel), touches réassignables, 3 nouvelles cartes et 2 ennemis-énigmes.
+  **Hyper3D lot 1 fait** : 7 unités générées sur le site par Claude (Claude in Chrome, 4 crédits ; reste 25 + 24,5),
+  allégées par `scripts/alleger_modele.gd`, en jeu. 122 tests.
+  **Reste** : P2-40 (encore plus de contenu), P2-55 (cartes vivantes), P2-56 (chemins par segments), P2-58 (BD),
+  P2-22 (chasse au texte continue), P2-11 (vitrine du titre), PT-51 (lot 2 bâtiments : images à faire puis à faire
+  valider par Carlos), PT-53 (animations Hyper3D), PT-54 (micro-décors). Test Windows par Carlos.
+- **Hyper3D par Chrome** : hyper3d.ai/workspace/rodin, champ image = 1er `file-input` (pas ceux de « 3D Editing ») ;
+  bouton GENERATE (0,5 crédit) → Confirm géométrie → Generate matériau → Confirm → `.glb` → Download. Chrome
+  n'enregistre pas l'archive (blob) : lancer le récepteur local (`scratchpad/recepteur/serveur.py`, port 8765) et
+  poser le crochet `URL.createObjectURL` dans la page (voir `docs/architecture.md` § Hyper3D lot 1).
+- **Banc depuis le playtest 2** : pause vide, cadence ateliers ×1,83, 5 s avant le 1er ennemi, tourelles des coffres
+  simulées (canon V4, mortier V7). Repères : moyen 0-36 PV, parfait 0-4 PV ; très sensible au seuil.
+  Variables d'essai `CADENCE`, `DELAI`, `AVANCE` ; 6e argument `sans_tourelles`.
+- **Captures** : `Graphismes` passe à 15 images/s hors focus → `Graphismes._arriere_plan = false` pour mesurer.
+  Jamais `prereglage()`/`enregistrer()` ni `Touches.assigner` dans une capture ; progression temporaire via
+  `Progression.chemin`.
 
 ## État précédent (2026-11-26 tard le soir)
 - **Après playtest 1** : la roadmap `docs/roadmap.md` § « Après playtest 1 » liste 100 % du brief de Carlos (PT-01 à PT-65,
