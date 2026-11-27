@@ -336,3 +336,7 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   prête la plus forte aura voisine à chaque ennemi, ajoutée dans `degats_recus`). `DepartDef.ennemis_speciaux`,
   `part_speciaux`, `vague_speciaux` : le directeur remplace un scarabée ordinaire sur 1/part (total inchangé).
   Rendu : modèles Hyper3D empruntés et teintés (`NueeVisuel.EMPRUNTS_H3D`). Le banc (Prairie) n'en a pas.
+- **Bâtiments Hyper3D** (PT-51, lot 2) : `PlateauVisuel._modele_hyper3d` charge `assets/final/<id>/<id>_h3d.res`
+  (prioritaire sur le kit), emprise 1,9 m, recentré, pivot au sol, méta `face_plus_z` (face avant +Z = port sud,
+  donc la rotation par ports reste juste). Tourelles Hyper3D retournées au repos (fût dos au port) et visée corrigée
+  de π. `generer_vignettes.gd` rend aussi ces modèles. Allègement 8 000 triangles, textures 1024 px.

@@ -49,7 +49,9 @@ func _init() -> void:
 	camera.current = true
 	await process_frame
 	for id: StringName in PIECES:
-		var modele: Node3D = (load(KIT % [id, id]) as PackedScene).instantiate()
+		var modele: Node3D = _hyper3d(id)
+		if modele == null:
+			modele = (load(KIT % [id, id]) as PackedScene).instantiate()
 		if PORTS.has(id):
 			_dents(modele, PORTS[id])
 		await _rendre(vue, camera, modele, String(id))
@@ -67,6 +69,24 @@ func _init() -> void:
 	for id: StringName in EXTENSIONS:
 		await _rendre(vue, camera, _extension(load(EXTENSIONS[id])), String(id))
 	quit()
+
+
+# Bâtiment Hyper3D allégé (même mise à l'échelle que `PlateauVisuel._modele_hyper3d`), sinon null.
+func _hyper3d(id: StringName) -> Node3D:
+	var chemin: String = "res://assets/final/%s/%s_h3d.res" % [id, id]
+	if not ResourceLoader.exists(chemin):
+		return null
+	var maillage: Mesh = load(chemin)
+	var boite: AABB = maillage.get_aabb()
+	var echelle: float = 1.9 / maxf(boite.size.x, boite.size.z)
+	var racine := Node3D.new()
+	var volume := MeshInstance3D.new()
+	volume.mesh = maillage
+	volume.scale = Vector3.ONE * echelle
+	var centre: Vector3 = boite.get_center()
+	volume.position = Vector3(-centre.x, -boite.position.y, -centre.z) * echelle
+	racine.add_child(volume)
+	return racine
 
 
 # Dents de laiton sur les ports, mêmes dimensions que `PlateauVisuel.creer_piece` : la forme de l'engrenage se lit.

@@ -205,7 +205,7 @@ Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces �
 ## Restes du playtest 1 (toujours ouverts)
 | ID | Tâche | Qui | Bloqué par |
 |---|---|---|---|
-| PT-51 | Modèles Hyper3D des paliers d'évolution (lot 2 : bâtiments) | Hyper3D + Gemini | images du lot 2 à faire |
+| PT-51 | Modèles Hyper3D des paliers d'évolution (lot 2 : bâtiments) | Hyper3D + Gemini | 🟡 atelier de soldats, lance-billes et canon en jeu ; carillon et mortier : images à faire (quota Gemini) |
 | PT-52 | 7 images de référence du lot 1 → validation Carlos → génération | Gemini → Carlos → Hyper3D | ✅ validées par Carlos, générées par Claude sur le site (4 crédits), allégées et en jeu |
 | PT-53 | Animations générées (marche, tir, ateliers, horloge) | Hyper3D + Gemini | PT-52 |
 | PT-54 | Micro-décors 3D | Gemini | quota Gemini |

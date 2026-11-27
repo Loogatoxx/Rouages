@@ -74,6 +74,8 @@ func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
 	var direction: Vector2 = arrivee - depart
 	# Le canon des modèles du kit regarde vers −Z : angle de lacet qui l'aligne sur la cible.
 	var cap: float = atan2(-direction.x, -direction.y)
+	if modele.get_meta(&"face_plus_z", false):
+		cap += PI
 	var actuel: float = modele.rotation.y
 	cap = actuel + wrapf(cap - actuel, -PI, PI)
 	var animation: Tween = modele.create_tween()
@@ -110,11 +112,43 @@ func _regler_lumiere() -> void:
 
 
 func _instancier(nom: StringName) -> Node3D:
+	var hyper3d: Node3D = _modele_hyper3d(nom)
+	if hyper3d != null:
+		return hyper3d
 	var scene: PackedScene = Materiaux.scene_du_kit(nom)
 	var noeud: Node3D = scene.instantiate() as Node3D if scene != null else null
 	if noeud != null:
 		_jouer_animation(noeud)
 	return noeud
+
+
+## Modèle Hyper3D allégé d'un bâtiment (`assets/final/<nom>/<nom>_h3d.res`, PT-51), prioritaire sur le kit Blender.
+## Mis à l'échelle d'une case (emprise de 1,9 m sur 2 m), recentré sur la case, pivot au sol ; sa face avant (+Z)
+## correspond au port sud du kit, donc la même rotation par ports s'applique.
+const EMPRISE_H3D := 1.9
+const MODELE_BATIMENT_H3D := "res://assets/final/%s/%s_h3d.res"
+var _maillages_h3d: Dictionary[StringName, Mesh] = {}
+
+
+func _modele_hyper3d(nom: StringName) -> Node3D:
+	if not _maillages_h3d.has(nom):
+		var chemin: String = MODELE_BATIMENT_H3D % [nom, nom]
+		_maillages_h3d[nom] = load(chemin) as Mesh if ResourceLoader.exists(chemin) else null
+	var maillage: Mesh = _maillages_h3d[nom]
+	if maillage == null:
+		return null
+	var boite: AABB = maillage.get_aabb()
+	var echelle: float = EMPRISE_H3D / maxf(boite.size.x, boite.size.z)
+	var racine := Node3D.new()
+	var volume := MeshInstance3D.new()
+	volume.mesh = maillage
+	volume.scale = Vector3.ONE * echelle
+	var centre: Vector3 = boite.get_center()
+	volume.position = Vector3(-centre.x, -boite.position.y, -centre.z) * echelle
+	racine.add_child(volume)
+	# Face avant vers +Z (le kit regarde vers −Z) : la visée des tourelles en tient compte.
+	racine.set_meta(&"face_plus_z", true)
+	return racine
 
 
 ## Pont vers les modèles animés (PT-53, Hyper3D) : si un modèle du kit arrive avec un AnimationPlayer, on joue en boucle
@@ -423,6 +457,9 @@ func creer_piece(piece: PieceDef, ports: int, teinte: Material = null) -> Node3D
 				break
 		if piece.type == PieceDef.Type.TOURELLE:
 			_colorer_rarete(modele, piece.rarete)
+			# Tourelle Hyper3D : au repos, le fût regarde vers l'extérieur (dos au port), comme le kit.
+			if modele.get_meta(&"face_plus_z", false):
+				modele.rotate_y(PI)
 	else:
 		_creer_piece_de_repli(racine, piece)
 	var hauteur_dent: float = 0.26 if modele != null and piece.type != PieceDef.Type.HORLOGE else 0.15
