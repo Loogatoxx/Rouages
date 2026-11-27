@@ -21,11 +21,16 @@ var _apparues: int = 0
 var _delai: float = 0.0
 var _boss: UniteDef
 var _boss_lache: bool = false
+var _speciaux: Array[Resource] = []
+var _pas_speciaux: int = 0
+var _ordinaires: int = 0
 
 
 ## Prépare les modèles avec les PV propres à la vague. `delai` = secondes avant le premier ennemi (le temps que les
 ## ateliers, repartis de zéro, sortent leurs premiers jouets : playtest 2).
-func commencer(vague: VagueDef, entrees: Array[Vector2i], delai: float = 0.0) -> void:
+## `speciaux` (ennemis propres au plateau) remplacent un scarabée ordinaire sur `1 / part` (sans changer le total).
+func commencer(vague: VagueDef, entrees: Array[Vector2i], delai: float = 0.0, speciaux: Array[Resource] = [],
+		part: float = 0.0) -> void:
 	_vague = vague
 	_unite = _modele_vague(vague.unite)
 	_renfort = _modele_vague(vague.renfort) if vague.renfort != null else null
@@ -39,6 +44,11 @@ func commencer(vague: VagueDef, entrees: Array[Vector2i], delai: float = 0.0) ->
 	_entrees = entrees.duplicate()
 	_apparues = 0
 	_delai = delai
+	_speciaux.clear()
+	for special: Resource in speciaux:
+		_speciaux.append(_modele_vague(special))
+	_pas_speciaux = roundi(1.0 / part) if part > 0.0 else 0
+	_ordinaires = 0
 	_boss = null
 	_boss_lache = vague.boss == null
 	if vague.boss != null:
@@ -80,6 +90,10 @@ func avancer(dt: float, sim: SwarmSim) -> void:
 			progression += _vague.nombre_renforts
 			if progression >= _total_sol:
 				modele = _renfort
+		if modele == _unite and not _speciaux.is_empty() and _pas_speciaux > 0:
+			_ordinaires += 1
+			if _ordinaires % _pas_speciaux == 0:
+				modele = _speciaux[(_ordinaires / _pas_speciaux) % _speciaux.size()]
 		if not sim.ajouter(modele, centre + decalage):
 			_delai = 0.0
 			break

@@ -96,3 +96,32 @@ func test_vague_06() -> String:
 	sim.blesser_zone(Vector2.ZERO, 100.0, 1000.0, 100.0)
 	sim.avancer(0.1)
 	return "" if directeur.est_terminee(sim) else "La vague devrait être terminée."
+
+
+## Taupe (fouisseuse) : les tourelles et les tireurs l'ignorent, les jouets au corps à corps la frappent.
+func test_taupe_sous_les_tirs() -> String:
+	var SwarmSim = load("res://game/swarm/swarm_sim.gd")
+	var taupe = load("res://data/unites/taupe.tres")
+	var sim = SwarmSim.new()
+	sim.ajouter(taupe, Vector2(1, 0))
+	if sim.blesser_zone(Vector2.ZERO, 5.0, 10.0, 0.0):
+		return "Une tourelle ne doit pas viser une taupe sous terre."
+	sim.ajouter(load("res://data/unites/soldat_remontoir.tres"), Vector2(0.5, 0))
+	var pv_avant: float = taupe.pv
+	for pas: int in 60:
+		sim.avancer(1.0 / 60.0)
+	return "" if sim.nombre(1) == 0 or sim._camps[1].vies[0] < pv_avant else "Un soldat doit pouvoir frapper la taupe."
+
+
+## Porte-bouclier : ses voisins encaissent moins ; loin de lui, rien ne change.
+func test_porte_bouclier() -> String:
+	var SwarmSim = load("res://game/swarm/swarm_sim.gd")
+	var sim = SwarmSim.new()
+	var scarabee = load("res://data/unites/scarabee.tres")
+	sim.ajouter(load("res://data/unites/porte_bouclier.tres"), Vector2(0, 0))
+	sim.ajouter(scarabee, Vector2(1, 0))
+	sim.ajouter(scarabee, Vector2(20, 0))
+	sim._calculer_boucliers()
+	if sim._bouclier(1) <= 0.0 or sim._bouclier(2) > 0.0:
+		return "Seuls les voisins du porte-bouclier doivent être protégés."
+	return "" if scarabee.degats_recus(5.0, false, sim._bouclier(1)) < 5.0 else "L'aura doit réduire les coups."

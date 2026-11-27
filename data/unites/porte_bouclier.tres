@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="UniteDef" format=3]
+
+[ext_resource type="Script" path="res://game/swarm/unite_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"porte_bouclier"
+nom = "Porte-bouclier"
+camp = 1
+butin = 2
+pv = 20.0
+degats = 3.0
+cadence = 0.8
+portee = 0.7
+vitesse = 1.4
+rayon = 0.42
+armure = 1.0
+aura_armure = 3.0
+rayon_aura = 2.5

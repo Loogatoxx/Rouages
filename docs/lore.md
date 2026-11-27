@@ -85,3 +85,5 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Carapace des cuirassés (armure) | Leurs plaques de bronze viennent des anciennes boîtes à outils d'Anselme : les petites billes ricochent, il faut un mortier ou un soldat qui vise les charnières. |
 | Le Pont | Un pont-levis de maquette qu'Anselme n'avait jamais fini de peindre ; son arbre de laiton porte le tic-tac de l'autre côté des routes. |
 | Le Générateur autonome | Un vieux moteur de boîte à musique que Lise remontait en cachette : il fait tourner quelques jouets loin de l'Horloge, pas plus. |
+| Taupe mécanique | Un jouet de jardin qu'Anselme réparait pour les enfants du village : elle creuse sous les billes, seuls les soldats l'attrapent par la queue. |
+| Porte-bouclier | Un scarabée qui porte un couvercle de boîte à couture : ses voisins s'abritent dessous. |

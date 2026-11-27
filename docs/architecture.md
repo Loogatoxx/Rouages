@@ -331,3 +331,8 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   `boite_musique.tres` (ch5, route en anneau autour de l'horloge : l'extérieur ne s'atteint que par Pont ou
   Générateur ; un Pont en réserve), `retour_lise.tres` (ch6, 13×13, trois entrées). Ajoutées à la partie libre.
   `test_plateaux_jouables` vérifie chaque plateau (route reliée, entrées, un plateau par chapitre).
+- **Ennemis-énigmes** (P2-32) : `UniteDef.fouisseur` (taupe : ignorée par `blesser_zone`, les tireurs et leur piste ;
+  seuls les jouets au corps à corps la frappent) ; `aura_armure` / `rayon_aura` (porte-bouclier : `_calculer_boucliers`
+  prête la plus forte aura voisine à chaque ennemi, ajoutée dans `degats_recus`). `DepartDef.ennemis_speciaux`,
+  `part_speciaux`, `vague_speciaux` : le directeur remplace un scarabée ordinaire sur 1/part (total inchangé).
+  Rendu : modèles Hyper3D empruntés et teintés (`NueeVisuel.EMPRUNTS_H3D`). Le banc (Prairie) n'en a pas.

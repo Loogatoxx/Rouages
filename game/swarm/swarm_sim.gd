@@ -95,6 +95,8 @@ var _pistes: Array[Dictionary] = [{}, {}]
 # Cases de chemin sur un trajet entrée → horloge (les autres sont des culs-de-sac).
 var _utiles: Dictionary = {}
 var _attente_piste: float = 0.0
+# Armure prêtée à chaque ennemi par un porte-bouclier voisin (même indice que les ennemis), recalculée à chaque pas.
+var _boucliers := PackedFloat32Array()
 
 
 ## Recalcule les cartes et les prochains centres à viser, sans déplacer les unités.
@@ -186,6 +188,8 @@ func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) ->
 	var distance_min: float = portee * portee
 	var cible: int = -1
 	for i: int in ennemis.lieux.size():
+		if ennemis.modeles[i].fouisseur:
+			continue  # sous terre : les tourelles ne le voient pas
 		var distance: float = centre.distance_squared_to(ennemis.lieux[i])
 		if ennemis.vies[i] > 0.0 and distance <= distance_min:
 			cible = i
@@ -193,16 +197,36 @@ func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) ->
 	if cible < 0:
 		return false
 	var impact: Vector2 = ennemis.lieux[cible]
-	ennemis.vies[cible] -= ennemis.modeles[cible].degats_recus(degats)
+	ennemis.vies[cible] -= ennemis.modeles[cible].degats_recus(degats, false, _bouclier(cible))
 	ennemis.touches[cible] = 0.12
 	if zone > 0.0:
 		var rayon_carre: float = zone * zone
 		for i: int in ennemis.lieux.size():
-			if i != cible and ennemis.vies[i] > 0.0 and impact.distance_squared_to(ennemis.lieux[i]) <= rayon_carre:
-				ennemis.vies[i] -= ennemis.modeles[i].degats_recus(degats)
+			if i != cible and ennemis.vies[i] > 0.0 and not ennemis.modeles[i].fouisseur \
+					and impact.distance_squared_to(ennemis.lieux[i]) <= rayon_carre:
+				ennemis.vies[i] -= ennemis.modeles[i].degats_recus(degats, false, _bouclier(i))
 				ennemis.touches[i] = 0.12
 	tir.emit(centre, impact)
 	return true
+
+
+func _bouclier(i: int) -> float:
+	return _boucliers[i] if i < _boucliers.size() else 0.0
+
+
+# Porte-boucliers : chaque ennemi proche reçoit l'aura la plus forte (pas de cumul, pour rester lisible).
+func _calculer_boucliers() -> void:
+	var ennemis: Nuee = _camps[ENNEMI]
+	_boucliers.resize(ennemis.lieux.size())
+	_boucliers.fill(0.0)
+	for b: int in ennemis.lieux.size():
+		var porteur: UniteDef = ennemis.modeles[b]
+		if porteur.aura_armure <= 0.0:
+			continue
+		var rayon_carre: float = porteur.rayon_aura * porteur.rayon_aura
+		for i: int in ennemis.lieux.size():
+			if i != b and ennemis.lieux[b].distance_squared_to(ennemis.lieux[i]) <= rayon_carre:
+				_boucliers[i] = maxf(_boucliers[i], porteur.aura_armure)
 
 
 ## Renvoie (PV restants, PV max) du premier boss vivant, ou Vector2.ZERO s'il n'y en a pas.
@@ -267,6 +291,7 @@ func avancer(dt: float) -> void:
 		_verifier_arrivee(ennemis, i)
 	for nuee: Nuee in _camps:
 		_indexer(nuee, dt)
+	_calculer_boucliers()
 	_attente_piste -= dt
 	if _attente_piste <= 0.0:
 		_attente_piste = RECALCUL_PISTE
@@ -364,6 +389,8 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 		for j: int in cellule.indices:
 			if melee and adverse.modeles[j].volant:
 				continue
+			if camp == ALLIE and not melee and adverse.modeles[j].fouisseur:
+				continue
 			var d: float = lieu.distance_squared_to(adversaires[j])
 			if d < meilleur or (d == meilleur and (cible < 0 or j < cible)):
 				meilleur = d
@@ -380,7 +407,8 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 			# Compte aussi les frappes intermédiaires si un pas dépasse une période.
 			if recharge < dt - 0.000001 or recharge <= 0.0:
 				var coups: int = maxi(1, ceili((dt - recharge - 0.000001) / periode))
-				adverse.vies[cible] -= adverse.modeles[cible].degats_recus(modele.degats, melee) * coups
+				var bonus: float = _bouclier(cible) if camp == ALLIE else 0.0
+				adverse.vies[cible] -= adverse.modeles[cible].degats_recus(modele.degats, melee, bonus) * coups
 				adverse.touches[cible] = 0.12
 				if camp == ALLIE and modele.portee >= PORTEE_DISTANCE:
 					for coup: int in coups:
@@ -409,6 +437,8 @@ func _tracer_pistes() -> void:
 		var file: Array[Vector2i] = []
 		for i: int in ennemis.lieux.size():
 			if k == 0 and ennemis.modeles[i].volant:
+				continue
+			if k == 1 and ennemis.modeles[i].fouisseur:
 				continue
 			var case := Vector2i((ennemis.lieux[i] / MAILLE).round())
 			if not _distances.has(case):

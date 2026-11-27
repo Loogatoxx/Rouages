@@ -32,6 +32,9 @@ const MODELE_H3D := "res://assets/final/%s/%s_h3d.res"
 ## Exceptions d'orientation (demi-tour) pour un futur modèle Hyper3D livré dos à sa marche. Le lot 1 a la même face
 ## avant que le kit Blender (vérifié par capture, `art_refs/playtest2/apres/31_galerie.jpg`).
 const DEMI_TOUR_H3D: Dictionary = {}
+## Ennemis sans modèle propre (playtest 2) : ils empruntent un modèle Hyper3D existant, teinté pour rester distincts.
+const EMPRUNTS_H3D: Dictionary = {&"taupe": [&"fourmi", Color(0.62, 0.45, 0.32)],
+		&"porte_bouclier": [&"scarabee_cuirasse", Color(0.62, 0.78, 0.95)]}
 var _lots: Dictionary[StringName, MultiMesh] = {}
 var _bases: Dictionary[StringName, Basis] = {}
 var _effectifs: Dictionary[StringName, int] = {}
@@ -61,6 +64,7 @@ func _ready() -> void:
 		shader_type spatial;
 		uniform sampler2D albedo_tex : source_color, filter_linear_mipmap;
 		uniform vec4 creme : source_color;
+		uniform vec4 teinte : source_color = vec4(1.0);
 		uniform float metal;
 		uniform float rugosite;
 		varying vec3 couleur;
@@ -68,7 +72,7 @@ func _ready() -> void:
 			couleur = COLOR.rgb;
 		}
 		void fragment() {
-			vec3 texte = texture(albedo_tex, UV).rgb;
+			vec3 texte = texture(albedo_tex, UV).rgb * teinte.rgb;
 			ALBEDO = couleur.b < 0.99 ? mix(texte, creme.rgb, 0.75) : texte;
 			METALLIC = metal;
 			ROUGHNESS = rugosite;
@@ -207,6 +211,10 @@ func _forme_de_repli(id: StringName, camp: int) -> ArrayMesh:
 # Modèle Hyper3D allégé de l'unité, mis à l'échelle de son rayon (pivot au pied, comme le kit).
 func _forme_hyper3d(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
+	var teinte: Color = Color.WHITE
+	if EMPRUNTS_H3D.has(nom):
+		teinte = EMPRUNTS_H3D[nom][1]
+		nom = EMPRUNTS_H3D[nom][0]
 	var chemin: String = MODELE_H3D % [nom, nom]
 	if not ResourceLoader.exists(chemin):
 		return null
@@ -227,6 +235,7 @@ func _forme_hyper3d(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 			peau.shader = _shader_texture
 			peau.set_shader_parameter("albedo_tex", origine.albedo_texture if origine != null else null)
 			peau.set_shader_parameter("creme", CREME)
+			peau.set_shader_parameter("teinte", teinte)
 			peau.set_shader_parameter("metal", origine.metallic if origine != null else 0.3)
 			peau.set_shader_parameter("rugosite", origine.roughness if origine != null else 0.5)
 			forme.surface_set_material(i, peau)

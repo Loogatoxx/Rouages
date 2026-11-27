@@ -11,6 +11,11 @@ const HORLOGE = preload("res://data/tuiles/horloge.tres")
 @export var chemins: Array[Vector2i] = []
 @export var horloge: Vector2i
 @export var reserve: Array[Lot] = []
+## Ennemis propres à ce plateau (playtest 2 : plus de variété), mêlés aux scarabées à partir de `vague_speciaux`.
+@export var ennemis_speciaux: Array[Resource] = []
+## Part des scarabées ordinaires remplacés par ces ennemis (0,1 = un sur dix).
+@export var part_speciaux: float = 0.1
+@export var vague_speciaux: int = 3
 
 
 ## Construit un plateau neuf en plaçant les chemins puis l'horloge sur le terrain.
