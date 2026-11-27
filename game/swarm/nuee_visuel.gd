@@ -25,6 +25,13 @@ var _arrivees := PackedVector2Array()
 var _ages := PackedFloat32Array()
 var _prochaine_bille: int = 0
 var _shader_carapace := Shader.new()
+## Même rôle que la carapace pour les modèles Hyper3D texturés : la texture reste, l'impact la blanchit (crème).
+var _shader_texture := Shader.new()
+## Modèles Hyper3D allégés (`scripts/alleger_modele.gd`) ; prioritaires sur le kit Blender quand ils existent.
+const MODELE_H3D := "res://assets/final/%s/%s_h3d.res"
+## Exceptions d'orientation (demi-tour) pour un futur modèle Hyper3D livré dos à sa marche. Le lot 1 a la même face
+## avant que le kit Blender (vérifié par capture, `art_refs/playtest2/apres/31_galerie.jpg`).
+const DEMI_TOUR_H3D: Dictionary = {}
 var _lots: Dictionary[StringName, MultiMesh] = {}
 var _bases: Dictionary[StringName, Basis] = {}
 var _effectifs: Dictionary[StringName, int] = {}
@@ -46,6 +53,23 @@ func _ready() -> void:
 		}
 		void fragment() {
 			ALBEDO = couleur.b < 0.99 ? creme.rgb : teinte.rgb;
+			METALLIC = metal;
+			ROUGHNESS = rugosite;
+		}
+	"""
+	_shader_texture.code = """
+		shader_type spatial;
+		uniform sampler2D albedo_tex : source_color, filter_linear_mipmap;
+		uniform vec4 creme : source_color;
+		uniform float metal;
+		uniform float rugosite;
+		varying vec3 couleur;
+		void vertex() {
+			couleur = COLOR.rgb;
+		}
+		void fragment() {
+			vec3 texte = texture(albedo_tex, UV).rgb;
+			ALBEDO = couleur.b < 0.99 ? mix(texte, creme.rgb, 0.75) : texte;
 			METALLIC = metal;
 			ROUGHNESS = rugosite;
 		}
@@ -180,6 +204,35 @@ func _forme_de_repli(id: StringName, camp: int) -> ArrayMesh:
 	return forme
 
 
+# Modèle Hyper3D allégé de l'unité, mis à l'échelle de son rayon (pivot au pied, comme le kit).
+func _forme_hyper3d(def: SwarmSim.UniteDef, camp: int) -> Mesh:
+	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
+	var chemin: String = MODELE_H3D % [nom, nom]
+	if not ResourceLoader.exists(chemin):
+		return null
+	var forme: Mesh = (load(chemin) as Mesh).duplicate()
+	var taille: Vector3 = forme.get_aabb().size
+	var largeur: float = maxf(taille.x, taille.z)
+	if largeur <= 0.0:
+		return null
+	var echelle: float = 2.0 * def.rayon / largeur
+	# Tous les modèles Hyper3D ont la même face avant (contrairement au kit, où jouets et insectes différaient).
+	var orientation: float = PI / 2.0
+	var demi_tour: float = PI if DEMI_TOUR_H3D.get(nom, false) else 0.0
+	_bases[def.id] = Basis(Vector3.UP, orientation + demi_tour).scaled(Vector3.ONE * echelle)
+	if camp == SwarmSim.ENNEMI:
+		for i: int in forme.get_surface_count():
+			var origine := forme.surface_get_material(i) as StandardMaterial3D
+			var peau := ShaderMaterial.new()
+			peau.shader = _shader_texture
+			peau.set_shader_parameter("albedo_tex", origine.albedo_texture if origine != null else null)
+			peau.set_shader_parameter("creme", CREME)
+			peau.set_shader_parameter("metal", origine.metallic if origine != null else 0.3)
+			peau.set_shader_parameter("rugosite", origine.roughness if origine != null else 0.5)
+			forme.surface_set_material(i, peau)
+	return forme
+
+
 func _forme_du_kit(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
 	if def.volant:
@@ -220,11 +273,16 @@ func _forme_du_kit(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 func _creer_lot(def: SwarmSim.UniteDef, camp: int) -> MultiMesh:
 	var id: StringName = def.id
 	var soldat: bool = camp == SwarmSim.ALLIE and id != &"lance_bille"
-	var forme: Mesh = _forme_du_kit(def, camp)
+	var forme: Mesh = _forme_hyper3d(def, camp)
+	var hyper3d: bool = forme != null
+	if hyper3d:
+		soldat = false  # le modèle Hyper3D porte déjà ses couleurs (pas de veste teintée par instance)
+	else:
+		forme = _forme_du_kit(def, camp)
 	if forme == null:
 		forme = _forme_de_repli(id, camp)
 		_bases[id] = Basis.from_scale(Vector3(1.25, 1.0, 0.85)) if camp == SwarmSim.ENNEMI else Basis.IDENTITY
-	if camp == SwarmSim.ENNEMI:
+	if camp == SwarmSim.ENNEMI and not hyper3d:
 		for i: int in forme.get_surface_count():
 			var origine: StandardMaterial3D = forme.surface_get_material(i) as StandardMaterial3D
 			var carapace := ShaderMaterial.new()

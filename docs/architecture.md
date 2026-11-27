@@ -280,3 +280,13 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - Panneau de pièce : statistiques icône + valeur (`plafond_jouets`, `cadence`, `degats`, `portee`, `revendre`),
   actions en icônes avec prix ; groupes `plateau_noeud` et `partie` pour lire énergie et effectifs.
 - Portée : disque + liseré au sol (`PoseControleur._afficher_portee`) à la pose, sélection et survol d'une tourelle.
+
+## Hyper3D lot 1 (PT-52) — unités
+- 7 modèles générés sur hyper3d.ai (Gen-2.5, High, 0,5 crédit chacun) depuis les images de Gemini validées par Carlos.
+- `scripts/alleger_modele.gd` : ~500 000 → ~3 900 triangles (meshoptimizer via `ImporterMesh.generate_lods`), sommets
+  compactés, textures 512 px (boss 1024 px) → `assets/final/<nom>/<nom>_h3d.res` (ArrayMesh + matériau intégrés).
+- `NueeVisuel._forme_hyper3d` : prioritaire sur le kit Blender ; mise à l'échelle par `UniteDef.rayon` ; une seule
+  orientation pour tous (`DEMI_TOUR_H3D` pour les exceptions) ; les ennemis gardent leur texture avec un shader qui la
+  blanchit à l'impact (`_shader_texture`). Les jouets Hyper3D ne sont plus teintés par instance (ils portent leurs couleurs).
+- Récupération des archives : la page fabrique un blob que Chrome n'enregistre pas ; un crochet sur
+  `URL.createObjectURL` l'envoie à un récepteur local (127.0.0.1:8765) au moment de sa création.

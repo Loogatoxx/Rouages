@@ -4,7 +4,8 @@
 crédit est définitif. Règles : image de référence validée par toi avant toute génération ; 4 modèles maximum par élément,
 réservés aux gros paliers (R1, R2) ; comptes dans `assets/CREDITS_HYPER3D.md`.
 
-**État** : prompts prêts. **Images de référence** : à produire par Gemini dès que son quota revient (épuisé le
+**État (2026-11-27)** : ✅ lot 1 validé par Carlos, généré par Claude sur le site (0,5 crédit par modèle), allégé
+(`scripts/alleger_modele.gd`) et intégré aux nuées (`assets/final/<nom>/<nom>_h3d.res`). Ancien état : prompts prêts. **Images de référence** : à produire par Gemini dès que son quota revient (épuisé le
 2026-11-26 vers 23 h 50, deux essais refusés). Dès qu'elles sont dans `art_refs/hyper3d/lot1/`, tu n'as qu'à :
 valider (ou refuser) chaque image → lancer Image-to-3D sur le site → déposer le `.glb` dans `assets/final/<nom>/`.
 
