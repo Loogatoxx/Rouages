@@ -122,3 +122,10 @@
   Codex), chantier d'extension (Gemini), aperçu de la vague suivante, demande Hyper3D groupée (prompts, budget),
   poussière et pétales d'ambiance. Builds réexportés, Mac relancé. Gemini hors quota en fin de session.
 - **Objectif** : un jeu qui récompense la stratégie plutôt que le spam, lisible et prêt pour le pipeline Hyper3D.
+
+## 2026-11-27 — Suite sans Gemini ni Carlos (message de la session principale)
+- **Demande** : craft, fin de l'audit UI, autres PT faisables sans Hyper3D, animations procédurales et pont Hyper3D,
+  banc avec lance-billes et rééquilibrage, relancer Gemini une fois après 1 h.
+- **Fait** : banc mixte et vagues relissées (parfait 0-1 PV, moyen meurt V5-V10) ; fin de l'audit UI (liens en boutons,
+  gabarit tirage/coffre, raretés teintées) ; craft (T11f, Codex : démonter, 3 recettes) ; démarche procédurale des nuées
+  et lecture automatique des AnimationPlayer ; astuces contextuelles ; builds réexportés, Mac relancé.
