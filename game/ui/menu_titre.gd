@@ -6,6 +6,8 @@ const Langue = preload("res://game/ui/langue.gd")
 const Progression = preload("res://game/core/progression.gd")
 const Regles = preload("res://game/core/regles.gd")
 const MODELE := "res://assets/final/horloge/horloge.glb"
+## Icône de la monnaie méta (engrenages d'or), distincte de l'icône « réseau d'engrenages » (règle R5).
+const ICONE_MONNAIE := "res://assets/ui/icones/monnaie_or.png"
 
 var _vitrine: Node3D
 const PARTIE := "res://game/main.tscn"
@@ -67,8 +69,74 @@ func _ready() -> void:
 	%Tutoriel.pressed.connect(_revoir_tutoriel)
 	%Quitter.pressed.connect(get_tree().quit)
 	%Panneau.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_composer_colonne()
 	apparaitre(%Panneau)
 	%Campagne.grab_focus()
+
+
+# Playtest 2 (écran titre plus abouti) : trois blocs séparés par un filet de laiton (campagne · partie libre et défi ·
+# établi), tous les boutons principaux à la même largeur, compteur d'or DANS le bouton Établi, rangée du bas homogène.
+func _composer_colonne() -> void:
+	var colonne: VBoxContainer = %Campagne.get_parent()
+	colonne.add_theme_constant_override(&"separation", 10)
+	# Établi : le compteur (icône + nombre) devient une pastille à droite, à l'intérieur du bouton.
+	var etabli: Button = %BoutonEtabli
+	var atelier: HBoxContainer = etabli.get_parent()
+	var pastille := PanelContainer.new()
+	pastille.theme_type_variation = &"Badge"
+	pastille.add_theme_stylebox_override(&"panel", get_theme_stylebox(&"normal", &"Badge"))
+	pastille.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var contenu := HBoxContainer.new()
+	contenu.add_theme_constant_override(&"separation", 4)
+	contenu.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	pastille.add_child(contenu)
+	etabli.add_child(pastille)
+	var icone: TextureRect = atelier.get_node(^"Engrenage")
+	_deplacer(icone, contenu)
+	icone.custom_minimum_size = Vector2(22, 22)
+	if ResourceLoader.exists(ICONE_MONNAIE):
+		icone.texture = load(ICONE_MONNAIE)
+	_deplacer(%Or, contenu)
+	%Or.theme_type_variation = &"Nombre"
+	%Or.add_theme_font_size_override(&"font_size", 17)
+	pastille.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT, Control.PRESET_MODE_MINSIZE, 14)
+	pastille.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	etabli.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# Partie libre : le mode prend toute la largeur, comme les autres boutons.
+	_mode.theme_type_variation = &""
+	_mode.size_flags_horizontal = Control.SIZE_FILL
+	# Filets entre les blocs.
+	colonne.move_child(_filet(), %Jouer.get_index())
+	colonne.move_child(_filet(), atelier.get_index())
+	# Rangée du bas : tutoriel, options, quitter, même taille.
+	var navigation: HBoxContainer = %Options.get_parent()
+	colonne.move_child(_filet(), navigation.get_index())
+	_deplacer(%Tutoriel, navigation)
+	navigation.move_child(%Tutoriel, 0)
+	navigation.add_theme_constant_override(&"separation", 10)
+	for bouton: Button in [%Tutoriel, %Options, %Quitter]:
+		bouton.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		bouton.custom_minimum_size.x = 0
+	navigation.size_flags_horizontal = Control.SIZE_FILL
+
+
+# Déplace un nœud de la scène en gardant son nom unique (`%Nom`) : `reparent` retire le propriétaire.
+func _deplacer(noeud: Node, parent: Node) -> void:
+	noeud.reparent(parent, false)
+	noeud.owner = self
+	noeud.unique_name_in_owner = noeud.unique_name_in_owner
+
+
+func _filet() -> HSeparator:
+	var filet := HSeparator.new()
+	var ligne := StyleBoxLine.new()
+	ligne.color = Color(0.552941, 0.368627, 0.180392, 0.6)
+	ligne.thickness = 2
+	ligne.grow_begin = -12.0
+	ligne.grow_end = -12.0
+	filet.add_theme_stylebox_override(&"separator", ligne)
+	%Campagne.get_parent().add_child(filet)
+	return filet
 
 
 func _process(delta: float) -> void:

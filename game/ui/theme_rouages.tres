@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" path="res://assets/ui/panneau_bois.png" id="panneau_bois"]
 [ext_resource type="Texture2D" path="res://assets/ui/plaque_laiton_petite.png" id="plaque_laiton"]
 [ext_resource type="Texture2D" path="res://assets/ui/papier.png" id="papier"]
-[ext_resource type="Texture2D" path="res://assets/ui/pastille.png" id="pastille"]
 [ext_resource type="Texture2D" path="res://assets/ui/ruban_petit.png" id="ruban"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-Bold.ttf" id="Fraunces-Bold"]
 [ext_resource type="FontFile" path="res://assets/ui/polices/Fraunces-SemiBold.ttf" id="Fraunces-SemiBold"]
@@ -102,16 +101,24 @@ content_margin_top = 22.0
 content_margin_right = 24.0
 content_margin_bottom = 24.0
 
-[sub_resource type="StyleBoxTexture" id="Pastille"]
-texture = ExtResource("pastille")
-texture_margin_left = 22.0
-texture_margin_top = 18.0
-texture_margin_right = 22.0
-texture_margin_bottom = 22.0
-content_margin_left = 14.0
-content_margin_top = 6.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
+[sub_resource type="StyleBoxFlat" id="Pastille"]
+content_margin_left = 9.0
+content_margin_top = 1.0
+content_margin_right = 9.0
+content_margin_bottom = 2.0
+bg_color = Color(0.968627, 0.909804, 0.788235, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.552941, 0.368627, 0.180392, 1)
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+shadow_color = Color(0.231373, 0.14902, 0.0941176, 0.25)
+shadow_size = 1
+shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxTexture" id="Ruban"]
 texture = ExtResource("ruban")
@@ -119,10 +126,10 @@ texture_margin_left = 44.0
 texture_margin_top = 13.0
 texture_margin_right = 44.0
 texture_margin_bottom = 13.0
-content_margin_left = 54.0
-content_margin_top = 10.0
-content_margin_right = 54.0
-content_margin_bottom = 10.0
+content_margin_left = 58.0
+content_margin_top = 9.0
+content_margin_right = 58.0
+content_margin_bottom = 21.0
 
 [sub_resource type="StyleBoxFlat" id="Focus"]
 draw_center = false
@@ -148,6 +155,54 @@ bg_color = Color(0.80, 0.63, 0.32, 1)
 border_width_left = 1
 border_width_right = 1
 border_color = Color(0.52, 0.34, 0.15, 1)
+
+[sub_resource type="StyleBoxFlat" id="CaseReserve"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.968627, 0.909804, 0.788235, 0.55)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.552941, 0.368627, 0.180392, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="CaseReserveSurvol"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.988235, 0.945098, 0.85098, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.831373, 0.658824, 0.294118, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="CaseReserveChoisie"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 0.968627, 0.890196, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.831373, 0.658824, 0.294118, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [resource]
 default_font = ExtResource("Nunito-Regular")
@@ -207,17 +262,17 @@ TooltipLabel/colors/font_color = Color(0.231373, 0.149020, 0.094118, 1)
 TooltipLabel/constants/outline_size = 0
 Titre/base_type = &"Label"
 Titre/fonts/font = ExtResource("Fraunces-Bold")
-Titre/font_sizes/font_size = 46
+Titre/font_sizes/font_size = 36
 Titre/colors/font_color = Color(1, 0.952941, 0.839216, 1)
 Titre/styles/normal = SubResource("Ruban")
 TitreMenu/base_type = &"Label"
 TitreMenu/fonts/font = ExtResource("Fraunces-SemiBold")
-TitreMenu/font_sizes/font_size = 32
+TitreMenu/font_sizes/font_size = 26
 TitreMenu/colors/font_color = Color(1, 0.952941, 0.839216, 1)
 TitreMenu/styles/normal = SubResource("Ruban")
 TitreRuban/base_type = &"Label"
 TitreRuban/fonts/font = ExtResource("Fraunces-SemiBold")
-TitreRuban/font_sizes/font_size = 32
+TitreRuban/font_sizes/font_size = 26
 TitreRuban/colors/font_color = Color(1, 0.952941, 0.839216, 1)
 SousTitre/base_type = &"Label"
 SousTitre/fonts/font = ExtResource("Fraunces-SemiBold")
@@ -263,3 +318,10 @@ VScrollBar/styles/scroll_focus = SubResource("Rainure")
 VScrollBar/styles/grabber = SubResource("Coulisse")
 VScrollBar/styles/grabber_highlight = SubResource("Coulisse")
 VScrollBar/styles/grabber_pressed = SubResource("Coulisse")
+CaseReserve/base_type = &"Button"
+CaseReserve/styles/normal = SubResource("CaseReserve")
+CaseReserve/styles/hover = SubResource("CaseReserveSurvol")
+CaseReserve/styles/pressed = SubResource("CaseReserveChoisie")
+CaseReserve/styles/hover_pressed = SubResource("CaseReserveChoisie")
+CaseReserve/styles/focus = SubResource("Vide")
+CaseReserve/styles/disabled = SubResource("CaseReserve")

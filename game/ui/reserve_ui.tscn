@@ -34,7 +34,9 @@ theme_type_variation = &"Tiroir"
 
 [node name="Pieces" type="GridContainer" parent="Colonne/Panneau/Ligne"]
 unique_name_in_owner = true
-columns = 4
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+columns = 6
 
 [node name="Assembler" type="Button" parent="Colonne/Panneau/Ligne"]
 unique_name_in_owner = true

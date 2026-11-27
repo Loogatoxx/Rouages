@@ -110,7 +110,14 @@ func _rendre(vue: SubViewport, camera: Camera3D, modele: Node3D, nom: String) ->
 	var rayon: float = boite.size.length() * 0.5
 	var direction := Vector3(1, 1.05, 1.25).normalized()
 	camera.look_at_from_position(centre + direction * rayon * 4.0, centre)
-	camera.size = rayon * 1.6
+	# Cadrage sur les 8 coins de la boîte vus par la caméra, + 8 % de marge (playtest 2 : l'ancien cadrage
+	# `rayon × 1,6` rognait la maison de l'atelier en bas et sur les côtés).
+	var etendue: float = 0.0
+	var inverse: Transform3D = camera.global_transform.affine_inverse()
+	for coin: int in 8:
+		var local: Vector3 = inverse * boite.get_endpoint(coin)
+		etendue = maxf(etendue, maxf(absf(local.x), absf(local.y)))
+	camera.size = etendue * 2.0 * 1.08
 	camera.near = 0.05
 	camera.far = rayon * 10.0
 	for i: int in 6:

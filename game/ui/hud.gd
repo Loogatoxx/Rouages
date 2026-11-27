@@ -436,39 +436,65 @@ func _actualiser_noms_lots() -> void:
 		var lot: Lot = Run.offre[i]
 		var carte: Carte = %Lots.get_child(i)
 		carte.nom.text = tr(lot.objet.get("nom"))
-		carte.accessibility_name = tr("%s ×%d") % [carte.nom.text, lot.quantite]
-		if Run.offre_coffre:
-			var piece: PieceDef = lot.objet as PieceDef
-			carte.accessibility_name = tr("%s · %s") % [carte.nom.text, tr(NOMS_RARETE[piece.rarete])]
+		var entete: String = tr("%s ×%d") % [carte.nom.text, lot.quantite]
+		var piece: PieceDef = lot.objet as PieceDef
+		if piece != null and (Run.offre_coffre or piece.rarete != PieceDef.Rarete.COMMUNE):
+			entete = tr("%s · %s") % [entete, tr(NOMS_RARETE[piece.rarete])]
+		# Playtest 2 : la carte ne montre que l'image et le nom ; tout le détail passe dans l'infobulle.
+		carte.tooltip_text = entete + "\n" + tr(lot.objet.get("description"))
+		carte.accessibility_name = entete
 		carte.accessibility_description = tr(lot.objet.get("description"))
 
 
+# Playtest 2 (zéro défilement) : la taille des cartes et le nombre de colonnes se calculent pour que toute l'offre
+# tienne dans la fenêtre, même avec beaucoup de choix (paliers d'extension, cartes bonus).
 func _dimensionner_tirage() -> void:
-	if not $Draft.visible:
+	if not $Draft.visible or %Lots.get_child_count() == 0:
 		return
-	var largeur: float = get_viewport().get_visible_rect().size.x
-	# Gabarit commun au tirage et au coffre : le panneau épouse ses cartes (audit UI 8.2 : le coffre laissait ~290 px
-	# de bois vide). Largeur = cartes + écarts + bords + marges du panneau.
-	var cartes: float = 0.0
-	for carte: Control in %Lots.get_children():
-		cartes += carte.get_combined_minimum_size().x
-	cartes += 16.0 * maxi(0, %Lots.get_child_count() - 1) + 18.0 + 56.0 + 24.0
-	var retrait: float = maxf(0.0, (largeur * 0.88 - cartes) / 2.0)
+	var ecran: Vector2 = get_viewport().get_visible_rect().size
+	var n: int = %Lots.get_child_count()
+	var ecart: float = 16.0
+	var cadre: float = 18.0 + 56.0 + 24.0
+	var largeur_dispo: float = ecran.x * 0.88 - cadre
+	var hauteur_dispo: float = ecran.y * 0.58
+	var meilleure := Vector2.ZERO
+	var colonnes_retenues: int = n
+	for colonnes: int in range(1, n + 1):
+		var lignes: int = ceili(n / float(colonnes))
+		var largeur: float = minf(Carte.LARGEUR_MAX, (largeur_dispo - ecart * (colonnes - 1)) / colonnes)
+		var hauteur: float = largeur * Carte.PROPORTION
+		var hauteur_totale: float = lignes * hauteur + 18.0 * (lignes - 1)
+		if hauteur_totale > hauteur_dispo:
+			hauteur = (hauteur_dispo - 18.0 * (lignes - 1)) / lignes
+			largeur = hauteur / Carte.PROPORTION
+		# À taille égale, plus de colonnes = moins de rangées (3 cartes sur une seule ligne).
+		if largeur >= meilleure.x - 0.5:
+			meilleure = Vector2(largeur, largeur * Carte.PROPORTION)
+			colonnes_retenues = colonnes
+	var lignes: int = ceili(n / float(colonnes_retenues))
+	for carte: Carte in %Lots.get_children():
+		carte.regler_taille(meilleure)
+	var largeur_cartes: float = colonnes_retenues * meilleure.x + ecart * (colonnes_retenues - 1) + cadre
+	var retrait: float = maxf(0.0, (ecran.x * 0.88 - largeur_cartes) / 2.0)
 	$Draft.offset_left = retrait
 	$Draft.offset_right = -retrait
-	_ajuster_hauteur()
+	%DefilementLots.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	%DefilementLots.custom_minimum_size.y = lignes * meilleure.y + 18.0 * (lignes - 1) + 28.0 + 12.0
 
 
 func _ajuster_hauteur() -> void:
-	var hauteur: float = get_viewport().get_visible_rect().size.y
-	%DefilementLots.custom_minimum_size.y = minf(%Lots.size.y + 28, hauteur * 0.42)
+	pass
 
 
-## Le bouton garde sa place dans la rangée pendant que sa fiche de papier bouge.
+## Carte de tirage : une fiche de papier avec la grande vignette de la pièce, son nom et un insigne (quantité ou
+## rareté). Le cadre se teinte selon la rareté. Le détail est dans l'infobulle (playtest 2 : minimum de texte).
 class Carte extends Button:
+	const LARGEUR_MAX := 210.0
+	## Hauteur / largeur de la carte.
+	const PROPORTION := 1.18
 	var nom: Label = Label.new()
 	var _papier: PanelContainer = PanelContainer.new()
-	var _textes: Array[Label] = []
+	var _vignette: TextureRect = TextureRect.new()
 	var _mouvement: Tween
 
 	func _init(lot: Lot, indice: int, coffre: bool) -> void:
@@ -477,62 +503,54 @@ class Carte extends Button:
 		_papier.mouse_behavior_recursive = Control.MOUSE_BEHAVIOR_DISABLED
 		add_child(_papier)
 		var colonne := VBoxContainer.new()
+		colonne.add_theme_constant_override(&"separation", 2)
 		_papier.add_child(colonne)
 		var insigne := HBoxContainer.new()
 		colonne.add_child(insigne)
-		var badge := Label.new()
-		badge.theme_type_variation = &"Badge"
-		if coffre:
-			var piece: PieceDef = lot.objet as PieceDef
+		var piece: PieceDef = lot.objet as PieceDef
+		var rarete: int = piece.rarete if piece != null else PieceDef.Rarete.COMMUNE
+		if rarete != PieceDef.Rarete.COMMUNE or coffre:
 			var medaillon := TextureRect.new()
-			medaillon.texture = MEDAILLONS[piece.rarete]
-			medaillon.custom_minimum_size = Vector2(36, 36)
+			medaillon.texture = MEDAILLONS[rarete]
+			medaillon.custom_minimum_size = Vector2(28, 28)
 			medaillon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			medaillon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			insigne.add_child(medaillon)
-			badge.text = NOMS_RARETE[piece.rarete]
-			# Pastille teintée par rareté (audit UI 8.3) : la rareté se lit à la couleur, sans lire le mot.
-			if piece.rarete != PieceDef.Rarete.COMMUNE:
-				# Lu dans le thème lui-même : la carte n'est pas encore dans l'arbre, `get_theme_stylebox` y rendait
-				# un style vide (plantage du coffre dès qu'une carte rare sortait, vu au playtest 2).
-				var teinte: Color = Color("#BFD7F0") if piece.rarete == PieceDef.Rarete.RARE else Color("#F3D27A")
-				var pastille: StyleBox = THEME_UI.get_stylebox(&"normal", &"Badge").duplicate()
-				if pastille is StyleBoxTexture:
-					(pastille as StyleBoxTexture).modulate_color = teinte
-				elif pastille is StyleBoxFlat:
-					(pastille as StyleBoxFlat).bg_color = teinte
-				badge.add_theme_stylebox_override(&"normal", pastille)
-		else:
+		if lot.quantite > 1 or not coffre:
+			var badge := Label.new()
+			badge.theme_type_variation = &"Badge"
 			badge.text = "×%d" % lot.quantite
-		insigne.add_child(badge)
-		# Vignette de la pièce à droite de l'insigne : on reconnaît le lot avant de lire.
-		var vignette := TextureRect.new()
-		vignette.texture = Interface.vignette_de(lot.objet)
-		vignette.custom_minimum_size = Vector2(64, 64)
-		vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		vignette.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		vignette.size_flags_horizontal = Control.SIZE_EXPAND | Control.SIZE_SHRINK_END
-		insigne.add_child(vignette)
+			insigne.add_child(badge)
+		# Grande vignette : elle remplit l'espace libre en gardant ses proportions (jamais rognée).
+		_vignette.texture = Interface.vignette_de(lot.objet)
+		_vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_vignette.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		_vignette.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		colonne.add_child(_vignette)
 		nom.theme_type_variation = &"CarteNom"
+		nom.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		nom.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		nom.custom_minimum_size.x = 206
+		nom.custom_minimum_size.x = LARGEUR_MAX - 40.0
 		colonne.add_child(nom)
-		var description := Label.new()
-		description.theme_type_variation = &"CarteTexte"
-		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		# Même largeur fixe que le nom : un texte à retour à la ligne calcule sa hauteur sur sa largeur ; sans largeur
-		# fixe, la hauteur venait d'une mise en page précédente et le texte portugais débordait du papier.
-		description.custom_minimum_size.x = 206
-		description.text = lot.objet.get("description")
-		colonne.add_child(description)
-		_textes = [nom, description]
+		_papier.clip_contents = true
+		# Cadre teinté par rareté : la rareté se lit à la couleur, sans lire un mot.
+		if rarete == PieceDef.Rarete.RARE:
+			_papier.self_modulate = Color("#D3E4F7")
+		elif rarete == PieceDef.Rarete.EPIQUE:
+			_papier.self_modulate = Color("#F7E2A6")
 		_papier.rotation_degrees = -1.5 if indice % 2 == 0 else 1.5
-		_papier.minimum_size_changed.connect(_dimensionner)
 		resized.connect(_ajuster_papier)
 
+	## Fixe la taille de la carte (calculée par le HUD pour que toute l'offre tienne à l'écran).
+	func regler_taille(taille: Vector2) -> void:
+		custom_minimum_size = taille
+		nom.add_theme_font_size_override(&"font_size", clampi(roundi(taille.x / 9.5), 16, 23))
+		# Largeur fixée : un texte à retour à la ligne sans largeur réclame une hauteur immense (une lettre par ligne).
+		nom.custom_minimum_size.x = taille.x - 40.0
+		nom.max_lines_visible = 2
+		_ajuster_papier()
+
 	func _ready() -> void:
-		_caler_hauteurs()
-		_dimensionner()
 		_papier.scale = Vector2.ONE * 1.06
 		var rebond: Tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		rebond.tween_property(_papier, "scale", Vector2.ONE, 0.28)
@@ -542,15 +560,6 @@ class Carte extends Button:
 		focus_exited.connect(_soulever)
 		button_down.connect(_soulever)
 		button_up.connect(_soulever)
-
-	# Hauteur de chaque texte mesurée sur sa police (voir `Interface.caler_hauteur`).
-	func _caler_hauteurs() -> void:
-		for texte: Label in _textes:
-			Interface.caler_hauteur(texte, 206.0)
-
-	func _dimensionner() -> void:
-		custom_minimum_size = _papier.get_combined_minimum_size()
-		_ajuster_papier()
 
 	func _ajuster_papier() -> void:
 		_papier.size = size
