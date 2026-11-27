@@ -8,3 +8,16 @@ class_name AmeliorationDef extends Resource
 @export var prix: Array[int] = []
 @export var effet: StringName
 @export var valeur_par_niveau: float
+
+@export var chapitre_min: int = 0
+
+enum Etat { DISPONIBLE, VERROUILLEE, MASQUEE }
+
+
+## Indique si l’établi propose l’achat, annonce son déblocage ou garde la surprise.
+func etat(chapitres_finis: int, ancien_joueur: bool) -> Etat:
+	if ancien_joueur or chapitre_min <= chapitres_finis:
+		return Etat.DISPONIBLE
+	if chapitre_min == chapitres_finis + 1:
+		return Etat.VERROUILLEE
+	return Etat.MASQUEE

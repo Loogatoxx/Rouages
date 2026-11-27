@@ -43,6 +43,7 @@ func _configurer() -> void:
 
 
 func _commencer(numero: int) -> void:
+	directeur.facteur_pv = Run.regles.difficultes_pv_ennemis[Run.difficulte]
 	directeur.commencer(Run.vagues[numero - 1], _entrees)
 	production.nouvelle_pause()
 

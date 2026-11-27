@@ -1,6 +1,13 @@
 [gd_resource type="Resource" script_class="Regles" format=3]
 
 [ext_resource type="Script" path="res://game/core/regles.gd" id="regles"]
+[ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
+[ext_resource type="Resource" path="res://data/campagne/chapitre_01.tres" id="chapitre_1"]
+[ext_resource type="Resource" path="res://data/campagne/chapitre_02.tres" id="chapitre_2"]
+[ext_resource type="Resource" path="res://data/campagne/chapitre_03.tres" id="chapitre_3"]
+[ext_resource type="Resource" path="res://data/campagne/chapitre_04.tres" id="chapitre_4"]
+[ext_resource type="Resource" path="res://data/campagne/chapitre_05.tres" id="chapitre_5"]
+[ext_resource type="Resource" path="res://data/campagne/chapitre_06.tres" id="chapitre_6"]
 [ext_resource type="Script" path="res://game/core/depart_def.gd" id="depart"]
 [ext_resource type="Resource" path="res://data/depart.tres" id="prairie"]
 [ext_resource type="Resource" path="res://data/departs/meandres.tres" id="meandres"]
@@ -136,6 +143,10 @@ poids = 1.0
 [resource]
 script = ExtResource("regles")
 ameliorations = Array[ExtResource("amelioration")]([ExtResource("meta_pv_horloge"), ExtResource("meta_ressorts_depart"), ExtResource("meta_choix_draft"), ExtResource("meta_cadence_ateliers"), ExtResource("meta_rente"), ExtResource("meta_relance_offerte"), ExtResource("meta_trefle")])
+chapitres = Array[ExtResource("chapitre")]([ExtResource("chapitre_1"), ExtResource("chapitre_2"), ExtResource("chapitre_3"), ExtResource("chapitre_4"), ExtResource("chapitre_5"), ExtResource("chapitre_6")])
+chapitre_deblocage_libre = 3
+difficultes_pv_ennemis = Array[float]([0.8, 1.0, 1.3])
+difficultes_pv_horloge = Array[int]([10, 0, -5])
 engrenages_par_vague = 1
 engrenages_victoire = 5
 departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("meandres"), ExtResource("fourche")])

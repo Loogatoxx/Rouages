@@ -7,6 +7,7 @@ script = ExtResource("amelioration")
 id = &"relance_offerte"
 nom = "Seconde esquisse"
 description = "La première relance de chaque tirage est offerte."
+chapitre_min = 2
 niveaux_max = 1
 prix = Array[int]([8])
 effet = &"relance_offerte"

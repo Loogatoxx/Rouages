@@ -631,6 +631,8 @@ func _afficher_fin(victoire: bool) -> void:
 
 func _actualiser_bilan() -> void:
 	%Bilan.text = "Victoire !" if _victoire else "L’horloge s’est arrêtée…"
+	if _victoire and Run.chapitre >= 0:
+		%Bilan.text = "Chapitre terminé !"
 	var tenues: int = Run.vague_actuelle if _victoire else maxi(0, Run.vague_actuelle - 1)
 	%Stats.text = tr("Vagues tenues : %d / %d\nScarabées endormis : %d\nRessorts gagnés : %d") % [
 		tenues, Run.nb_vagues, Run.ennemis_casses, Run.ressorts_gagnes]

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ChapitreDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
+[ext_resource type="Resource" path="res://data/depart.tres" id="depart"]
+
+[resource]
+script = ExtResource("chapitre")
+id = 1
+titre = "L'Établi"
+recit = "Déplie la prairie sur l’établi. Au centre du village, le tic-tac de l’Horloge-Mère réveille un premier soldat de bois."
+depart = ExtResource("depart")
+difficulte = 0

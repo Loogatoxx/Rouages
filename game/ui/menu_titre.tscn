@@ -65,13 +65,15 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(460, 0)
 
 [node name="Colonne" type="VBoxContainer" parent="Centre/Ensemble/Panneau"]
-theme_override_constants/separation = 14
+theme_override_constants/separation = 8
 
-[node name="Plateau" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
+[node name="Campagne" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
-text = "Plateau : Prairie"
+theme_type_variation = &"Action"
+custom_minimum_size = Vector2(420, 52)
+autowrap_mode = 3
 
-[node name="DescriptionPlateau" type="Label" parent="Centre/Ensemble/Panneau/Colonne"]
+[node name="DescriptionChapitre" type="Label" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
 theme_type_variation = &"Description"
 custom_minimum_size = Vector2(420, 0)
@@ -80,13 +82,27 @@ autowrap_mode = 3
 
 [node name="Jouer" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
-text = "Jouer"
-theme_type_variation = &"Action"
-custom_minimum_size = Vector2(0, 52)
+text = "Partie libre"
+
+[node name="ChoixLibre" type="HBoxContainer" parent="Centre/Ensemble/Panneau/Colonne"]
+unique_name_in_owner = true
+
+[node name="Plateau" type="Button" parent="Centre/Ensemble/Panneau/Colonne/ChoixLibre"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+
+[node name="Difficulte" type="Button" parent="Centre/Ensemble/Panneau/Colonne/ChoixLibre"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
 
 [node name="Defi" type="Button" parent="Centre/Ensemble/Panneau/Colonne"]
 unique_name_in_owner = true
 text = "Défi du jour"
+
+[node name="Verrou" type="Label" parent="Centre/Ensemble/Panneau/Colonne"]
+unique_name_in_owner = true
+theme_type_variation = &"Description"
+horizontal_alignment = 1
 
 [node name="Atelier" type="HBoxContainer" parent="Centre/Ensemble/Panneau/Colonne"]
 

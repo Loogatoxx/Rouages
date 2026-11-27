@@ -4,12 +4,17 @@ extends Control
 const APERCU := "res://assets/final/horloge/apercu.png"
 const Langue = preload("res://game/ui/langue.gd")
 const Progression = preload("res://game/core/progression.gd")
+const Regles = preload("res://game/core/regles.gd")
 const MODELE := "res://assets/final/horloge/horloge.glb"
 
 var _vitrine: Node3D
 const PARTIE := "res://game/main.tscn"
 const TITRE := "res://game/ui/menu_titre.tscn"
 const REGLAGES := "user://reglages.cfg"
+const DIFFICULTES: Array[String] = ["Facile", "Normal", "Difficile"]
+var _chapitre: int
+var _plateau_libre: int = 0
+var _difficulte_libre: int = 1
 
 
 func _ready() -> void:
@@ -38,15 +43,21 @@ func _ready() -> void:
 	%Reglages.ferme.connect(func() -> void:
 		$Centre.show()
 		%Options.grab_focus())
+	_chapitre = mini(Progression.chapitres_finis(), Run.regles.chapitres.size() - 1)
+	if Run.chapitre < 0 and not Run.defi_du_jour:
+		_plateau_libre = maxi(0, Run.regles.departs.find(Run.depart))
+		_difficulte_libre = Run.difficulte
+	%Campagne.pressed.connect(_lancer_chapitre)
 	%Jouer.pressed.connect(_jouer)
 	%Plateau.pressed.connect(_plateau_suivant)
+	%Difficulte.pressed.connect(_difficulte_suivante)
 	%Defi.pressed.connect(_lancer_defi)
 	_afficher_plateau()
 	%Tutoriel.pressed.connect(_revoir_tutoriel)
 	%Quitter.pressed.connect(get_tree().quit)
 	%Panneau.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	apparaitre(%Panneau)
-	%Jouer.grab_focus()
+	%Campagne.grab_focus()
 
 
 func _process(delta: float) -> void:
@@ -103,16 +114,35 @@ func _creer_vitrine() -> SubViewportContainer:
 	return cadre
 
 
-# Plateau choisi dans le menu (mémorisé dans Run : « Rejouer » relance le même plateau).
 func _plateau_suivant() -> void:
-	var i: int = (Run.regles.departs.find(Run.depart) + 1) % Run.regles.departs.size()
-	Run.choisir_depart(i)
+	_plateau_libre = (_plateau_libre + 1) % Run.regles.departs.size()
+	_afficher_plateau()
+
+
+func _difficulte_suivante() -> void:
+	_difficulte_libre = (_difficulte_libre + 1) % DIFFICULTES.size()
 	_afficher_plateau()
 
 
 func _afficher_plateau() -> void:
-	%Plateau.text = tr("Plateau : %s") % tr(Run.depart.nom)
-	%DescriptionPlateau.text = tr(Run.depart.description)
+	var chapitre: Regles.ChapitreDef = Run.regles.chapitres[_chapitre]
+	%Campagne.text = tr("Campagne — Chapitre %d : %s") % [chapitre.id, tr(chapitre.titre)]
+	%Campagne.tooltip_text = tr(chapitre.recit)
+	%DescriptionChapitre.text = tr(chapitre.recit)
+	var libre: bool = Progression.libre_debloque()
+	%Jouer.disabled = not libre
+	%Defi.disabled = not libre
+	%ChoixLibre.visible = libre
+	%Verrou.visible = not libre
+	%Verrou.text = tr("Verrouillé : termine le chapitre %d") % Run.regles.chapitre_deblocage_libre
+	%Jouer.tooltip_text = "" if libre else %Verrou.text
+	%Defi.tooltip_text = "" if libre else %Verrou.text
+	var depart: Regles.DepartDef = Run.regles.departs[_plateau_libre]
+	%Plateau.text = tr("Plateau : %s") % tr(depart.nom)
+	%Plateau.tooltip_text = tr(depart.description)
+	%Difficulte.text = tr("Difficulté : %s") % tr(DIFFICULTES[_difficulte_libre])
+	if libre:
+		%Jouer.tooltip_text = tr("Record : %d / %d") % [Progression.record(depart.nom, _difficulte_libre), Run.nb_vagues]
 	var record: int = record_defi(_date())
 	%Defi.text = tr("Défi du jour") if record < 0 else tr("Défi du jour — record : %d / %d") % [record, Run.nb_vagues]
 
@@ -130,8 +160,14 @@ func _notification(quoi: int) -> void:
 		_afficher_or()
 
 
+func _lancer_chapitre() -> void:
+	Run.preparer_chapitre(_chapitre)
+	commencer_partie(get_tree())
+
+
 func _jouer() -> void:
-	Run.choisir_depart(maxi(0, Run.regles.departs.find(Run.depart)))
+	Run.choisir_depart(_plateau_libre)
+	Run.difficulte = _difficulte_libre
 	commencer_partie(get_tree())
 
 

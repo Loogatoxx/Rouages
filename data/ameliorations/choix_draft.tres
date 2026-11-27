@@ -7,6 +7,7 @@ script = ExtResource("amelioration")
 id = &"choix_draft"
 nom = "Casier à plans"
 description = "Une carte de plus à chaque tirage."
+chapitre_min = 4
 niveaux_max = 1
 prix = Array[int]([8])
 effet = &"choix_draft"

@@ -17,6 +17,11 @@ enum Phase { DRAFT, CONSTRUCTION, VAGUE, FIN }
 
 var regles: Regles = preload("res://data/regles.tres")
 var depart: DepartDef = regles.departs[0]
+## Indice du diorama en cours, ou -1 en partie libre et en défi.
+var chapitre: int = -1
+var difficulte: int = 1:
+	set(valeur):
+		difficulte = clampi(valeur, 0, 2)
 var defi_du_jour: bool = false
 var _graine_defi: int
 var reserve: Reserve = Reserve.new()
@@ -348,9 +353,12 @@ func terminer_vague() -> void:
 func _terminer_partie(victoire: bool) -> void:
 	if not defi_du_jour:
 		var vagues_tenues: int = vague_actuelle if victoire else maxi(0, vague_actuelle - 1)
+		Progression.noter_record(depart.nom, difficulte, vagues_tenues)
 		var gain: int = vagues_tenues * regles.engrenages_par_vague
 		if victoire:
 			gain += regles.engrenages_victoire
+			if chapitre >= 0:
+				Progression.finir_chapitre(regles.chapitres[chapitre].id)
 		if Progression.gagner(gain):
 			engrenages_gagnes = gain
 	changer_phase(Phase.FIN)
@@ -361,7 +369,18 @@ func _terminer_partie(victoire: bool) -> void:
 func choisir_depart(i: int) -> void:
 	if i >= 0 and i < regles.departs.size():
 		depart = regles.departs[i]
+		chapitre = -1
 		defi_du_jour = false
+
+
+## Sélectionne un diorama de campagne d'après son indice dans les règles.
+func preparer_chapitre(i: int) -> void:
+	if i < 0 or i >= regles.chapitres.size() or i > Progression.chapitres_finis():
+		return
+	chapitre = i
+	depart = regles.chapitres[i].depart
+	difficulte = regles.chapitres[i].difficulte
+	defi_du_jour = false
 
 
 ## Renvoie la graine commune aux parties jouées pour cette date.
@@ -371,6 +390,8 @@ func graine_du_jour(date: String) -> int:
 
 ## Sélectionne le plateau et mémorise la graine du défi pour le prochain départ.
 func preparer_defi(date: String) -> void:
+	chapitre = -1
+	difficulte = 1
 	_graine_defi = graine_du_jour(date)
 	depart = regles.departs[posmod(_graine_defi, regles.departs.size())]
 	defi_du_jour = true
@@ -392,7 +413,7 @@ func reinitialiser() -> void:
 	deplacements_pause = 0
 	_porte_bonheur_achete = false
 	chance = int(_bonus(&"chance"))
-	pv_max = regles.pv_horloge + int(_bonus(&"pv_horloge"))
+	pv_max = regles.pv_horloge + regles.difficultes_pv_horloge[difficulte] + int(_bonus(&"pv_horloge"))
 	pv_horloge = pv_max
 	choix_par_draft = regles.choix_par_draft + int(_bonus(&"choix_draft"))
 	bonus_cadence = 1.0 + _bonus(&"cadence_ateliers")

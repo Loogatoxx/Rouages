@@ -2,6 +2,7 @@ class_name Regles extends Resource
 ## Regroupe les réglages communs à toutes les vagues d'une partie.
 
 const AmeliorationDef = preload("res://game/core/amelioration_def.gd")
+const ChapitreDef = preload("res://game/core/chapitre_def.gd")
 const DepartDef = preload("res://game/core/depart_def.gd")
 const RecetteDef = preload("res://game/core/recette_def.gd")
 const Lot = preload("res://game/core/lot.gd")
@@ -10,6 +11,10 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var ameliorations: Array[AmeliorationDef] = []
 @export var engrenages_par_vague: int
 @export var engrenages_victoire: int
+@export var chapitres: Array[ChapitreDef] = []
+@export var chapitre_deblocage_libre: int
+@export var difficultes_pv_ennemis: Array[float]
+@export var difficultes_pv_horloge: Array[int]
 @export var departs: Array[DepartDef] = []
 @export var garde_ratio: float = 0.55
 @export var prix_rotation: int = 2

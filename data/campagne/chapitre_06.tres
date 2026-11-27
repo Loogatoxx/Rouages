@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ChapitreDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/chapitre_def.gd" id="chapitre"]
+[ext_resource type="Resource" path="res://data/departs/fourche.tres" id="depart"]
+
+[resource]
+script = ExtResource("chapitre")
+id = 6
+titre = "Le Retour de Lise"
+recit = "Lise pousse enfin la porte de l’atelier et reconnaît les gardiens qu’elle fabriquait enfant. Elle assemble la clé d’or et redonne un tour de ressort à son premier scarabée."
+depart = ExtResource("depart")
+difficulte = 2

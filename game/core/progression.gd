@@ -11,6 +11,15 @@ static func _lire() -> ConfigFile:
 	var fichier := ConfigFile.new()
 	var erreur: Error = fichier.load(chemin)
 	if erreur == OK or erreur == ERR_FILE_NOT_FOUND:
+		if not fichier.has_section("campagne"):
+			# Reconnaître l'ancien profil avant d'y inscrire son prochain gain.
+			var ancien: bool = fichier.get_value("monnaie", "engrenages", 0) > 0
+			if fichier.has_section("niveaux"):
+				for id: String in fichier.get_section_keys("niveaux"):
+					if fichier.get_value("niveaux", id) > 0:
+						ancien = true
+						break
+			fichier.set_value("campagne", "ancien_joueur", ancien)
 		return fichier
 	push_warning("Lecture de la progression impossible : " + error_string(erreur))
 	return null
@@ -25,6 +34,48 @@ static func _sauver(fichier: ConfigFile) -> bool:
 	if erreur != OK:
 		push_warning("Sauvegarde de la progression impossible : " + error_string(erreur))
 	return erreur == OK
+
+
+## Indique si le profil possédait déjà des engrenages ou des améliorations avant la campagne.
+static func ancien_joueur() -> bool:
+	var fichier: ConfigFile = _lire()
+	return fichier != null and fichier.get_value("campagne", "ancien_joueur", false)
+
+
+## Renvoie le nombre de chapitres consécutifs terminés.
+static func chapitres_finis() -> int:
+	var fichier: ConfigFile = _lire()
+	return fichier.get_value("campagne", "finis", 0) if fichier else 0
+
+
+## Valide le prochain chapitre dans l'ordre du récit, numéroté à partir de un.
+static func finir_chapitre(n: int) -> void:
+	var fichier: ConfigFile = _lire()
+	if fichier == null or n < 1 or n > REGLES.chapitres.size():
+		return
+	if n == int(fichier.get_value("campagne", "finis", 0)) + 1:
+		fichier.set_value("campagne", "finis", n)
+		_sauver(fichier)
+
+
+## Ouvre la partie libre et le défi du jour au même palier de campagne.
+static func libre_debloque() -> bool:
+	return chapitres_finis() >= REGLES.chapitre_deblocage_libre or ancien_joueur()
+
+
+## Renvoie le meilleur nombre de vagues tenues sur ce plateau à cette difficulté.
+static func record(depart_nom: String, difficulte: int) -> int:
+	var fichier: ConfigFile = _lire()
+	return fichier.get_value("records_" + depart_nom, str(difficulte), 0) if fichier else 0
+
+
+## Conserve le meilleur résultat du couple plateau et difficulté.
+static func noter_record(depart_nom: String, difficulte: int, vagues: int) -> void:
+	var fichier: ConfigFile = _lire()
+	var section: String = "records_" + depart_nom
+	if fichier != null and vagues > int(fichier.get_value(section, str(difficulte), 0)):
+		fichier.set_value(section, str(difficulte), vagues)
+		_sauver(fichier)
 
 
 ## Renvoie le nombre d'engrenages d'or disponibles.

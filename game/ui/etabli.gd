@@ -37,10 +37,24 @@ class Ligne extends HBoxContainer:
 		add_child(prix)
 
 	## Affiche le niveau acquis et le prix du prochain niveau dans la langue active.
-	func actualiser(solde: int) -> void:
+	func actualiser(solde: int, chapitres_finis: int, ancien_joueur: bool) -> void:
+		var etat: AmeliorationDef.Etat = definition.etat(chapitres_finis, ancien_joueur)
+		visible = etat != AmeliorationDef.Etat.MASQUEE
+		if not visible:
+			return
+		var verrouillee: bool = etat == AmeliorationDef.Etat.VERROUILLEE
+		modulate.a = 0.65 if verrouillee else 1.0
+		nom.text = tr(definition.nom)
+		pastilles.visible = not verrouillee
+		if verrouillee:
+			description.text = tr("Débloquée au chapitre %d") % definition.chapitre_min
+			achat.text = tr("Acheter")
+			achat.accessibility_name = description.text
+			achat.disabled = true
+			prix.hide()
+			return
 		var niveau: int = Progression.niveau(definition.id)
 		var complet: bool = niveau >= definition.niveaux_max
-		nom.text = tr(definition.nom)
 		description.text = tr(definition.description)
 		pastilles.text = "●".repeat(niveau) + "○".repeat(definition.niveaux_max - niveau)
 		achat.text = tr("Niveau maximum") if complet else tr("Acheter")
@@ -66,7 +80,7 @@ func ouvrir() -> void:
 	show()
 	_actualiser()
 	for ligne: Ligne in %Lignes.get_children():
-		if not ligne.achat.disabled:
+		if ligne.visible and not ligne.achat.disabled:
 			ligne.achat.grab_focus()
 			return
 	%Retour.grab_focus()
@@ -81,9 +95,11 @@ func _acheter(def: AmeliorationDef) -> void:
 
 func _actualiser() -> void:
 	var solde: int = Progression.engrenages()
+	var finis: int = Progression.chapitres_finis()
+	var ancien: bool = Progression.ancien_joueur()
 	%Solde.text = tr("Engrenages d’or : %d") % solde
 	for ligne: Ligne in %Lignes.get_children():
-		ligne.actualiser(solde)
+		ligne.actualiser(solde, finis, ancien)
 
 
 func _notification(quoi: int) -> void:

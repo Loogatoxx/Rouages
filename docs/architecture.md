@@ -218,3 +218,13 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - **Astuces contextuelles** (`game/ui/astuces.gd`, créé par le HUD, benchmark D7) : placement, panneau de pièce,
   libellule, chance, craft ; chacune une seule fois, au moment où elle sert (`user://reglages.cfg`, section `astuces`,
   remise à zéro par « Revoir le tutoriel »).
+
+## Après playtest 1 — lot 9 (campagne, déblocage, difficultés ; table)
+- **Campagne** (T12a, Codex puis Claude après la limite d'usage de Codex) : `ChapitreDef` (`data/campagne/`,
+  `Regles.chapitres`), 6 dioramas tirés du lore ; `Run.chapitre` / `preparer_chapitre` ; victoire →
+  `Progression.finir_chapitre`. Partie libre et défi du jour verrouillés jusqu'au chapitre 3 (`libre_debloque`), sauf
+  pour un ancien joueur (progression existante sans section « campagne »). Records par plateau et difficulté.
+- **Difficultés** : `Run.difficulte` (0-2) → `DirecteurVagues.facteur_pv` (0,8 / 1 / 1,3, réglé par `Partie` : le banc
+  reste à 1) et PV de l'horloge (+10 / 0 / −5).
+- **Anti-spoil** : `AmeliorationDef.chapitre_min` ; l'Établi masque ce qui est loin, grise avec cadenas le palier suivant.
+- **Table** : `game/board/table_bois.gdshader` (planches, joints, fil, nœuds calculés dans l'espace du monde).

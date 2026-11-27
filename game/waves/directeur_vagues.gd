@@ -6,6 +6,7 @@ const UniteDef = preload("res://game/swarm/unite_def.gd")
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
 
+var facteur_pv: float = 1.0
 var _vague: VagueDef
 var _unite: UniteDef
 var _renfort: UniteDef
@@ -46,7 +47,7 @@ func commencer(vague: VagueDef, entrees: Array[Vector2i]) -> void:
 
 func _modele_vague(source: UniteDef) -> UniteDef:
 	var modele: UniteDef = source.duplicate() as UniteDef
-	modele.pv *= _vague.multiplicateur_pv
+	modele.pv *= _vague.multiplicateur_pv * facteur_pv
 	return modele
 
 
