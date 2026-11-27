@@ -458,3 +458,6 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
 - **Impacts** (P3-44) : `PlateauVisuel._onde(point, rayon, couleur)` : boulet, obus, carillon, coup de carillon.
 - **Joueur automatique** : suit la marée (`_suivre_la_maree`) ; La Serre gagnée 1 fois sur 2 sans Pont ; Le Quai
   perdu en V5 (il faudrait un Pont pour s'installer entre les deux jetées) : cartes de « casse-tête », à faire jouer.
+- **Objets d'établi** (P3-45) : `PlateauVisuel.OBJETS_ETABLI` / `_poser_objets_etabli` posent `table_tasse`,
+  `table_loupe`, `table_bobine`, `table_carnet`, `table_tournevis` (kit Blender de Gemini, dimensions en mètres du
+  jeu : une tasse = 3 cases) à gauche et à droite du terrain, d'après `Run.depart.terrain`.

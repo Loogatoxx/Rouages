@@ -179,6 +179,33 @@ func _poser_table() -> void:
 	var plateau_table := BoxMesh.new()
 	plateau_table.size = Vector3(140, 1, 140)
 	_ajouter_forme(self, plateau_table, Vector3(0, -0.75, 0), bois)
+	_poser_objets_etabli()
+
+
+## Objets géants de l'établi autour de la maquette (playtest 3, « la table est déserte ») : tasse, bobine, loupe,
+## tournevis, carnet (kit Blender de Gemini). Ils donnent l'échelle « jouet » et occupent le cadre sans jamais
+## recouvrir le plateau : chacun est placé par rapport au bord du terrain de la carte.
+## [modèle, côté (-1 ouest / +1 est), position le long du bord (0 = nord, 1 = sud), recul depuis le bord, lacet en degrés].
+const OBJETS_ETABLI := [
+	[&"table_tasse", 1, 0.12, 6.5, 20.0], [&"table_loupe", -1, 0.3, 7.5, -35.0], [&"table_bobine", 1, 0.78, 5.5, 60.0],
+	[&"table_carnet", -1, 0.92, 8.0, 12.0], [&"table_tournevis", 1, 0.48, 9.5, 80.0],
+]
+
+func _poser_objets_etabli() -> void:
+	var terrain: Rect2i = Run.depart.terrain
+	var ouest: float = (terrain.position.x - 0.5) * GrilleMonde.TAILLE_CASE
+	var est: float = (terrain.end.x - 0.5) * GrilleMonde.TAILLE_CASE
+	var nord: float = (terrain.position.y - 0.5) * GrilleMonde.TAILLE_CASE
+	var sud: float = (terrain.end.y - 0.5) * GrilleMonde.TAILLE_CASE
+	for objet: Array in OBJETS_ETABLI:
+		var modele: Node3D = _instancier(objet[0])
+		if modele == null:
+			continue
+		add_child(modele)
+		var x: float = (est + objet[3]) if objet[1] > 0 else (ouest - objet[3])
+		# La table est à 0,25 m sous le dessus de l'herbe : les objets y reposent.
+		modele.position = Vector3(x, -0.25, lerpf(nord, sud, objet[2]))
+		modele.rotation.y = deg_to_rad(objet[4])
 
 
 # La scène d'ambiance est partagée ; ces réglages s'appliquent à la vue du plateau.

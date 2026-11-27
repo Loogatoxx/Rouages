@@ -182,3 +182,16 @@ Jamais plus de 39 jouets vivants, 14 le plus souvent. Avant le lot : 6 victoires
 - **Lance-billes** : moins rentables par dent que deux canons ; à revoir avec le pilier 3 (carillon qui ralentit).
 - **Boîte à musique et Grand atelier** : le joueur automatique ne sait pas poser de Pont, ces deux cartes ne sont donc
   pas mesurées (jouables à la main, à vérifier par Carlos).
+
+## 10. « L'établi habité » : ce qui est fait (lot 5)
+| Cause du vide (§ 6) | Réponse en jeu | Reste |
+|---|---|---|
+| 1. Cadrage | la caméra cadre le plateau sur ~80 % de la hauteur de l'écran | zoom automatique vers le front |
+| 2. Plateau uniforme | décors non constructibles sur les 8 cartes (bosquets, rochers, parterres, mares, caisses), rigoles d'eau, une palette par carte | teintes d'herbe par zones |
+| 3. Entourage désert | tasse, loupe, bobine, tournevis et carnet géants autour de la maquette | tache de soleil qui glisse |
+| 4. Pause morte | fanions qui flottent | clés et cheminées des ateliers (modèles animés) |
+| 5. Impacts muets | ondes au sol du boulet, de l'obus, du carillon ; ennemis ralentis teintés ; coup de carillon | ressort qui roule vers le compteur |
+| 6. Aucune vie ambiante | — | oiseau mécanique, papillons (modèles animés) |
+| 7. Contraste à l'envers | la route n'est plus l'élément le plus clair : eau bleue, décors, escouades rangées sur la route | — |
+Deux cartes neuves portent chacune une règle : **La Serre** (l'eau coupe l'herbe, il faut des Ponts) et **Le Quai**
+(la marée ferme une route sur deux). Les cartes « Le Manège » et « Le Rail » restent à faire (P3-48, P3-49).
