@@ -50,6 +50,8 @@ func _initialize() -> void:
 	seed(int(args[1]) if args.size() > 1 else 1)
 	var vague_extension: int = int(args[2]) if args.size() > 2 else 0
 	var mixte: bool = not (args.size() > 3 and args[3] == "soldats")
+	# 5e argument `longue` : Longue route (15 vagues, PT-60).
+	var longue: bool = args.size() > 4 and args[4] == "longue"
 	var regles: Regles = load("res://data/regles.tres")
 	var remontage: float = float(OS.get_environment("REMONTAGE")) if OS.get_environment("REMONTAGE") != "" else regles.remontage_lancement
 	var depart: DepartDef = load("res://data/depart.tres")
@@ -63,7 +65,9 @@ func _initialize() -> void:
 	var total: float = 0.0
 	var mort: int = 0
 	var etapes_faites: int = 0
-	for i: int in regles.vagues.size():
+	var vagues: Array = load("res://game/core/route_longue.gd").prolonger(regles.vagues, regles.vagues_longue_route) \
+			if longue else regles.vagues
+	for i: int in vagues.size():
 		while etapes_faites < mini(int(profil[mini(i, profil.size() - 1)]), ETAPES.size()):
 			for p: Array in ETAPES[etapes_faites]:
 				var piece: Resource = CROIX if p[2] == "X" else (BILLES if p[2] == "B" and mixte else ATELIER)
@@ -82,7 +86,7 @@ func _initialize() -> void:
 			sim.avancer(DT)
 			t += DT
 		production.nouvelle_pause()
-		directeur.commencer(regles.vagues[i], entrees)
+		directeur.commencer(vagues[i], entrees)
 		fuites[0] = 0.0
 		var allies: int = sim.nombre(SwarmSim.ALLIE)
 		t = 0.0
