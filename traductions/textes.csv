@@ -146,7 +146,6 @@ Aide et commandes,Aide et commandes,Help and controls,Ajuda e comandos
 Quitter le jeu,Quitter le jeu,Quit game,Sair do jogo
 Menu (Échap),Menu (Échap),Menu (Esc),Menu (Esc)
 Ouvrir ou fermer la boutique (B),Ouvrir ou fermer la boutique (B),Open or close the shop (B),Abrir ou fechar a loja (B)
-"Clic gauche : poser, ou reprendre une pièce posée · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran","Clic gauche : poser, ou ouvrir les actions d’une pièce · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran","Left click: place, or open a piece’s actions · R or right click: rotate\nEsc: deselect, then menu · B: shop\nSpace: speed ×1 / ×2 · Tab: top / tilted view\nWheel or + / −: zoom · Middle-drag or Q / E: tilt\nW A S D: move the view · F11: fullscreen","Clique esquerdo: colocar, ou abrir as ações de uma peça · R ou clique direito: rodar\nEsc: desselecionar, depois menu · B: loja\nEspaço: velocidade ×1 / ×2 · Tab: vista de cima / inclinada\nRoda ou + / −: zoom · Arrastar com a roda ou Q / E: inclinação\nW A S D: mover a vista · F11: ecrã inteiro"
 Déplacer coûte %d ressorts,Déplacer coûte %d ressorts,Moving costs %d springs,Mover custa %d molas
 Clic : reprendre (gratuit avant la vague 1),Clic : reprendre (gratuit avant la vague 1),Click to pick up (free before wave 1),Clica para recolher (grátis antes da vaga 1)
 Clic : reprendre (%d ressorts),Clic : reprendre (%d ressorts),Click to pick up (%d springs),Clica para recolher (%d molas)
@@ -306,7 +305,6 @@ Un seul Générateur par plateau.,Un seul Générateur par plateau.,Only one Gen
 "Horloge pleine (%d dents) : ce bâtiment reste éteint. Reprends-en un autre, ou attends que l’Horloge se remonte.","Horloge pleine (%d dents) : ce bâtiment reste éteint. Reprends-en un autre, ou attends que l’Horloge se remonte.","Clock full (%d teeth): this building stays off. Take another one back, or wait for the Clock to wind up.","Relógio cheio (%d dentes): este edifício fica desligado. Retira outro, ou espera que o Relógio dê corda."
 L’Horloge se remonte : +1 dent d’énergie !,L’Horloge se remonte : +1 dent d’énergie !,The Clock winds up: +1 tooth of energy!,O Relógio dá corda: +1 dente de energia!
 Énergie : %d dents de l’Horloge,Énergie : %d dents de l’Horloge,Energy: %d Clock teeth,Energia: %d dentes do Relógio
-"Énergie de l’Horloge : %d dents utilisées sur %d.\nUn atelier en consomme 2, une petite tourelle 1. Les engrenages n’en consomment pas.\nL’Horloge gagne une dent après les vagues 2, 4, 6 et 8.","Énergie de l’Horloge : %d dents utilisées sur %d.\nUn atelier en consomme 2, une petite tourelle 1. Les engrenages n’en consomment pas.\nL’Horloge gagne une dent après les vagues 2, 4, 6 et 8.","Clock energy: %d teeth used out of %d.\nA workshop uses 2, a small turret 1. Gears use none.\nThe Clock gains a tooth after waves 2, 4, 6 and 8.","Energia do Relógio: %d dentes usados em %d.\nUma oficina consome 2, uma torre pequena 1. As engrenagens não consomem.\nO Relógio ganha um dente após as vagas 2, 4, 6 e 8."
 Dents d’énergie consommées,Dents d’énergie consommées,Energy teeth used,Dentes de energia consumidos
 Éteint : sa source d’énergie est pleine.,Éteint : sa source d’énergie est pleine.,Off: its energy source is full.,Desligado: a sua fonte de energia está cheia.
 Poste de garde : choisis la case de route que tient cette escouade (3 cases au plus),Poste de garde : choisis la case de route que tient cette escouade (3 cases au plus),Guard post: choose the road tile this squad holds (3 tiles away at most),Posto de guarda: escolhe a casa de estrada que este esquadrão defende (3 casas no máximo)
@@ -319,3 +317,45 @@ Le carillon se remonte : encore %d s.,Le carillon se remonte : encore %d s.,The 
 Coup de carillon : clique ici puis sur la route pour étourdir les ennemis proches (touche C),Coup de carillon : clique ici puis sur la route pour étourdir les ennemis proches (touche C),Chime strike: click here then on the road to stun nearby enemies (C key),Toque de carrilhão: clica aqui e depois na estrada para atordoar os inimigos próximos (tecla C)
 "Pendant la vague, tu peux faire sonner l’Horloge : clique sur la cloche (ou touche C) puis sur la route. Les ennemis proches restent étourdis un instant.","Pendant la vague, tu peux faire sonner l’Horloge : clique sur la cloche (ou touche C) puis sur la route. Les ennemis proches restent étourdis un instant.","During a wave you can ring the Clock: click the bell (or press C), then the road. Nearby enemies stay stunned for a moment.","Durante a vaga podes fazer soar o Relógio: clica no sino (ou tecla C) e depois na estrada. Os inimigos próximos ficam atordoados por um instante."
 Cet atelier est enfermé : laisse une case libre entre lui et la route.,Cet atelier est enfermé : laisse une case libre entre lui et la route.,This workshop is walled in: leave a free tile between it and the road.,Esta oficina está fechada: deixa uma casa livre entre ela e a estrada.
+"%s : poser, ou ouvrir les actions d’une pièce posée · %s : tourner","%s : poser, ou ouvrir les actions d’une pièce posée · %s : tourner","%s: place, or open a placed piece’s actions · %s: rotate","%s: colocar, ou abrir as ações de uma peça colocada · %s: rodar"
+"%s : désélectionner, puis menu · %s : boutique","%s : désélectionner, puis menu · %s : boutique","%s: deselect, then menu · %s: shop","%s: desselecionar, depois menu · %s: loja"
+"%s : vitesse ×1 / ×2 · %s : vue de dessus / inclinée","%s : vitesse ×1 / ×2 · %s : vue de dessus / inclinée","%s: speed ×1 / ×2 · %s: top / tilted view","%s: velocidade ×1 / ×2 · %s: vista de cima / inclinada"
+"Molette, %s ou %s : zoom · %s ou %s : inclinaison","Molette, %s ou %s : zoom · %s ou %s : inclinaison","Wheel, %s or %s: zoom · %s or %s: tilt","Roda, %s ou %s: zoom · %s ou %s: inclinação"
+"%s %s %s %s : déplacer la vue · %s : plein écran","%s %s %s %s : déplacer la vue · %s : plein écran","%s %s %s %s: move the view · %s: fullscreen","%s %s %s %s: mover a vista · %s: ecrã inteiro"
+"%s : coup de carillon pendant une vague (étourdit les ennemis proches)","%s : coup de carillon pendant une vague (étourdit les ennemis proches)","%s: chime strike during a wave (stuns nearby enemies)","%s: toque de carrilhão durante uma vaga (atordoa os inimigos próximos)"
+"Clic sur un atelier, puis sur le fanion du panneau : choisir son poste de garde","Clic sur un atelier, puis sur le fanion du panneau : choisir son poste de garde","Click a workshop, then the pennant in its panel: choose its guard post","Clica numa oficina e depois na flâmula do painel: escolher o seu posto de guarda"
+"Énergie de l’Horloge : %d dents utilisées sur %d.
+Un atelier en consomme 2, une petite tourelle 1. Les engrenages n’en consomment pas.
+L’Horloge gagne une dent après les vagues 2, 4, 6 et 8.","Énergie de l’Horloge : %d dents utilisées sur %d.
+Un atelier en consomme 2, une petite tourelle 1. Les engrenages n’en consomment pas.
+L’Horloge gagne une dent après les vagues 2, 4, 6 et 8.","Clock energy: %d teeth used out of %d.
+A workshop uses 2, a small turret 1. Gears use none.
+The Clock gains a tooth after waves 2, 4, 6 and 8.","Energia do Relógio: %d dentes usados em %d.
+Uma oficina consome 2, uma torre pequena 1. As engrenagens não consomem.
+O Relógio ganha um dente após as vagas 2, 4, 6 e 8."
+"Choisis une carte","Choisis une carte","Choose a map","Escolhe um mapa"
+"Difficulté","Difficulté","Difficulty","Dificuldade"
+"Mode","Mode","Mode","Modo"
+"Classique","Classique","Classic","Clássico"
+"Longue route","Longue route","Long road","Estrada longa"
+"Bac à sable","Bac à sable","Sandbox","Caixa de areia"
+"10 vagues : la partie de référence.","10 vagues : la partie de référence.","10 waves: the standard game.","10 vagas: a partida de referência."
+"15 vagues ; des tiroirs s’ouvrent en route et ajoutent des entrées.","15 vagues ; des tiroirs s’ouvrent en route et ajoutent des entrées.","15 waves; drawers open along the way and add entrances.","15 vagas; abrem-se gavetas pelo caminho e acrescentam entradas."
+"Tout est débloqué, ressources illimitées, l’Horloge ne peut pas s’arrêter : pour essayer librement.","Tout est débloqué, ressources illimitées, l’Horloge ne peut pas s’arrêter : pour essayer librement.","Everything unlocked, unlimited resources, the Clock cannot stop: for free experimenting.","Tudo desbloqueado, recursos ilimitados, o Relógio não pode parar: para experimentar livremente."
+"Lancer la partie","Lancer la partie","Start the game","Começar a partida"
+"Entrées des ennemis : %d","Entrées des ennemis : %d","Enemy entrances: %d","Entradas dos inimigos: %d"
+"Énergie de l’Horloge au départ : %d dents","Énergie de l’Horloge au départ : %d dents","Clock energy at the start: %d teeth","Energia do Relógio no início: %d dentes"
+"Ennemis propres à cette carte : %s","Ennemis propres à cette carte : %s","Enemies specific to this map: %s","Inimigos próprios deste mapa: %s"
+"Pas encore de record ici.","Pas encore de record ici.","No record here yet.","Ainda sem recorde aqui."
+"Choisir une carte, une difficulté et un mode","Choisir une carte, une difficulté et un mode","Choose a map, a difficulty and a mode","Escolher um mapa, uma dificuldade e um modo"
+"Campagne","Campagne","Campaign","Campanha"
+"Chapitre %d : %s","Chapitre %d : %s","Chapter %d: %s","Capítulo %d: %s"
+"Nouvelles pièces : %s","Nouvelles pièces : %s","New pieces: %s","Novas peças: %s"
+"À jouer : c’est la suite de l’histoire.","À jouer : c’est la suite de l’histoire.","Up next: the story continues here.","A jogar: é a continuação da história."
+"Terminé en Normal et en Difficile.","Terminé en Normal et en Difficile.","Completed on Normal and Hard.","Concluído em Normal e em Difícil."
+"Terminé en Normal. Le Difficile donne plus d’engrenages d’or (optionnel).","Terminé en Normal. Le Difficile donne plus d’engrenages d’or (optionnel).","Completed on Normal. Hard gives more golden gears (optional).","Concluído em Normal. O Difícil dá mais engrenagens de ouro (opcional)."
+"Jouer ce chapitre","Jouer ce chapitre","Play this chapter","Jogar este capítulo"
+"Rejouer ce chapitre","Rejouer ce chapitre","Replay this chapter","Voltar a jogar este capítulo"
+"Rejouer en Difficile","Rejouer en Difficile","Replay on Hard","Voltar a jogar em Difícil"
+"Tous les chapitres","Tous les chapitres","All chapters","Todos os capítulos"
+"Revoir la campagne : rejouer un chapitre, tenter le Difficile","Revoir la campagne : rejouer un chapitre, tenter le Difficile","Review the campaign: replay a chapter, try Hard","Rever a campanha: voltar a jogar um capítulo, tentar o Difícil"

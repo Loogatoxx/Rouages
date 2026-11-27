@@ -423,3 +423,19 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   Non retenu : relève d'un bâtiment par un générateur (un bâtiment n'a qu'un port, il ne peut pas être sur deux
   réseaux) ; durée du dernier paquet incomplet d'une vague (écart de moins d'une seconde).
 - **Mesures** (3 cartes × 3 graines) : masse 0/9, moyen 6/9 (3 à 10 PV restants), tactique 7/9 (5 à 28 PV).
+
+## Après playtest 3 — lot 4 (interface et localisation)
+- **Règle d'interface** (P3-30) : jusqu'à trois valeurs, des boutons côte à côte ; au-delà, une liste et un aperçu.
+  `game/ui/choix_partie.gd` (écran « Partie libre », construit en code) : liste des cartes, `Plan` (mini-plan
+  dessiné d'après `DepartDef` : herbe, route, Horloge, entrées), description, entrées, énergie de départ, ennemis
+  propres, record ; difficulté et mode en boutons à bascule ; signal `lancee(plateau, difficulte, mode)`.
+  `game/ui/choix_chapitre.gd` (écran « Chapitres ») : liste des six chapitres (✓ terminé, ★ Difficile, grisé si
+  verrouillé), aperçu (plan, récit, pièces débloquées), « Jouer / Rejouer », « Rejouer en Difficile ».
+  `menu_titre.gd` : « Partie libre » et « Tous les chapitres » ouvrent ces écrans ; les anciens boutons qui faisaient
+  défiler les valeurs au clic sont masqués.
+- **Aide traduite** (P3-31) : `MenuPause.LIGNES_AIDE` (une clé de traduction par ligne, `%s` remplacés par
+  `Touches.decrire` de la touche actuelle) et `texte_aide()`. Cause du bug : la clé unique contenait `\n` écrit en
+  toutes lettres dans le CSV ; Godot ne le convertit pas, donc la clé ne correspondait jamais au texte du jeu (vrais
+  retours à la ligne). Une cellule CSV à plusieurs lignes s'écrit entre guillemets avec de vrais retours.
+  `tests/test_traductions.gd` : lignes d'aide traduites en EN et PT, aide qui change avec la langue, aucune clé
+  avec `\n` littéral.

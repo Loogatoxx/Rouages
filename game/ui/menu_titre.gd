@@ -19,9 +19,11 @@ var _plateau_libre: int = 0
 var _difficulte_libre: int = 1
 ## Mode de partie libre : 0 = classique (10 vagues), 1 = Longue route (15 vagues), 2 = bac à sable (P2-53).
 var _mode_libre: int = 0
-var _difficile: HBoxContainer
+var _difficile: Button
+var _chapitres: CanvasLayer
 var _chapitre_difficile: int = 0
 var _mode: Button
+var _choix: CanvasLayer
 
 
 func _ready() -> void:
@@ -55,18 +57,22 @@ func _ready() -> void:
 		_plateau_libre = maxi(0, Run.regles.departs.find(Run.depart))
 		_difficulte_libre = Run.difficulte
 	%Campagne.pressed.connect(_lancer_chapitre)
-	%Jouer.pressed.connect(_jouer)
-	%Plateau.pressed.connect(_plateau_suivant)
-	%Difficulte.pressed.connect(_difficulte_suivante)
-	# Mode de partie libre : classique (10 vagues) ou Longue route (15 vagues, tiroirs qui s'ouvrent).
-	_mode = Button.new()
-	_mode.theme_type_variation = &"Lien"
-	_mode.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	preparer_bouton(_mode)
-	_mode.pressed.connect(func() -> void:
-		_mode_libre = (_mode_libre + 1) % 3
-		_afficher_plateau())
-	%ChoixLibre.add_sibling(_mode)
+	# Playtest 3 : la partie libre s'ouvre sur un écran « liste des cartes + aperçu » (six cartes, trois difficultés,
+	# trois modes : trop de choix pour des boutons qui défilent au clic).
+	_choix = preload("res://game/ui/choix_partie.gd").new()
+	add_child(_choix)
+	_choix.ferme.connect(func() -> void:
+		$Centre.show()
+		%Jouer.grab_focus())
+	_choix.lancee.connect(func(plateau: int, difficulte: int, mode: int) -> void:
+		_plateau_libre = plateau
+		_difficulte_libre = difficulte
+		_mode_libre = mode
+		_jouer())
+	%Jouer.pressed.connect(func() -> void:
+		$Centre.hide()
+		_choix.ouvrir(_plateau_libre, _difficulte_libre, _mode_libre))
+	%ChoixLibre.hide()
 	%Defi.pressed.connect(_lancer_defi)
 	_creer_difficile()
 	_afficher_plateau()
@@ -106,9 +112,6 @@ func _composer_colonne() -> void:
 	pastille.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT, Control.PRESET_MODE_MINSIZE, 14)
 	pastille.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	etabli.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# Partie libre : le mode prend toute la largeur, comme les autres boutons.
-	_mode.theme_type_variation = &""
-	_mode.size_flags_horizontal = Control.SIZE_FILL
 	# Filets entre les blocs.
 	colonne.move_child(_filet(), %Jouer.get_index())
 	colonne.move_child(_filet(), atelier.get_index())
@@ -215,7 +218,7 @@ func _afficher_plateau() -> void:
 	var libre: bool = Progression.libre_debloque()
 	%Jouer.disabled = not libre
 	%Defi.disabled = not libre
-	%ChoixLibre.visible = libre
+	%ChoixLibre.visible = false  # remplacé par l'écran « Partie libre » (liste + aperçu)
 	%Verrou.visible = not libre
 	%Verrou.text = tr("Verrouillé : termine le chapitre %d") % Run.regles.chapitre_deblocage_libre
 	%Jouer.tooltip_text = "" if libre else %Verrou.text
@@ -229,7 +232,7 @@ func _afficher_plateau() -> void:
 		_mode.text = [tr("Mode : Classique (10 vagues)"), tr("Mode : Longue route (15 vagues)"),
 				tr("Mode : Bac à sable (tout débloqué)")][_mode_libre]
 	if libre:
-		%Jouer.tooltip_text = tr("Record : %d / %d") % [Progression.record(depart.nom, _difficulte_libre), Run.nb_vagues]
+		%Jouer.tooltip_text = tr("Choisir une carte, une difficulté et un mode")
 	var record: int = record_defi(_date())
 	%Defi.text = tr("Défi du jour") if record < 0 else tr("Défi du jour — record : %d / %d") % [record, Run.nb_vagues]
 
@@ -266,29 +269,18 @@ func _jouer() -> void:
 # Difficile optionnel (P2-51) : rejouer un chapitre déjà terminé, plus dur et mieux récompensé. Aucun blocage :
 # le bouton Campagne propose toujours le chapitre suivant.
 func _creer_difficile() -> void:
-	var finis: int = Progression.chapitres_finis()
-	if finis <= 0:
-		return
-	_chapitre_difficile = finis - 1
-	_difficile = HBoxContainer.new()
-	_difficile.add_theme_constant_override(&"separation", 8)
-	var choix := Button.new()
-	choix.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	choix.tooltip_text = tr("Difficile : plus de PV ennemis, engrenages d’or ×1,5, un coffre de plus, +2 chance. Optionnel.")
-	preparer_bouton(choix)
-	choix.pressed.connect(func() -> void:
-		_chapitre_difficile = (_chapitre_difficile + 1) % finis
-		_ecrire_difficile())
-	_difficile.add_child(choix)
-	var lancer := Button.new()
-	lancer.text = "▶"
-	lancer.custom_minimum_size.x = 56
-	lancer.tooltip_text = choix.tooltip_text
-	preparer_bouton(lancer)
-	lancer.pressed.connect(func() -> void:
-		Run.preparer_chapitre(_chapitre_difficile, true)
-		commencer_partie(get_tree()))
-	_difficile.add_child(lancer)
+	# Playtest 3 : « Tous les chapitres » ouvre la liste des chapitres avec aperçu (rejouer, Difficile). L'ancien
+	# bouton faisait défiler les chapitres au clic.
+	_chapitres = preload("res://game/ui/choix_chapitre.gd").new()
+	add_child(_chapitres)
+	_chapitres.ferme.connect(func() -> void:
+		$Centre.show()
+		_difficile.grab_focus())
+	_difficile = Button.new()
+	preparer_bouton(_difficile)
+	_difficile.pressed.connect(func() -> void:
+		$Centre.hide()
+		_chapitres.ouvrir())
 	%DescriptionChapitre.add_sibling(_difficile)
 	_ecrire_difficile()
 
@@ -296,9 +288,8 @@ func _creer_difficile() -> void:
 func _ecrire_difficile() -> void:
 	if _difficile == null:
 		return
-	var id: int = Run.regles.chapitres[_chapitre_difficile].id
-	(_difficile.get_child(0) as Button).text = tr("Chapitre %d en Difficile") % id \
-			+ (" ★" if Progression.chapitre_difficile_fini(id) else "")
+	_difficile.text = tr("Tous les chapitres")
+	_difficile.tooltip_text = tr("Revoir la campagne : rejouer un chapitre, tenter le Difficile")
 
 
 # Défi du jour : même plateau et même graine pour tout le monde à cette date.

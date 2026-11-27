@@ -297,9 +297,9 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 ## Moyen terme — §5 du brief : interface et localisation (P1)
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
-| P3-30 | **Menu initial : liste + aperçu** : dès qu'un choix a plus de 3 valeurs (carte, mode, chapitre), le sélecteur à flèches devient une liste claire avec, à droite, l'aperçu de l'élément choisi (mini-plan de la carte, description, record, ennemis propres). | P1 | Fable → Codex | `menu_titre.gd` | |
-| P3-31 | **« Aide et commandes » traduite** : textes passés par `tr()`, touches lues dans l'`InputMap` (donc à jour après réassignation), ajoutés au CSV en FR/EN/PT ; test qui interdit tout texte en dur dans ce panneau. | P1 | Fable | `menu_pause.gd`, CSV | |
-| P3-32 | **Chasse aux textes non traduits** dans tous les écrans (test automatique : chaque chaîne affichée a une entrée dans le CSV). | P2 | Codex (relecture Fable) | P3-31 | |
+| P3-30 | **Menu initial : liste + aperçu** : dès qu'un choix a plus de 3 valeurs (carte, mode, chapitre), le sélecteur à flèches devient une liste claire avec, à droite, l'aperçu de l'élément choisi (mini-plan de la carte, description, record, ennemis propres). | P1 | Fable → Codex | `menu_titre.gd` | ✅ écran « Partie libre » (liste des 6 cartes + mini-plan, description, entrées, énergie, ennemis, record ; difficulté et mode en boutons) et écran « Chapitres » (liste + aperçu, rejouer, Difficile) |
+| P3-31 | **« Aide et commandes » traduite** : textes passés par `tr()`, touches lues dans l'`InputMap` (donc à jour après réassignation), ajoutés au CSV en FR/EN/PT ; test qui interdit tout texte en dur dans ce panneau. | P1 | Fable | `menu_pause.gd`, CSV | ✅ une clé par ligne, touches lues dans l'`InputMap` ; cause du bug : une clé avec « \n » écrit en toutes lettres dans le CSV ne correspondait à aucun texte ; 3 tests (`test_traductions`) |
+| P3-32 | **Chasse aux textes non traduits** dans tous les écrans (test automatique : chaque chaîne affichée a une entrée dans le CSV). | P2 | Codex (relecture Fable) | P3-31 | 🟡 test contre les « \n » littéraux en place ; reste : balayage automatique de toutes les chaînes affichées |
 
 ## Moyen / long terme — §2 du brief : sensation de vide, cartes variées (P1-P3)
 | ID | Tâche | Prio | Qui | Dépendances | État |

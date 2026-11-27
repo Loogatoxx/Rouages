@@ -2,6 +2,7 @@ extends CanvasLayer
 ## Suspend le plateau en laissant les commandes du menu actives.
 
 const Interface = preload("res://game/ui/menu_titre.gd")
+const Touches = preload("res://game/core/touches.gd")
 
 var _ancien_focus: Control
 
@@ -22,13 +23,37 @@ func _ready() -> void:
 	%Aide.toggled.connect(_afficher_aide)
 
 
-## Liste des commandes (le menu en jeu sert aussi d'aide-mémoire, playtest 1 : « un vrai menu en pleine partie »).
-const AIDE := "Clic gauche : poser, ou reprendre une pièce posée · R ou clic droit : tourner\nÉchap : désélectionner, puis menu · B : boutique\nEspace : vitesse ×1 / ×2 · Tab : vue de dessus / inclinée\nMolette ou + / − : zoom · Clic molette glissé ou A / E : inclinaison\nZ Q S D : déplacer la vue · F11 : plein écran"
+## Aide-mémoire des commandes (playtest 1 : « un vrai menu en pleine partie »). Playtest 3 : chaque ligne est une
+## clé de traduction (elle restait en français : une seule grande clé avec des retours à la ligne ne correspondait à
+## aucune entrée du fichier de traduction), et les touches sont lues dans les réglages du joueur : l'aide suit donc
+## la langue ET les touches réassignées. [clé avec un %s par touche, actions dont on affiche la touche].
+const LIGNES_AIDE: Array[Array] = [
+	["%s : poser, ou ouvrir les actions d’une pièce posée · %s : tourner", [&"poser_tuile", &"tourner_tuile"]],
+	["%s : désélectionner, puis menu · %s : boutique", [&"annuler", &"boutique"]],
+	["%s : vitesse ×1 / ×2 · %s : vue de dessus / inclinée", [&"accelerer", &"basculer_camera"]],
+	["Molette, %s ou %s : zoom · %s ou %s : inclinaison", [&"camera_zoom_avant", &"camera_zoom_arriere", &"camera_redresser", &"camera_coucher"]],
+	["%s %s %s %s : déplacer la vue · %s : plein écran", [&"camera_haut", &"camera_gauche", &"camera_bas", &"camera_droite", &"plein_ecran"]],
+	["%s : coup de carillon pendant une vague (étourdit les ennemis proches)", [&"coup_carillon"]],
+	["Clic sur un atelier, puis sur le fanion du panneau : choisir son poste de garde", []],
+]
+
+
+## Texte de l'aide dans la langue courante, avec les touches actuelles du joueur.
+static func texte_aide() -> String:
+	var lignes := PackedStringArray()
+	for ligne: Array in LIGNES_AIDE:
+		var touches: Array = []
+		for action: StringName in ligne[1]:
+			var evenements: Array[InputEvent] = InputMap.action_get_events(action) if InputMap.has_action(action) else ([] as Array[InputEvent])
+			touches.append("—" if evenements.is_empty() else Touches.decrire(evenements[0]))
+		var texte: String = TranslationServer.translate(ligne[0])
+		lignes.append(texte % touches if not touches.is_empty() else texte)
+	return "\n".join(lignes)
 
 
 func _afficher_aide(visible_aide: bool) -> void:
-	%TexteAide.text = tr(AIDE)
-	Interface.caler_hauteur(%TexteAide, 500.0)
+	%TexteAide.text = texte_aide()
+	Interface.caler_hauteur(%TexteAide, 560.0)
 	%TexteAide.visible = visible_aide
 
 
