@@ -15,6 +15,8 @@ const DIFFICULTES: Array[String] = ["Facile", "Normal", "Difficile"]
 var _chapitre: int
 var _plateau_libre: int = 0
 var _difficulte_libre: int = 1
+var _longue_libre: bool = false
+var _mode: Button
 
 
 func _ready() -> void:
@@ -51,6 +53,15 @@ func _ready() -> void:
 	%Jouer.pressed.connect(_jouer)
 	%Plateau.pressed.connect(_plateau_suivant)
 	%Difficulte.pressed.connect(_difficulte_suivante)
+	# Mode de partie libre : classique (10 vagues) ou Longue route (15 vagues, tiroirs qui s'ouvrent).
+	_mode = Button.new()
+	_mode.theme_type_variation = &"Lien"
+	_mode.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	preparer_bouton(_mode)
+	_mode.pressed.connect(func() -> void:
+		_longue_libre = not _longue_libre
+		_afficher_plateau())
+	%ChoixLibre.add_sibling(_mode)
 	%Defi.pressed.connect(_lancer_defi)
 	_afficher_plateau()
 	%Tutoriel.pressed.connect(_revoir_tutoriel)
@@ -141,6 +152,9 @@ func _afficher_plateau() -> void:
 	%Plateau.text = tr("Plateau : %s") % tr(depart.nom)
 	%Plateau.tooltip_text = tr(depart.description)
 	%Difficulte.text = tr("Difficulté : %s") % tr(DIFFICULTES[_difficulte_libre])
+	if _mode != null:
+		_mode.visible = libre
+		_mode.text = tr("Mode : Longue route (15 vagues)") if _longue_libre else tr("Mode : Classique (10 vagues)")
 	if libre:
 		%Jouer.tooltip_text = tr("Record : %d / %d") % [Progression.record(depart.nom, _difficulte_libre), Run.nb_vagues]
 	var record: int = record_defi(_date())
@@ -168,6 +182,7 @@ func _lancer_chapitre() -> void:
 func _jouer() -> void:
 	Run.choisir_depart(_plateau_libre)
 	Run.difficulte = _difficulte_libre
+	Run.longue_route = _longue_libre
 	commencer_partie(get_tree())
 
 

@@ -40,6 +40,13 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var chance_max: int = 10
 @export var prix_porte_bonheur: int = 8
 @export var chance_porte_bonheur: int = 2
+@export_group("Terrain (PT-60, PT-61)")
+## Bonus créatifs débloqués par le nombre d'extensions posées dans la partie.
+@export var paliers_extension: Array[Resource] = []
+## Longue route : nombre total de vagues et vagues après lesquelles un tiroir s'ouvre.
+@export var vagues_longue_route: int = 15
+@export var tiroirs_longue_route: Array[int] = [4, 8, 12]
+@export var extension_tiroir: Resource
 @export_group("")
 @export var prix_deplacement: int = 3
 @export var prix_deplacement_pas: int = 2

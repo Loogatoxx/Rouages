@@ -39,3 +39,44 @@ func test_ouvrir_tiroir() -> String:
 	if RouteLongue.choisir_pose(autre, SENTIER, rng) != pose:
 		return "La même graine doit donner la même pose (défi du jour)."
 	return ""
+
+
+## Paliers d'extension (PT-61) : carte de plus, remise d'amélioration, carillon offert, chance.
+func test_paliers_extension() -> String:
+	var run: Node = Engine.get_main_loop().root.get_node_or_null("Run")
+	if run == null:
+		return ""
+	run.reinitialiser()
+	var choix: int = run.choix_par_draft
+	run.poser_extension(0, 0)
+	if run.choix_par_draft != choix + 1:
+		return "La 1re extension doit ajouter une carte aux tirages."
+	run.poser_extension(0, 0)
+	if not is_equal_approx(run.remise_amelioration, 0.25):
+		return "La 2e extension doit donner 25 % de remise sur les améliorations."
+	run.poser_extension(0, 0)
+	if run.reserve.quantite(&"tourelle_carillon") != 1:
+		return "La 3e extension doit offrir un carillon."
+	var chance: int = run.chance
+	run.poser_extension(0, 0)
+	if run.chance != mini(chance + 3, run.regles.chance_max):
+		return "La 4e extension doit donner de la chance."
+	run.reinitialiser()
+	if run.extensions_posees != 0 or run.remise_amelioration != 0.0:
+		return "Les paliers repartent de zéro à chaque partie."
+	return ""
+
+
+## Longue route : 15 vagues et 3 tiroirs ; jamais au défi du jour ; partie classique inchangée.
+func test_longue_route_dans_run() -> String:
+	var run: Node = Engine.get_main_loop().root.get_node_or_null("Run")
+	if run == null:
+		return ""
+	run.choisir_depart(0)
+	run.longue_route = true
+	run.reinitialiser()
+	var ok: bool = run.nb_vagues == 15 and run.tiroirs() == run.regles.tiroirs_longue_route
+	run.longue_route = false
+	run.reinitialiser()
+	ok = ok and run.nb_vagues == 10 and run.tiroirs().is_empty()
+	return "" if ok else "La Longue route doit compter 15 vagues et 3 tiroirs, la partie classique 10 et aucun."

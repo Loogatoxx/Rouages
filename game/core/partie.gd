@@ -21,6 +21,7 @@ func _ready() -> void:
 	Events.piece_reprise.connect(_piece_reprise)
 	Events.plateau_modifie.connect(_configurer)
 	Events.vague_commencee.connect(_commencer)
+	Events.vague_terminee.connect(_ouvrir_tiroir)
 	sim.ennemi_arrive.connect(Run.subir_degats)
 	sim.unite_morte.connect(_unite_morte)
 	_configurer()
@@ -35,6 +36,19 @@ func _piece_reprise(case: Vector2i, def: Resource) -> void:
 	var piece: Production.Plateau.PieceDef = def as Production.Plateau.PieceDef
 	if piece != null and piece.type == Production.Plateau.PieceDef.Type.ATELIER:
 		production.atelier_repris(case)
+
+
+# Carte qui évolue (PT-60) : après certaines vagues, un tiroir s'ouvre et un sentier se pose seul (nouvelle entrée).
+# Tirage par `Run.rng` : au défi du jour, tout le monde voit le même tiroir.
+func _ouvrir_tiroir(numero: int) -> void:
+	if numero >= Run.nb_vagues or not numero in Run.tiroirs() or Run.regles.extension_tiroir == null:
+		return
+	var RouteLongue = preload("res://game/core/route_longue.gd")
+	if not RouteLongue.ouvrir_tiroir(_source.plateau, Run.regles.extension_tiroir, Run.rng).is_empty():
+		# Après le bandeau « Vague tenue » (même instant) : sinon il recouvrirait l'annonce.
+		get_tree().create_timer(1.6).timeout.connect(func() -> void:
+			Events.message_joueur.emit(tr("Un tiroir s’ouvre : une nouvelle entrée apparaît !")))
+		Sons.jouer(&"pose")
 
 
 func _configurer() -> void:

@@ -50,6 +50,10 @@
 [ext_resource type="Resource" path="res://data/recettes/engrenage_t.tres" id="recette_engrenage_t"]
 [ext_resource type="Resource" path="res://data/recettes/atelier_billes.tres" id="recette_atelier_billes"]
 
+[ext_resource type="Resource" path="res://data/paliers_extension/plans.tres" id="palier_1"]
+[ext_resource type="Resource" path="res://data/paliers_extension/atelier_chantier.tres" id="palier_2"]
+[ext_resource type="Resource" path="res://data/paliers_extension/carillon_chantier.tres" id="palier_3"]
+[ext_resource type="Resource" path="res://data/paliers_extension/grande_ouverture.tres" id="palier_4"]
 [sub_resource type="Resource" id="lot_atelier"]
 script = ExtResource("lot")
 objet = ExtResource("atelier")
@@ -142,6 +146,8 @@ poids = 1.0
 
 [resource]
 script = ExtResource("regles")
+paliers_extension = Array[Resource]([ExtResource("palier_1"), ExtResource("palier_2"), ExtResource("palier_3"), ExtResource("palier_4")])
+extension_tiroir = ExtResource("sentier")
 ameliorations = Array[ExtResource("amelioration")]([ExtResource("meta_pv_horloge"), ExtResource("meta_ressorts_depart"), ExtResource("meta_choix_draft"), ExtResource("meta_cadence_ateliers"), ExtResource("meta_rente"), ExtResource("meta_relance_offerte"), ExtResource("meta_trefle")])
 chapitres = Array[ExtResource("chapitre")]([ExtResource("chapitre_1"), ExtResource("chapitre_2"), ExtResource("chapitre_3"), ExtResource("chapitre_4"), ExtResource("chapitre_5"), ExtResource("chapitre_6")])
 chapitre_deblocage_libre = 3

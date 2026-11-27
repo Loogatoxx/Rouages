@@ -228,3 +228,10 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   reste à 1) et PV de l'horloge (+10 / 0 / −5).
 - **Anti-spoil** : `AmeliorationDef.chapitre_min` ; l'Établi masque ce qui est loin, grise avec cadenas le palier suivant.
 - **Table** : `game/board/table_bois.gdshader` (planches, joints, fil, nœuds calculés dans l'espace du monde).
+- **Longue route et carte qui évolue** (PT-60, `game/core/route_longue.gd`) : `RouteLongue.prolonger` extrapole les vagues
+  11-15 (+12 % d'ennemis, +10 % de PV, boss à la fin) ; `ouvrir_tiroir` pose un sentier au hasard (`Run.rng`, donc
+  identique au défi du jour) parmi les poses valides. `Run.longue_route` (partie libre, bouton « Mode » au menu),
+  `ChapitreDef.tiroirs` / `longue_route` (chapitre 4 : un tiroir après la V5 ; chapitre 6 : longue route).
+  `Partie._ouvrir_tiroir` écoute `vague_terminee`. Les 10 premières vagues ne changent pas (banc inchangé).
+- **Paliers d'extension** (PT-61, `PalierExtensionDef`, `data/paliers_extension/`) : 1re extension = +1 carte par tirage,
+  2e = −25 % sur les améliorations, 3e = carillon offert, 4e = +3 chance ; annoncés par `message_joueur`.

@@ -10,3 +10,4 @@ titre = "Le Jardin d'hiver"
 recit = "Sous les vitres du jardin, les libellules passent au-dessus des soldats. Entre deux sonneries, on les entend frôler les feuilles."
 depart = ExtResource("depart")
 difficulte = 1
+tiroirs = Array[int]([5])

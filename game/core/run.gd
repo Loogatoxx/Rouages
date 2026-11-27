@@ -12,6 +12,7 @@ const Reserve = preload("res://game/core/reserve.gd")
 const RecetteDef = preload("res://game/core/recette_def.gd")
 const Lot = preload("res://game/core/lot.gd")
 const Draft = preload("res://game/draft/draft.gd")
+const RouteLongue = preload("res://game/core/route_longue.gd")
 
 enum Phase { DRAFT, CONSTRUCTION, VAGUE, FIN }
 
@@ -28,9 +29,16 @@ var reserve: Reserve = Reserve.new()
 var offre: Array[Lot] = []
 var offre_coffre: bool = false
 var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+## Vagues de la partie en cours : celles des règles, ou prolongées en Longue route (PT-60).
 var vagues: Array[VagueDef]:
 	get:
-		return regles.vagues
+		return _vagues_partie if not _vagues_partie.is_empty() else regles.vagues
+var _vagues_partie: Array[VagueDef] = []
+## Longue route choisie en partie libre (le chapitre 6 l'impose).
+var longue_route: bool = false
+## Extensions posées dans la partie et remise d'amélioration acquise par les paliers (PT-61).
+var extensions_posees: int = 0
+var remise_amelioration: float = 0.0
 var nb_vagues: int:
 	get:
 		return vagues.size()
@@ -105,7 +113,7 @@ func prix_amelioration(plateau: Plateau, case: Vector2i) -> int:
 	var niveau: int = plateau.niveau_de(case)
 	if piece == null or piece.type == Plateau.PieceDef.Type.HORLOGE or niveau >= piece.niveau_max:
 		return 0
-	return piece.prix_amelioration * niveau
+	return ceili(piece.prix_amelioration * niveau * (1.0 - remise_amelioration))
 
 
 ## Achète un niveau pour une pièce posée pendant la construction ou la vague.
@@ -278,6 +286,36 @@ func reparer_horloge() -> bool:
 func poser_extension(ressorts_pose: int, revenu: int) -> void:
 	revenu_extensions += maxi(0, revenu)
 	gagner(ressorts_pose)
+	extensions_posees += 1
+	for palier: Resource in regles.paliers_extension:
+		if palier.seuil == extensions_posees:
+			_appliquer_palier(palier)
+
+
+# Bonus créatif d'un palier d'extension (PT-61), annoncé au joueur.
+func _appliquer_palier(palier: Resource) -> void:
+	match palier.effet:
+		&"choix_draft":
+			choix_par_draft += int(palier.valeur)
+		&"remise_amelioration":
+			remise_amelioration = clampf(remise_amelioration + palier.valeur, 0.0, 0.9)
+		&"chance":
+			ajouter_chance(int(palier.valeur))
+		&"piece":
+			if palier.objet != null:
+				reserve.ajouter(palier.objet, 1)
+	Events.message_joueur.emit(tr("%s : %s") % [tr(palier.titre), tr(palier.description)])
+
+
+## Vagues après lesquelles un tiroir s'ouvre dans cette partie (Longue route ou chapitre qui le prévoit).
+func tiroirs() -> Array[int]:
+	if chapitre >= 0 and not regles.chapitres[chapitre].tiroirs.is_empty():
+		return regles.chapitres[chapitre].tiroirs
+	return regles.tiroirs_longue_route if _longue_route_active() else ([] as Array[int])
+
+
+func _longue_route_active() -> bool:
+	return regles.chapitres[chapitre].longue_route if chapitre >= 0 else (longue_route and not defi_du_jour)
 
 
 ## Comptabilise un ennemi cassé et verse le butin de son modèle.
@@ -413,6 +451,10 @@ func reinitialiser() -> void:
 	deplacements_pause = 0
 	_porte_bonheur_achete = false
 	chance = int(_bonus(&"chance"))
+	extensions_posees = 0
+	remise_amelioration = 0.0
+	_vagues_partie = RouteLongue.prolonger(regles.vagues, regles.vagues_longue_route) \
+			if _longue_route_active() else ([] as Array[VagueDef])
 	pv_max = regles.pv_horloge + regles.difficultes_pv_horloge[difficulte] + int(_bonus(&"pv_horloge"))
 	pv_horloge = pv_max
 	choix_par_draft = regles.choix_par_draft + int(_bonus(&"choix_draft"))

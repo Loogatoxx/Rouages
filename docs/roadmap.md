@@ -92,8 +92,8 @@ Le relecteur n'est jamais le producteur (Claude relit Codex et Gemini ; Codex ou
 ## Long terme — modes, méta, onboarding, lore (P3)
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
-| PT-60 | **Runs plus ambitieuses** : plus de vagues et plus grosses, cartes qui évoluent en cours de partie (zones qui s'ouvrent, chemins qui se déplacent, événements). | P3 | Claude (design) → Codex | PT-30, perfs `SwarmSim` (500+ unités) | ⬜ |
-| PT-61 | **Méta d'extension** : agrandir le terrain vers les zones bloquées (la table) débloque des bonus créatifs (nouveaux bâtiments, décors, règles). | P3 | Claude (design) → Codex + Gemini | PT-55, PT-60 | ⬜ |
+| PT-60 | **Runs plus ambitieuses** : plus de vagues et plus grosses, cartes qui évoluent en cours de partie (zones qui s'ouvrent, chemins qui se déplacent, événements). | P3 | Claude (design) → Codex | PT-30, perfs `SwarmSim` (500+ unités) | ✅ Longue route (15 vagues) et tiroirs qui s'ouvrent ; chapitres 4 et 6 |
+| PT-61 | **Méta d'extension** : agrandir le terrain vers les zones bloquées (la table) débloque des bonus créatifs (nouveaux bâtiments, décors, règles). | P3 | Claude (design) → Codex + Gemini | PT-55, PT-60 | ✅ 4 paliers créatifs par extensions posées |
 | PT-62 | **Campagne** : progression principale guidée par l'histoire ; choix libre de la carte et défi du jour débloqués après N niveaux ; plusieurs difficultés par carte. | P3 | Claude → Codex | PT-63, PT-64 | ✅ T12a : 6 chapitres, libre et défi après le chapitre 3, 3 difficultés |
 | PT-63 | **Déblocage progressif / anti-spoil** : on commence avec les bases ; certains contenus totalement cachés (surprise), d'autres grisés avec cadenas (envie de grinder). | P3 | Claude (plan de déblocage) → Codex | `Progression`, PT-33 | ✅ T12a : améliorations masquées ou cadenassées selon le chapitre ; anciens joueurs épargnés |
 | PT-64 | **Lore** : bible `docs/lore.md` écrite en même temps que chaque feature (histoire claire mais pas simpliste, easter eggs, foreshadowing). | P3 | Claude | chaque feature ajoutée | ✅ v1 `docs/lore.md` |

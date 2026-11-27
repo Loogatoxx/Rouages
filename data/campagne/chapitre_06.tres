@@ -10,3 +10,4 @@ titre = "Le Retour de Lise"
 recit = "Lise pousse enfin la porte de l’atelier et reconnaît les gardiens qu’elle fabriquait enfant. Elle assemble la clé d’or et redonne un tour de ressort à son premier scarabée."
 depart = ExtResource("depart")
 difficulte = 2
+longue_route = true
