@@ -5,6 +5,7 @@ const Interface = preload("res://game/ui/menu_titre.gd")
 const Lot = preload("res://game/core/lot.gd")
 const PieceDef = preload("res://game/board/piece_def.gd")
 const Reperes = preload("res://game/ui/reperes.gd")
+const Astuces = preload("res://game/ui/astuces.gd")
 const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
 
 const ICONE_RESSORT: Texture2D = preload("res://assets/ui/icones/ressort.png")
@@ -82,6 +83,9 @@ func _ready() -> void:
 	_creer_barre_boss()
 	_creer_chance()
 	_creer_apercu_vague()
+	var astuces := Astuces.new()
+	astuces.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
+	add_child(astuces)
 	var reperes := Reperes.new()
 	reperes.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
 	reperes.partie = get_parent().get_node_or_null("Partie")

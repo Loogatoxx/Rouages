@@ -215,3 +215,6 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   par instance de MultiMesh, mémoire « en marche » entre deux pas physiques). `PlateauVisuel._jouer_animation` : tout
   modèle du kit livré avec un `AnimationPlayer` joue « travail », sinon « idle », sinon sa première animation, en boucle.
   Contrat pour les unités animées Hyper3D (MultiMesh, pas de squelette par unité) : voir `AGENTS.md`.
+- **Astuces contextuelles** (`game/ui/astuces.gd`, créé par le HUD, benchmark D7) : placement, panneau de pièce,
+  libellule, chance, craft ; chacune une seule fois, au moment où elle sert (`user://reglages.cfg`, section `astuces`,
+  remise à zéro par « Revoir le tutoriel »).

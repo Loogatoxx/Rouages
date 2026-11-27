@@ -179,8 +179,12 @@ static func regler_tutoriel(vu: bool) -> bool:
 		return false
 	if vu:
 		fichier.set_value("tutoriel", "vu", true)
-	elif fichier.has_section_key("tutoriel", "vu"):
-		fichier.erase_section_key("tutoriel", "vu")
+	elif fichier.has_section_key("tutoriel", "vu") or fichier.has_section("astuces"):
+		# Revoir le tutoriel réaffiche aussi les astuces contextuelles (game/ui/astuces.gd).
+		if fichier.has_section_key("tutoriel", "vu"):
+			fichier.erase_section_key("tutoriel", "vu")
+		if fichier.has_section("astuces"):
+			fichier.erase_section("astuces")
 	else:
 		return true
 	var ecriture: Error = fichier.save(REGLAGES)
