@@ -129,3 +129,9 @@
 - **Fait** : banc mixte et vagues relissées (parfait 0-1 PV, moyen meurt V5-V10) ; fin de l'audit UI (liens en boutons,
   gabarit tirage/coffre, raretés teintées) ; craft (T11f, Codex : démonter, 3 recettes) ; démarche procédurale des nuées
   et lecture automatique des AnimationPlayer ; astuces contextuelles ; builds réexportés, Mac relancé.
+
+## 2026-11-27 — PT de moyen et long terme sans Gemini ni Carlos (message de la session principale)
+- **Fait** : table de l'établi en bois procédural ; campagne en 6 chapitres liée au lore, partie libre et défi du jour
+  débloqués au chapitre 3 (anciens joueurs épargnés), 3 difficultés, améliorations masquées ou cadenassées (T12a, Codex
+  puis Claude après sa limite d'usage) ; Longue route (15 vagues) et tiroirs qui s'ouvrent ; paliers créatifs par
+  extensions posées ; banc avec option Longue route. Gemini relancé une fois à 0 h 50 : quota toujours épuisé.

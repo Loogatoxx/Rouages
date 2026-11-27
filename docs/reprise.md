@@ -5,13 +5,14 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
 
 ## État (mis à jour le 2026-11-26 tard le soir, autonomie totale)
 - **Après playtest 1** : la roadmap `docs/roadmap.md` § « Après playtest 1 » liste 100 % du brief de Carlos (PT-01 à PT-65,
-  règles R1-R7, table de vérification brief → tâches). **Faits et commités** (2026-11-27, ~0 h 15) : PT-01 à 05, 10 à 18,
-  20, 21, 30 à 39, 40, 41, 50, 55, 64, 65 + astuces contextuelles (D7) et aperçu de vague (D8) ; partiels : PT-51
-  (ornements faits main), 52 (prompts prêts), 53 (démarche procédurale + pont AnimationPlayer), 54 (particules).
-  98 tests. Builds Mac/Windows réexportés, Mac relancé (OK).
-  **Reste** : PT-51/53 avec les modèles Hyper3D, PT-54 micro-décors 3D et 2 icônes (Gemini), PT-56 table, PT-60 à 63.
+  règles R1-R7, table de vérification brief → tâches). **Faits et commités** (2026-11-27, ~0 h 55) : tous les PT sauf
+  ceux qui attendent Hyper3D ou Gemini — PT-51 (modèles de paliers), 52 (images du lot 1), 53 (animations générées),
+  54 (micro-décors 3D) et 2 icônes (monnaie méta, « assembler »). Campagne (6 chapitres), difficultés, déblocage
+  progressif, Longue route avec tiroirs, paliers d'extension, craft, table procédurale faits. 107 tests. Builds
+  Mac/Windows réexportés, Mac relancé (OK).
   **Attend Carlos** : valider les images puis générer le lot 1 Hyper3D (`art_refs/hyper3d/DEMANDE_LOT1.md`) ; test Windows.
-  **Gemini** : quota épuisé le 2026-11-26 vers 23 h 50 (Neon XHigh et High) → relancer d'abord les images du lot 1.
+  **Gemini** : quota épuisé depuis le 2026-11-26 ~23 h 50 (encore épuisé à 0 h 50) → relancer d'abord les images du lot 1.
+  **Codex** : limite d'usage atteinte le 2026-11-27 ~0 h 15 (réessai annoncé à 1 h 26).
   Gemini : `agy-bridge` uniquement (le CLI `agy` avec saut de permissions est refusé) ; un `delegate` tient ~12 min,
   un `follow_up` expire à 5 min, `web_lookup` à 2 min → découper finement.
 - **Captures** : ajouter `-- --fenetre` après le script (`Godot --path . --windowed --resolution 1600x900 --script res://x.gd
