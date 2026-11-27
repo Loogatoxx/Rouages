@@ -39,7 +39,7 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 		var places: int = plafond(plateau, alimentees, case, regles) - sim.effectif(case)
 		var sortis: int = 0
 		if places > 0 and progression >= 1.0:
-			var sortie: Vector2 = _sortie(case, plateau)
+			var sortie: Vector2 = _sortie(case, plateau, sim)
 			for i: int in mini(floori(progression), places):
 				if not sim.ajouter(atelier.unite_produite, sortie, case):
 					break
@@ -49,8 +49,13 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 		_progressions[case] = minf(progression - sortis, 1.0)
 
 
-# Un atelier en bord de route lâche ses jouets sur la route (front immédiat) ; sinon, par son premier port.
-func _sortie(case: Vector2i, plateau: Plateau) -> Vector2:
+# Un atelier en bord de route lâche ses jouets sur la route (front immédiat) ; sinon, du côté d'une case libre qui
+# mène à la route (playtest 3 : plus de jouets qui traversent les engrenages) ; en dernier recours, par son premier port.
+func _sortie(case: Vector2i, plateau: Plateau, sim: SwarmSim = null) -> Vector2:
+	if sim != null:
+		var libre: Vector2 = sim.sortie_atelier(case)
+		if libre != Vector2.INF:
+			return libre
 	var centre: Vector2 = Vector2(case) * GrilleMonde.TAILLE_CASE
 	var route: Vector2i = Placement.cote_route(plateau, case)
 	if route != Vector2i.ZERO:

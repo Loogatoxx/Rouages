@@ -13,6 +13,10 @@ var _sols: Dictionary[Vector2i, Sol] = {}
 var _pieces: Dictionary[Vector2i, PieceDef] = {}
 var _niveaux: Dictionary[Vector2i, int] = {}
 var _rotations: Dictionary[Vector2i, int] = {}
+## Ordre de pose de chaque pièce (playtest 3) : quand une source d'énergie est pleine, c'est la pièce posée en
+## dernier qui reste éteinte, jamais une pièce déjà en marche.
+var _ordres: Dictionary[Vector2i, int] = {}
+var _prochain_ordre: int = 0
 
 
 ## Définit le sol d’une case et signale tout changement.
@@ -40,6 +44,8 @@ func dupliquer() -> Plateau:
 	copie._pieces = _pieces.duplicate()
 	copie._rotations = _rotations.duplicate()
 	copie._niveaux = _niveaux.duplicate()
+	copie._ordres = _ordres.duplicate()
+	copie._prochain_ordre = _prochain_ordre
 	return copie
 
 
@@ -57,6 +63,9 @@ func sol_de(coord: Vector2i) -> int:
 func peut_poser(coord: Vector2i, def: PieceDef) -> bool:
 	if def == null or _pieces.has(coord):
 		return false
+	# Pièce unique (le Générateur légendaire) : une seule sur le plateau.
+	if def.unique and _pieces.values().has(def):
+		return false
 	return sol_de(coord) == (Sol.CHEMIN if def.sur_route else Sol.HERBE)
 
 
@@ -67,6 +76,8 @@ func poser(coord: Vector2i, def: PieceDef, rotation: int = 0) -> bool:
 	_pieces[coord] = def
 	_niveaux[coord] = 1
 	_rotations[coord] = posmod(rotation, 4)
+	_ordres[coord] = _prochain_ordre
+	_prochain_ordre += 1
 	modifie.emit()
 	return true
 
@@ -79,6 +90,7 @@ func retirer(coord: Vector2i) -> PieceDef:
 	_pieces.erase(coord)
 	_niveaux.erase(coord)
 	_rotations.erase(coord)
+	_ordres.erase(coord)
 	modifie.emit()
 	return piece
 
@@ -105,6 +117,11 @@ func tourner(coord: Vector2i) -> bool:
 	_rotations[coord] = (_rotations[coord] + 1) % 4
 	modifie.emit()
 	return true
+
+
+## Rang de pose de la pièce (plus petit = posée plus tôt) ; une case libre a le rang le plus récent.
+func ordre_de(coord: Vector2i) -> int:
+	return _ordres.get(coord, _prochain_ordre)
 
 
 ## Retrouve la pièce posée sur la case.

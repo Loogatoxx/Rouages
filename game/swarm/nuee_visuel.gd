@@ -364,6 +364,8 @@ func _process(delta: float) -> void:
 		var modeles: Array[SwarmSim.UniteDef] = sim.modeles(camp)
 		var precedents: PackedVector2Array = _precedents[camp]
 		var pas_physique: bool = lieux != precedents
+		# Playtest 3 : sur un Pont, les unités au sol montent sur le tablier au lieu de le traverser.
+		var relief: bool = sim.a_du_relief()
 		if pas_physique:
 			var marche := PackedByteArray()
 			marche.resize(lieux.size())
@@ -384,7 +386,10 @@ func _process(delta: float) -> void:
 					base = base.scaled_local(Vector3.ONE * 1.12)
 			var en_marche: bool = i < _en_marche[camp].size() and _en_marche[camp][i] == 1
 			var pose: Array = _pose_animee(base, modeles[i], camp, i, en_marche)
-			lot.set_instance_transform(indice, Transform3D(pose[0], Vector3(lieux[i].x, pose[1], lieux[i].y)))
+			var hauteur: float = pose[1]
+			if relief and not modeles[i].volant:
+				hauteur += sim.relief(lieux[i])
+			lot.set_instance_transform(indice, Transform3D(pose[0], Vector3(lieux[i].x, hauteur, lieux[i].y)))
 			_effectifs[id] = indice + 1
 		_precedents[camp] = lieux.duplicate()
 	for id: StringName in _lots:

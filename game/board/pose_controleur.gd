@@ -268,3 +268,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif _choix is PieceDef and _source.plateau.poser(_case, _choix, _rotation):
 			Run.reserve.retirer(id)
 			Sons.jouer(&"pose", 0.05)
+		elif _choix is PieceDef and _choix.unique and _source.plateau.coords_pieces().any(
+				func(c: Vector2i) -> bool: return _source.plateau.piece_de(c) == _choix):
+			Events.message_joueur.emit(tr("Un seul Générateur par plateau."))

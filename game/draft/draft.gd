@@ -39,6 +39,6 @@ static func _bonus_chance(lot: Lot, chance: int, facteurs: Vector2) -> float:
 	match int(lot.objet.get("rarete")):
 		1:
 			return 1.0 + chance * facteurs.x
-		2:
-			return 1.0 + chance * facteurs.y
+		2, 3:
+			return 1.0 + chance * facteurs.y  # épique et légendaire
 	return 1.0

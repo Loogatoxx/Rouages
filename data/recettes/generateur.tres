@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
 [ext_resource type="Resource" path="res://data/tuiles/generateur.tres" id="produit"]
 [ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
-[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="croix"]
 
 [sub_resource type="Resource" id="e1"]
 script = ExtResource("lot")
@@ -13,8 +13,8 @@ quantite = 1
 
 [sub_resource type="Resource" id="e2"]
 script = ExtResource("lot")
-objet = ExtResource("droit")
-quantite = 3
+objet = ExtResource("croix")
+quantite = 2
 
 [sub_resource type="Resource" id="sortie"]
 script = ExtResource("lot")

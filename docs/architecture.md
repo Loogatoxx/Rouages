@@ -340,3 +340,37 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   (prioritaire sur le kit), emprise 1,9 m, recentré, pivot au sol, méta `face_plus_z` (face avant +Z = port sud,
   donc la rotation par ports reste juste). Tourelles Hyper3D retournées au repos (fût dos au port) et visée corrigée
   de π. `generer_vignettes.gd` rend aussi ces modèles. Allègement 8 000 triangles, textures 1024 px.
+
+## Après playtest 3 — lot 1 (chemins, tourelles, Pont, Générateur légendaire)
+Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : roadmap § « Après playtest 3 » (P3-xx).
+- **Joueur automatique** (P3-21, `scripts/joueur_auto.gd`) : joue une vraie partie dans `main.tscn` (tirages, boutique,
+  pose avec une prise d'engrenage toujours gardée libre, améliorations, vagues), styles `spam` et `tactique`,
+  captures pendant les vagues, bilan par vague. Sans fenêtre : ×12 (`time_scale` ET `physics_ticks_per_second`
+  multipliés ensemble, car Godot multiplie le pas physique par `time_scale` ; on garde des pas de 1/60 s). → Le banc
+  ne simule ni tirages ni boutique ni l'image ; ce script est le juge de l'équilibrage « en conditions réelles ».
+  Mesure de référence (3 cartes, graine 1) : victoire 6 fois sur 6, **150 à 260 jouets vivants**.
+- **Suivi strict des chemins** (P3-01, `SwarmSim`) : `_tracer_couloirs` donne à chaque case de route son rectangle
+  autorisé (marge `MARGE_ROUTE` côté herbe) ; `_contenir`, après la séparation, y ramène chaque unité au sol (une
+  unité sur la route n'entre que dans une case de route). `_voie_libre` : poursuite en ligne droite seulement si le
+  segment reste sur la route, sinon le jouet suit la piste par la route, même au-delà de son poste de garde.
+- **Bâtiments contournés** (P3-02) : `_libres` = parcours en largeur depuis la route à travers l'herbe sans pièce ;
+  `sortie_atelier(case)` lâche le jouet du côté de la case libre la plus proche de la route ; une unité dans l'herbe
+  n'entre jamais dans une case occupée. → Conséquence de design : un atelier enfermé derrière d'autres bâtiments met
+  longtemps à rejoindre le front (le banc, qui entasse ses ateliers autour de l'horloge, n'est plus représentatif :
+  à refaire au lot 2).
+- **Pont** (P3-03) : `_amenager_pont` tourne le tablier dans le sens de la route, l'élargit, dégage son dessus
+  (`DecoupeTourelle.degager`) et descend l'arbre de laiton sous l'arche ; `SwarmSim.relief(lieu)` (hauteur du tablier
+  + marche d'accès) est lu par `NueeVisuel` : les unités montent sur le pont. Couloir resserré (`DEMI_TABLIER`).
+- **Tête de tourelle** (P3-04/05, `game/board/decoupe_tourelle.gd`) : les modèles sont d'un seul bloc ; on découpe
+  le maillage une fois (par hauteur pour le canon Hyper3D, par morceaux d'un seul tenant pour le mortier du kit) en
+  socle + nœud « Tete » centré sur son pivot. `_sur_tir` ne fait tourner que la tête ; une tourelle absente de
+  `PlateauVisuel.TETES` (carillon) ne pivote pas. Un futur modèle Hyper3D s'ajoute par une ligne dans `TETES`.
+- **Énergie** (P3-10/12, `Energie.analyser` → `Bilan`) : profondeur ≥ 0 = réseau de l'horloge, < 0 = réseau d'un
+  générateur (énergie faible : `Placement._donne_bonus` refuse les bonus d'engrenage). Générateur : chaîne de
+  `portee_generateur` pièces, capacité en dents (`cout_energie` par bâtiment, 1 pour l'instant) servie **dans l'ordre
+  de pose** (`Plateau.ordre_de`) ; les refusés vont dans `Bilan.surcharge` → gris + écriteau « Plein » + bandeau
+  (`PlateauNoeud`, `PlateauVisuel._marquer_plein`). `PieceDef.unique` : une seule pièce de ce type sur le plateau.
+  → Ce mécanisme est volontairement générique : le lot 2 l'applique à l'Horloge (« Tic-tac », énergie comptée).
+- **Rareté Légendaire** (P3-11) : 4e valeur de `PieceDef.Rarete`, teinte corail, médaillon `rarete_legendaire.png`
+  (dérivé de l'épique en attendant Gemini), cadre de carte ; Générateur hors pioche (coffre poids 0,6, recette
+  1 atelier + 2 croix), niveau 2 au plus (25 ressorts).

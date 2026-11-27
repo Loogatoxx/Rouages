@@ -6,7 +6,7 @@
 script = ExtResource("1")
 id = &"pont"
 nom = "Pont"
-description = "Se pose sur une route : l'énergie passe par-dessus jusqu'à l'herbe d'en face. Introuvable en boutique."
+description = "Se pose sur une route : les jouets passent dessus, l'énergie passe dessous jusqu'à l'herbe d'en face. Introuvable en boutique."
 type = 1
 niveau_max = 1
 ports = 10

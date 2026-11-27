@@ -87,3 +87,8 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Le Générateur autonome | Un vieux moteur de boîte à musique que Lise remontait en cachette : il fait tourner quelques jouets loin de l'Horloge, pas plus. |
 | Taupe mécanique | Un jouet de jardin qu'Anselme réparait pour les enfants du village : elle creuse sous les billes, seuls les soldats l'attrapent par la queue. |
 | Porte-bouclier | Un scarabée qui porte un couvercle de boîte à couture : ses voisins s'abritent dessous. |
+| Jouets qui restent sur les routes | Anselme a peint les routes au vernis : les semelles de plomb des jouets y accrochent, pas sur le feutre de l'herbe. |
+| Le Pont (refonte) | Les jouets passent sur son tablier ; l'arbre de laiton tourne dessous, à l'abri des petits pieds. |
+| Générateur légendaire et unique | Il n'existe qu'un seul moteur de boîte à musique dans tout l'atelier : celui de la boîte de Lise. Son ressort est court (deux bâtiments tout proches) et trop doux pour entraîner les engrenages savants d'Anselme. |
+| Écriteau « Plein » | Quand le moteur n'en peut plus, le dernier jouet branché attend son tour, comme les apprentis devant l'établi. |
+| Tête des tourelles | Les socles sont vissés à la maquette ; seuls les fûts tournent sur leur plateau de laiton. |

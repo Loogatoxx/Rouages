@@ -250,3 +250,111 @@ Les 3 captures citées par Carlos ne sont pas arrivées : Claude reproduit ces �
 Lot A (§1) : P2-01, 02, 03, 33 → banc → P2-04, 05, 06 → commit · Lot B (§2) : P2-10, 14, 15, 16, 17, 18, 19 → P2-12, 11,
 20, 21, 35 → P2-13 · Lot C (§3) : P2-31, 30, 36, 37, 38, 39, 34 → banc · Lot D (§4) : P2-50, 51, 53, 52, 57 → P2-54, 32,
 40 → P2-56, 55, 58 · PT ouverts dès que le quota Gemini revient. Builds Mac/Windows à la fin des lots A, B et C.
+
+---
+
+# Après playtest 3 (brief de Carlos du 2026-11-27, soir)
+
+**Cap (règle R9, prioritaire)** : *« Tenir la ligne »* — on gagne en plaçant **mieux**, plus jamais en ayant **plus**.
+Réflexion complète, diagnostics et chiffres cibles : `docs/game_design_p3.md`. Game feeling et équilibrage sont
+confiés à Fable 5.2 (demande de Carlos), **en jouant de vraies parties** (`scripts/joueur_auto.gd`, captures, puis banc).
+
+**Lecture** : identifiant `P3-xx`, priorité (**P0** bloquant · **P1** court terme · **P2** moyen terme · **P3** long
+terme), responsable, dépendances, état. Responsables : **Fable** (= Claude : game design, équilibrage, architecture,
+logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icônes, décor, images de référence) ·
+**Hyper3D** (modèles) · **Carlos** (test Windows, validation d'images, ressenti).
+
+## Court terme — §4 du brief : bugs de chemins, collisions, tourelles (P0)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P3-01 | **Suivi strict des chemins** (alliés et ennemis) : couloir par case de route (marge côté herbe), poursuite en ligne droite seulement si le segment reste sur la route, sinon par la route. | P0 | Fable | `swarm_sim.gd` (`_tracer_couloirs`, `_contenir`, `_voie_libre`) | ✅ tests `test_chemins` |
+| P3-02 | **Les unités ne traversent plus les bâtiments** : sortie d'atelier du côté d'une case libre, trajet jusqu'à la route de case libre en case libre, aucune entrée dans une case occupée. | P0 | Fable | P3-01, `production.gd` | ✅ |
+| P3-03 | **Le Pont ne se fait plus traverser** : tablier tourné dans le sens de la route et dégagé, les unités montent dessus (`SwarmSim.relief`), l'arbre de laiton passe dessous. | P0 | Fable | P3-01, `plateau_visuel.gd`, `nuee_visuel.gd` | ✅ capture |
+| P3-04 | **Canon : seule la tête pivote**, le socle reste fixe (découpe du maillage en socle + tête, pivot au centre de la tête). | P0 | Fable | `decoupe_tourelle.gd` | ✅ capture |
+| P3-05 | **Mortier : il pivote vers sa cible** comme le canon (fût et affût tournent, planches et boulets restent). Le carillon, lui, ne pivote plus (c'est un clocher). | P0 | Fable | P3-04 | ✅ capture |
+
+## Court terme — §3 du brief : Générateur et rareté Légendaire (P0)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P3-10 | **Refonte du Générateur** : chaîne de 2 pièces au plus, capacité 2 bâtiments (3 une fois amélioré, 25 ressorts), **unique** sur le plateau, **pas de bonus d'engrenage** sur son énergie (non-cumul), retiré de la pioche (coffre rare et recette 1 atelier + 2 croix). | P0 | Fable | `energie.gd`, `placement.gd`, `generateur.tres` | ✅ 4 tests |
+| P3-11 | **Rareté « Légendaire »** (4e palier, émail corail) : énumération, teinte, médaillon, cadre de carte, nom traduit, chance ; le Générateur y est placé. | P0 | Fable (+ Gemini : médaillon définitif) | `piece_def.gd`, `hud.gd`, CSV | ✅ (médaillon dérivé de l'épique, à redessiner) |
+| P3-12 | **Surcharge inversée** : les bâtiments en marche le restent ; c'est le **dernier posé** qui reste éteint, gris, avec un écriteau « Plein », un liseré rouge et un bandeau d'explication. Le plateau mémorise l'ordre de pose. | P0 | Fable | `plateau.gd` (`ordre_de`), `plateau_noeud.gd`, `plateau_visuel.gd` | ✅ test + capture |
+
+## Court / moyen terme — §1 du brief : game design profond, anti-spam, équilibrage réel (P0-P1)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P3-20 | **Réflexion de fond** : diagnostic du spam, jeux de référence, « le truc qui manque », solution « Tenir la ligne ». | P0 | Fable | — | ✅ `docs/game_design_p3.md` |
+| P3-21 | **Joueur automatique** : vraies parties (tirages, boutique, pose, améliorations, vagues), 2 styles, captures en cours de vague, bilan par vague ; sert de juge à tout l'équilibrage. | P0 | Fable | — | ✅ `scripts/joueur_auto.gd` (à enrichir : extensions, drapeaux) |
+| P3-22 | **Pilier 1 — le Tic-tac** : énergie de l'Horloge comptée en dents (4 au départ, +1 après V2, V4, V6, V8), coût par bâtiment, dernier posé éteint si plein, jauge dans le HUD, coût sur les cartes. | P0 | Fable | P3-12 (même mécanisme) | |
+| P3-23 | **Ralentir les ateliers** : soldats 0,5 jouet/s (au lieu de 1,1), lance-billes 0,3 ; plafond 5 par atelier (+1 par niveau) ; soldats plus solides (PV 26, dégâts 4). | P0 | Fable (joueur auto + banc) | P3-22 | |
+| P3-24 | **Vagues refondues** : moins d'ennemis, plus solides (V1 8, V5 30, V10 70 + boss), mêmes contres ; toutes les cartes rejouées en 3 graines. | P0 | Fable | P3-23 | |
+| P3-25 | **Pilier 2 — postes de garde** : un drapeau par atelier, déplaçable sur la route (3 cases), escouade qui s'y range et bloque ; anneau de portée ; bouton dans le panneau de pièce. | P1 | Fable → Codex (interface) | P3-23 | |
+| P3-26 | **Pilier 3 — rôles nets** : le carillon ralentit (35 %, 1,5 s), le canon perce l'armure, le mortier rase ; textes et icônes de rôle sur les cartes. | P1 | Fable | P3-24 | |
+| P3-27 | **Pilier 4 — Coup de carillon** : pouvoir de l'Horloge (étourdit 2,5 s dans 3 m, recharge 25 s), bouton et touche réassignable. | P1 | Fable → Codex | P3-25 | |
+| P3-28 | **Preuve anti-spam** : critères de `game_design_p3.md` § 5 mesurés (spam ≤ tactique, ≤ 35 jouets vivants, profil moyen V6-V10, profil soigné 5-20 PV) sur 3 cartes × 3 graines ; film d'une vague (`--write-movie`). | P0 | Fable | P3-22 à P3-26 | |
+| P3-29 | **Game feeling** : impacts (ressort qui saute, poussière, recul), secousse, sons de blocage, lisibilité du front ; jugé sur film. | P1 | Fable | P3-25 | |
+
+## Moyen terme — §5 du brief : interface et localisation (P1)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P3-30 | **Menu initial : liste + aperçu** : dès qu'un choix a plus de 3 valeurs (carte, mode, chapitre), le sélecteur à flèches devient une liste claire avec, à droite, l'aperçu de l'élément choisi (mini-plan de la carte, description, record, ennemis propres). | P1 | Fable → Codex | `menu_titre.gd` | |
+| P3-31 | **« Aide et commandes » traduite** : textes passés par `tr()`, touches lues dans l'`InputMap` (donc à jour après réassignation), ajoutés au CSV en FR/EN/PT ; test qui interdit tout texte en dur dans ce panneau. | P1 | Fable | `menu_pause.gd`, CSV | |
+| P3-32 | **Chasse aux textes non traduits** dans tous les écrans (test automatique : chaque chaîne affichée a une entrée dans le CSV). | P2 | Codex (relecture Fable) | P3-31 | |
+
+## Moyen / long terme — §2 du brief : sensation de vide, cartes variées (P1-P3)
+| ID | Tâche | Prio | Qui | Dépendances | État |
+|---|---|---|---|---|---|
+| P3-40 | **Diagnostic du vide** : 7 causes classées, vues sur captures. | P0 | Fable | — | ✅ `docs/game_design_p3.md` § 6 |
+| P3-41 | **Cadrage serré** : plateau à ~60 % de l'écran, léger zoom automatique vers le front pendant la vague (option). | P1 | Fable | `camera_plateau.gd` | |
+| P3-42 | **Plateau qui raconte** : cases de décor non constructibles par carte (bosquet, mare, rocher, barrière), teintes d'herbe par zones, bordure plus épaisse. | P1 | Fable (logique) + Gemini (modèles) | PT-54, quota Gemini | |
+| P3-43 | **Pause qui respire et vie ambiante** : clés et cheminées des ateliers, balancier de l'Horloge, drapeaux, oiseau mécanique ; aucun jouet dehors (règle du playtest 2). | P1 | Fable + Gemini | P3-41 | |
+| P3-44 | **Impacts et récompenses visibles** : ressort qui roule vers le compteur, poussière d'obus, onde du carillon, recul de l'ennemi touché. | P1 | Fable | P3-29 | |
+| P3-45 | **L'établi autour** : grands objets d'horloger au bord de l'image, tache de soleil qui glisse. | P2 | Gemini (modèles) + Fable | quota Gemini | |
+| P3-46 | **Carte « La Serre »** (menthe et rose) : rigoles d'eau qui coupent l'herbe en îlots. | P2 | Fable | P3-22, P3-42 | |
+| P3-47 | **Carte « Le Quai »** (bleu ardoise et sable) : marée, une route sur deux inondée une vague sur deux. | P2 | Fable | P3-25 | |
+| P3-48 | **Carte « Le Manège »** (crème, cerise, or) : plaque tournante qui change les entrées toutes les 2 vagues. | P3 | Fable | P3-47 | |
+| P3-49 | **Carte « Le Rail »** (ocre, vert bouteille) : petit train qui repousse tout ce qui est sur la voie. | P3 | Fable + Hyper3D (train) | P3-48 | |
+| P3-50 | **Palette par carte** : teintes de sol, de route, de lumière et de table propres à chaque plateau (`DepartDef`). | P1 | Fable | P3-42 | |
+
+## Restes du playtest 2 (toujours ouverts)
+| ID | Tâche | Qui | État / bloqué par |
+|---|---|---|---|
+| P2-40 | Beaucoup plus de contenu à débloquer (pièces de synergie, Établi, cosmétiques) | Fable → Codex + Gemini | après P3-28 (on équilibre d'abord) |
+| P2-55 | Cartes plus grandes, détaillées et vivantes | Gemini + Fable | absorbé par P3-42 à P3-45 |
+| P2-56 | Chemins qui évoluent par segments | Fable | après P3-46 |
+| P2-58 | Lore en BD (3-4 cases par chapitre) | Fable → Gemini | quota Gemini |
+| P2-22 | Chasse au texte continue, distinction des éléments du plateau | Fable + Gemini | avec P3-32 |
+| P2-11 | Vitrine de l'écran titre à revoir | Fable | avec P3-30 |
+| PT-51 | Lot 2 Hyper3D : carillon et mortier (images à générer puis **à valider par Carlos**) | Gemini → Carlos → Hyper3D | quota Gemini ; le mortier Hyper3D devra garder un fût séparable (P3-05) |
+| PT-51b | Pont Hyper3D (tablier dans le sens de la route, arche pour l'arbre) | Gemini → Carlos → Hyper3D | après PT-51 |
+| PT-53 | Animations générées (marche, tir, ateliers, horloge) | Hyper3D + Gemini | PT-51 |
+| PT-54 | Micro-décors 3D | Gemini | quota Gemini ; sert P3-42 |
+
+## Vérification ligne à ligne (brief 3 → tâches)
+| Brief | Point | Tâche(s) |
+|---|---|---|
+| Directive | Lire 2-3 fois, capacités de game design, tout dans la roadmap en Court / Moyen / Long terme | cette section, `docs/game_design_p3.md` |
+| §1 | Trouver « le truc qui manque », réflexion de fond, solution concrète et ambitieuse | P3-20, P3-22, P3-25, P3-26, P3-27 |
+| §1 | Éradiquer le spam : plus jamais la stratégie dominante ; jeu propre, lisible, tactique | P3-22, P3-23, P3-24, P3-28 |
+| §1 | Game feeling et équilibrage délégués à Fable 5.2 | P3-28, P3-29 (responsable : Fable) |
+| §1 | Ne pas équilibrer sur papier : jouer réellement, s'appuyer sur des TD de référence, vérifier en jeu | P3-21, P3-28, `game_design_p3.md` § 1 et § 3 |
+| §1 | Ralentir les ateliers, ~0,5 unité/s en début de montée en puissance | P3-23 |
+| §2 | Diagnostiquer précisément l'effet « vide » (rythme visuel, décor, impacts, vie ambiante, contraste) | P3-40 |
+| §2 | Vraie solution pour un jeu vivant et habité | P3-41, P3-42, P3-43, P3-44, P3-45 |
+| §2 | Nouvelles cartes : autres palettes / ambiances | P3-50, P3-46 à P3-49 |
+| §2 | Nouvelles cartes : contraintes ou mécaniques propres | P3-46, P3-47, P3-48, P3-49 |
+| §3 | Générateur trop fort avec l'engrenage en croix : portée / chaîne max, capacité totale, non-cumul | P3-10 |
+| §3 | Rareté « Légendaire », y placer le Générateur | P3-11 |
+| §3 | Surcharge : garder les bâtiments existants, désactiver le NOUVEAU, retour visuel clair | P3-12 |
+| §4 | Alliés et ennemis suivent les chemins, plus de raccourci par le terrain | P3-01 |
+| §4 | Les troupes traversent les constructions (exemple : le Pont) | P3-02, P3-03 |
+| §4 | Le Mortier pivote vers sa cible comme le Canon | P3-05 |
+| §4 | Canon : seule la tête / le fût tourne, base fixe | P3-04 |
+| §5 | Menu initial : liste claire + aperçu quand il y a beaucoup de choix | P3-30 |
+| §5 | « Help & Controls » toujours en français → système de traduction | P3-31 (+ P3-32) |
+| Restes | P2-40, P2-55, P2-56, P2-58, P2-22, P2-11, PT-51 (carillon + mortier), PT-53, PT-54 | tableau « Restes du playtest 2 » |
+
+## Ordre d'exécution (autonomie)
+Lot 1 : P3-20, 21, 40 + P3-01 à 05 + P3-10 à 12 → commit ✅ · Lot 2 : P3-22, 23, 24 → joueur automatique + banc →
+commit · Lot 3 : P3-25, 26, 27, 29 → P3-28 (preuve) → builds Mac/Windows · Lot 4 : P3-30, 31, 32 · Lot 5 : P3-41, 50,
+42, 43, 44 → P3-46, 47 · puis restes du playtest 2 et cartes P3-48, 49. PT-51 dès que le quota Gemini revient.

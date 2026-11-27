@@ -160,3 +160,16 @@
 - **Suite (même demande)** : touches réassignables ; lot D (bâtiments débloqués par chapitre avec fiche « Nouveau ! »,
   Difficile optionnel, bac à sable, tutoriel au chapitre 1) ; 3 nouvelles cartes (Jardin d'hiver, Boîte à musique où
   le Pont devient une énigme, Grand atelier) ; taupe fouisseuse et porte-bouclier. 122 tests, builds réexportés.
+
+## 2026-11-27 (soir) — Brief de playtest 3 (message de la session principale, texte intégral de Carlos)
+- **Demande** : réflexion de game design de fond (« le truc qui manque », fin du spam, équilibrage confié à Fable et
+  fait en jouant réellement, ateliers à ~0,5 jouet/s), diagnostic de la sensation de vide et cartes variées, refonte du
+  Générateur (Légendaire, surcharge inversée), bugs de chemins / collisions / pivots de tourelles, menu en liste avec
+  aperçu, aide traduite. Tout dans la roadmap (Court / Moyen / Long terme).
+- **Fait (lot 1)** : `docs/game_design_p3.md` (diagnostics chiffrés, jeux de référence, solution « Tenir la ligne » en
+  4 piliers, chiffres cibles, 7 causes du vide, 4 cartes à mécaniques) ; roadmap « Après playtest 3 » (P3-01 à P3-50,
+  table brief → tâches) ; joueur automatique qui joue de vraies parties (`scripts/joueur_auto.gd`) ; unités qui
+  restent sur les routes, contournent les bâtiments et montent sur le Pont ; canon et mortier dont seule la tête
+  pivote ; Générateur légendaire, unique, à chaîne courte, sans bonus d'engrenage, et surcharge qui éteint le dernier
+  bâtiment posé (écriteau « Plein »). 130 tests. Captures avant/après dans `art_refs/playtest3/`.
+- **Objectif** : un jeu propre et lisible, puis (lot 2) un jeu où l'on gagne en plaçant mieux, pas en ayant plus.

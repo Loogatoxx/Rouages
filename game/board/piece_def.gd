@@ -6,9 +6,11 @@ const UniteDef = preload("res://game/swarm/unite_def.gd")
 ## GENERATEUR (playtest 2) : source d'énergie autonome, limitée à quelques pièces (ajouté en fin d'énumération pour
 ## ne pas décaler les types déjà enregistrés dans les ressources).
 enum Type { HORLOGE, ENGRENAGE, ATELIER, TOURELLE, GENERATEUR }
-enum Rarete { COMMUNE, RARE, EPIQUE }
+## LEGENDAIRE (playtest 3) : palier au-dessus de l'épique, réservé aux pièces qui changent les règles (le Générateur).
+enum Rarete { COMMUNE, RARE, EPIQUE, LEGENDAIRE }
 
-const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color("#E8B04A")]
+## Teinte par rareté (émail de la pièce, cadre de la carte) : laiton, bleu pastel, or, corail.
+const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color("#E8B04A"), Color("#E0795C")]
 
 @export var id: StringName
 @export var nom: String
@@ -20,9 +22,16 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var transmet: bool = true
 ## Se pose sur une case de route (le Pont) au lieu de l'herbe ; les unités passent dessous.
 @export var sur_route: bool = false
-## Générateur : nombre d'ateliers et de tourelles qu'il alimente au niveau 1, puis en plus par niveau.
+## Générateur : dents d'énergie qu'il fournit au niveau 1, puis en plus par niveau (un atelier ou une tourelle
+## consomme `cout_energie` dents ; les engrenages ne consomment rien).
 @export var capacite_generateur: int = 0
 @export var capacite_par_niveau: int = 0
+## Générateur : longueur maximale de sa chaîne, en pièces (2 = un engrenage puis un bâtiment). 0 = sans limite.
+@export var portee_generateur: int = 0
+## Dents d'énergie consommées par un atelier ou une tourelle sur sa source.
+@export var cout_energie: int = 1
+## Pièce unique : on ne peut en poser qu'une sur le plateau.
+@export var unique: bool = false
 @export var unite_produite: UniteDef
 @export var cadence_production: float = 0.0
 @export var rarete: Rarete = Rarete.COMMUNE

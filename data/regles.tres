@@ -159,13 +159,6 @@ quantite = 1
 poids = 0.5
 vague_min = 4
 
-[sub_resource type="Resource" id="lot_generateur"]
-script = ExtResource("lot")
-objet = ExtResource("generateur")
-quantite = 1
-poids = 0.8
-vague_min = 3
-
 [sub_resource type="Resource" id="coffre_pont"]
 script = ExtResource("lot")
 objet = ExtResource("pont")
@@ -176,7 +169,7 @@ poids = 1.5
 script = ExtResource("lot")
 objet = ExtResource("generateur")
 quantite = 1
-poids = 2.0
+poids = 0.6
 
 [resource]
 script = ExtResource("regles")
@@ -204,7 +197,7 @@ multiplicateur_acceleration = 2.0
 choix_par_draft = 3
 vagues_coffre = Array[int]([3, 6, 9])
 coffre = Array[ExtResource("lot")]([SubResource("lot_canon"), SubResource("lot_carillon"), SubResource("lot_mortier"), SubResource("coffre_pont"), SubResource("coffre_generateur")])
-pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont"), SubResource("lot_generateur")])
+pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont")])
 ressorts_depart = 0
 recompense_vague = 6
 recompense_par_vague = 2

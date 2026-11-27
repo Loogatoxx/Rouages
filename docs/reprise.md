@@ -3,7 +3,24 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-27 après-midi, autonomie totale)
+## État (mis à jour le 2026-11-27 au soir, après playtest 3, autonomie totale)
+- **Après playtest 3** : cap « Tenir la ligne » (`docs/game_design_p3.md`), roadmap § « Après playtest 3 » (P3-xx).
+  **Lot 1 fait et commité** : chemins stricts, bâtiments contournés, Pont praticable, têtes de tourelles, Générateur
+  légendaire et surcharge inversée, joueur automatique. 130 tests.
+  **Suite (lot 2)** : P3-22 Tic-tac (énergie de l'Horloge en dents : le mécanisme existe déjà dans `Energie`,
+  `cout_energie` + ordre de pose), P3-23 ateliers à 0,5 jouet/s et plafond 5, P3-24 vagues refondues ; puis
+  postes de garde (P3-25), carillon qui ralentit (P3-26), coup de carillon (P3-27), preuve anti-spam (P3-28).
+- **Joueur automatique** (le juge de l'équilibrage) : sans fenêtre
+  `Godot --headless --path . --script res://scripts/joueur_auto.gd -- --fenetre <dossier> <plateau 0-5> <spam|tactique> <graine> 0`
+  (30 s par partie) ; avec captures : `--windowed --resolution 1600x900` et `1` à la place du `0` final (×4, variable
+  `VITESSE=1` pour filmer avec `--write-movie`). Référence avant refonte : 6 victoires sur 6, 150 à 260 jouets vivants.
+- **Pièges du lot 1** : `Engine.time_scale` multiplie le pas physique (multiplier aussi `physics_ticks_per_second`) ;
+  `trait` est un mot réservé en GDScript ; `surface_get_arrays` renvoie des tableaux vides en `--headless` pour les
+  maillages `.res` (la découpe des tourelles ne se teste qu'avec une fenêtre) ; le banc entasse ses ateliers autour de
+  l'horloge → depuis que les jouets contournent les bâtiments, ses chiffres ne valent plus (à refaire au lot 2) ;
+  Codex : limite d'usage atteinte à 17 h 30 (fiche de relecture prête : `taches/T14a_relecture_playtest3_lot1.md`).
+
+## État précédent (2026-11-27 après-midi)
 - **Après playtest 2** : roadmap `docs/roadmap.md` § « Après playtest 2 » (P2-01 à P2-58, règle R8). Faits et commités :
   lots A (bugs, spawn progressif, perf, export), B (UI : ruban, cartes, réserve, titre, panneau en icônes, portée),
   C (armure, Pont, Générateur, craft exclusif, raretés des tirages, tourelles animées), D (bâtiments par chapitre,
@@ -106,3 +123,9 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
 ## Fin de session
 Quand l'étape est relue et testée par Carlos : proposer le commit, puis proposer d'ouvrir une **session neuve** pour l'étape
 suivante (contexte frais = moins de tokens), en mettant à jour la section « État » ci-dessus.
+
+## Incident à connaître (2026-11-27, 16 h 56)
+`reglages.cfg` de Carlos a reçu `[astuces] chance=true` pendant une capture fenêtrée : la fenêtre du jeu prend le focus,
+et un clic ou une touche de Carlos y a fermé une bulle d'astuce (`Astuces._fermer` écrit dans les réglages). Depuis,
+`scripts/joueur_auto.gd` met `root.gui_disable_input = true` : **tout script de capture fenêtré doit faire pareil**.
+L'ancien contenu n'a pas pu être reconstitué (md5 différent de toutes les hypothèses) : fichier laissé tel quel.

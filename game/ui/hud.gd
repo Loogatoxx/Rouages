@@ -7,7 +7,7 @@ const PieceDef = preload("res://game/board/piece_def.gd")
 const Reperes = preload("res://game/ui/reperes.gd")
 const Astuces = preload("res://game/ui/astuces.gd")
 const THEME_UI: Theme = preload("res://game/ui/theme_rouages.tres")
-const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique"]
+const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique", "Légendaire"]
 
 const ICONE_RESSORT: Texture2D = preload("res://assets/ui/icones/ressort.png")
 const ICONE_PV: Texture2D = preload("res://assets/ui/icones/horloge_pv.png")
@@ -17,7 +17,8 @@ const VITESSE_DOUBLE: Texture2D = preload("res://assets/ui/icones/vitesse_x2.png
 const MEDAILLONS: Array[Texture2D] = [
 	preload("res://assets/ui/icones/rarete_commune.png"),
 	preload("res://assets/ui/icones/rarete_rare.png"),
-	preload("res://assets/ui/icones/rarete_epique.png")
+	preload("res://assets/ui/icones/rarete_epique.png"),
+	preload("res://assets/ui/icones/rarete_legendaire.png")
 ]
 
 @onready var _pv: Label = %PV
@@ -589,6 +590,8 @@ class Carte extends Button:
 			_papier.self_modulate = Color("#D3E4F7")
 		elif rarete == PieceDef.Rarete.EPIQUE:
 			_papier.self_modulate = Color("#F7E2A6")
+		elif rarete == PieceDef.Rarete.LEGENDAIRE:
+			_papier.self_modulate = Color("#F8C9B8")
 		_papier.rotation_degrees = -1.5 if indice % 2 == 0 else 1.5
 		resized.connect(_ajuster_papier)
 

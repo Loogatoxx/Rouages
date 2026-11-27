@@ -28,6 +28,7 @@
 | `rarete_commune.png` | Conservée | **Rareté Commune** | Badge de rareté sur cartes et infobulles |
 | `rarete_rare.png` | Conservée | **Rareté Rare** | Badge de rareté sur cartes et infobulles |
 | `rarete_epique.png` | Conservée | **Rareté Épique** | Badge de rareté sur cartes et infobulles |
+| `rarete_legendaire.png` | Dérivée de l'épique (émail corail, playtest 3) ; à redessiner par Gemini | **Rareté Légendaire** | Badge de rareté sur cartes et infobulles |
 | `monnaie_or.png` | **Nouvelle** *(v3)* | **Engrenages d'or (monnaie méta)** (pièce dorée à bord lisse frappée d'un engrenage en relief) | Compteur de monnaie méta inter-parties et déblocages permanents |
 | `assembler.png` | **Nouvelle** *(v3)* | **Assembler / craft** (deux pièces de laiton s'emboîtant + petit marteau d'horloger) | Action / onglet d'assemblage et de fabrication de pièces |
 | `plafond_jouets.png` | **Nouvelle** *(v3)* | **Plafond de jouets d'un atelier** (trois silhouettes de soldats-jouets serrées sous une barre/toit) | Indicateur de capacité maximale de jouets actifs par atelier |

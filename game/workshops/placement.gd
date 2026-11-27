@@ -33,6 +33,16 @@ static func cote_route(plateau: Plateau, case: Vector2i) -> Vector2i:
 	return Vector2i.ZERO
 
 
+# Un engrenage ne donne son bonus que s'il tourne sur l'énergie de l'horloge (profondeur ≥ 0). L'énergie d'un
+# générateur est faible (profondeur < 0, voir `Energie.Bilan`) : elle fait tourner les pièces, pas leurs bonus
+# (playtest 3 : générateur + engrenages à bonus reproduisait la puissance de l'horloge).
+static func _donne_bonus(alimentees: Dictionary, case: Vector2i) -> bool:
+	if not alimentees.has(case):
+		return false
+	var profondeur: Variant = alimentees[case]
+	return not (profondeur is int and profondeur < 0)
+
+
 static func _facteur_engrenage(plateau: Plateau, case: Vector2i, regles: Regles) -> float:
 	return 1.0 + (plateau.niveau_de(case) - 1) * regles.gain_niveau_engrenage
 
@@ -46,7 +56,7 @@ static func cadence_atelier(plateau: Plateau, alimentees: Dictionary, case: Vect
 		var voisin: PieceDef = plateau.piece_de(case + direction)
 		if voisin == null:
 			continue
-		if voisin.bonus_voisins_cadence > 0.0 and alimentees.has(case + direction):
+		if voisin.bonus_voisins_cadence > 0.0 and _donne_bonus(alimentees, case + direction):
 			demultiplicateurs.append(voisin.bonus_voisins_cadence * _facteur_engrenage(plateau, case + direction, regles))
 		if atelier != null and voisin == atelier:
 			bonus -= regles.malus_encombrement
@@ -65,7 +75,7 @@ static func plafond_atelier(plateau: Plateau, alimentees: Dictionary, case: Vect
 	var bonus: int = (plateau.niveau_de(case) - 1) * regles.plafond_niveau_atelier
 	for direction: Vector2i in VOISINS:
 		var voisin: PieceDef = plateau.piece_de(case + direction)
-		if voisin != null and voisin.bonus_voisins_plafond > 0 and alimentees.has(case + direction):
+		if voisin != null and voisin.bonus_voisins_plafond > 0 and _donne_bonus(alimentees, case + direction):
 			bonus += roundi(voisin.bonus_voisins_plafond * _facteur_engrenage(plateau, case + direction, regles))
 	return bonus
 
@@ -83,7 +93,7 @@ static func cadence_tourelle(plateau: Plateau, alimentees: Dictionary, case: Vec
 	var bonus: float = 0.0
 	for direction: Vector2i in VOISINS:
 		var voisin: PieceDef = plateau.piece_de(case + direction)
-		if voisin != null and voisin.bonus_voisins_tourelle > 0.0 and alimentees.has(case + direction):
+		if voisin != null and voisin.bonus_voisins_tourelle > 0.0 and _donne_bonus(alimentees, case + direction):
 			bonus += voisin.bonus_voisins_tourelle * _facteur_engrenage(plateau, case + direction, regles)
 	return 1.0 + bonus
 

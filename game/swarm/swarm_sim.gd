@@ -18,6 +18,16 @@ const ENNEMI := UniteDef.Camp.ENNEMI
 const SANS_ORIGINE := Vector2i(-99999, -99999)
 ## Intervalle (secondes de simulation) entre deux recalculs du chemin vers les ennemis.
 const RECALCUL_PISTE := 0.2
+## Playtest 3 (« suivi strict des chemins ») : marge entre une unité et le bord d'herbe de la route.
+const MARGE_ROUTE := 0.28
+## Demi-largeur du tablier d'un Pont (les unités montent dessus : elles s'y serrent un peu plus).
+const DEMI_TABLIER := 0.5
+## Hauteur du tablier d'un Pont et longueur de la marche d'accès (mètres), lues par le visuel des nuées : les jouets
+## sautent sur le pont juste avant sa culée, comme sur une marche.
+const HAUTEUR_PONT := 0.6
+const RAMPE_PONT := 0.3
+## Pas d'échantillonnage (mètres) pour vérifier qu'une poursuite en ligne droite reste sur la route.
+const PAS_VOIE := 0.5
 
 
 ## Une cellule de deux mètres conserve les indices locaux et son rectangle occupé.
@@ -95,6 +105,13 @@ var _pistes: Array[Dictionary] = [{}, {}]
 # Cases de chemin sur un trajet entrée → horloge (les autres sont des culs-de-sac).
 var _utiles: Dictionary = {}
 var _attente_piste: float = 0.0
+# Playtest 3 : zone autorisée de chaque case de route (Rect2 en mètres) ; cases d'herbe libres → case suivante vers la
+# route (les jouets contournent les bâtiments) ; cases occupées par une pièce ; ponts [centre, axe de la route].
+var _couloirs: Dictionary[Vector2i, Rect2] = {}
+var _libres: Dictionary[Vector2i, Vector2i] = {}
+var _profondeurs_libres: Dictionary[Vector2i, int] = {}
+var _occupees: Dictionary[Vector2i, bool] = {}
+var _ponts: Array[PackedVector2Array] = []
 # Armure prêtée à chaque ennemi par un porte-bouclier voisin (même indice que les ennemis), recalculée à chaque pas.
 var _boucliers := PackedFloat32Array()
 
@@ -139,6 +156,137 @@ func configurer(plateau: Plateau, ratio: float = 1.0) -> void:
 			_objectifs[ALLIE][case] = branches[0]
 		elif branches.size() > 1:
 			_branches[case] = branches
+	_tracer_couloirs(plateau)
+
+
+# Playtest 3 : les unités au sol ne quittent plus la route et ne traversent plus les bâtiments.
+# - `_couloirs` : rectangle autorisé de chaque case de route (une marge du côté de l'herbe, rien du côté d'une autre
+#   case de route) ; le tablier d'un Pont est plus étroit.
+# - `_libres` : parcours en largeur depuis la route à travers l'herbe sans pièce ; un jouet né derrière les
+#   engrenages rejoint la route de case libre en case libre, sans passer à travers un atelier.
+func _tracer_couloirs(plateau: Plateau) -> void:
+	_couloirs.clear()
+	_libres.clear()
+	_profondeurs_libres.clear()
+	_occupees.clear()
+	_ponts.clear()
+	for case: Vector2i in plateau.coords_pieces():
+		if not _distances.has(case):
+			_occupees[case] = true
+	var demi: float = MAILLE / 2.0
+	var file: Array[Vector2i] = []
+	for case: Vector2i in _distances:
+		var centre: Vector2 = Vector2(case) * MAILLE
+		var gauche: bool = _distances.has(case + Vector2i.LEFT)
+		var droite: bool = _distances.has(case + Vector2i.RIGHT)
+		var haut: bool = _distances.has(case + Vector2i.UP)
+		var bas: bool = _distances.has(case + Vector2i.DOWN)
+		var marge_x: float = MARGE_ROUTE
+		var marge_y: float = MARGE_ROUTE
+		var piece: Plateau.PieceDef = plateau.piece_de(case)
+		if piece != null and piece.sur_route:
+			# Le tablier suit la route : axe X si la route continue à gauche ou à droite, sinon axe Y.
+			var axe: Vector2 = Vector2.RIGHT if (gauche or droite) and not (haut or bas) else Vector2.DOWN
+			if axe == Vector2.RIGHT:
+				marge_y = demi - DEMI_TABLIER
+			else:
+				marge_x = demi - DEMI_TABLIER
+			_ponts.append(PackedVector2Array([centre, axe]))
+		var x0: float = centre.x - demi + (0.0 if gauche else marge_x)
+		var x1: float = centre.x + demi - (0.0 if droite else marge_x)
+		var y0: float = centre.y - demi + (0.0 if haut else marge_y)
+		var y1: float = centre.y + demi - (0.0 if bas else marge_y)
+		_couloirs[case] = Rect2(x0, y0, x1 - x0, y1 - y0)
+		_profondeurs_libres[case] = 0
+		file.append(case)
+	var tete: int = 0
+	while tete < file.size():
+		var case: Vector2i = file[tete]
+		tete += 1
+		for direction: Vector2i in ChampFlux.VOISINS:
+			var voisin: Vector2i = case + direction
+			if _profondeurs_libres.has(voisin) or _occupees.has(voisin) or not plateau.a_sol(voisin):
+				continue
+			_profondeurs_libres[voisin] = _profondeurs_libres[case] + 1
+			_libres[voisin] = case
+			_objectifs[ALLIE][voisin] = Vector2(case) * MAILLE
+			file.append(voisin)
+
+
+## Point de sortie des jouets d'un atelier (playtest 3) : sur la route s'il la borde, sinon du côté de la case libre
+## qui mène le plus vite à la route (jamais à travers un engrenage ou un autre bâtiment). `Vector2.INF` si l'atelier
+## est enfermé : l'appelant garde alors son ancien point de sortie.
+func sortie_atelier(case: Vector2i) -> Vector2:
+	var meilleure: Vector2i = Vector2i.ZERO
+	var profondeur_min: int = 1 << 30
+	for direction: Vector2i in ChampFlux.VOISINS:
+		var profondeur: int = _profondeurs_libres.get(case + direction, -1)
+		if profondeur >= 0 and profondeur < profondeur_min:
+			profondeur_min = profondeur
+			meilleure = direction
+	if meilleure == Vector2i.ZERO:
+		return Vector2.INF
+	# Sur la route : au bord de l'atelier. Dans l'herbe : un peu à l'intérieur de la case libre, pour que le jouet
+	# s'y trouve dès sa naissance.
+	var recul: float = MAILLE / 2.0 + (MARGE_ROUTE if profondeur_min == 0 else 0.4)
+	return Vector2(case) * MAILLE + Vector2(meilleure) * recul
+
+
+## Hauteur du sol sous une unité (playtest 3) : 0 partout, sauf sur le tablier d'un Pont et ses deux rampes.
+## Le visuel des nuées s'en sert pour faire monter les unités sur le pont au lieu de le traverser.
+func relief(lieu: Vector2) -> float:
+	var hauteur: float = 0.0
+	for pont: PackedVector2Array in _ponts:
+		var ecart: Vector2 = lieu - pont[0]
+		var long: float = absf(ecart.dot(pont[1]))
+		var large: float = absf(ecart.dot(pont[1].orthogonal()))
+		if large > MAILLE / 2.0 or long >= MAILLE / 2.0 + RAMPE_PONT:
+			continue
+		hauteur = maxf(hauteur, HAUTEUR_PONT * minf(1.0, (MAILLE / 2.0 + RAMPE_PONT - long) / RAMPE_PONT))
+	return hauteur
+
+
+## Indique si le plateau porte un Pont (évite de calculer le relief pour rien).
+func a_du_relief() -> bool:
+	return not _ponts.is_empty()
+
+
+# Vrai si le segment a → b reste sur des cases de route : sinon une poursuite en ligne droite couperait par l'herbe.
+func _voie_libre(a: Vector2, b: Vector2) -> bool:
+	if _distances.is_empty():
+		return true  # pas de plateau (tests de combat) : rien à couper
+	var longueur: float = a.distance_to(b)
+	var pas: int = ceili(longueur / PAS_VOIE)
+	for k: int in range(0, pas + 1):
+		var point: Vector2 = a.lerp(b, float(k) / maxf(1.0, float(pas)))
+		if not _distances.has(Vector2i((point / MAILLE).round())):
+			return false
+	return true
+
+
+# Garde chaque unité au sol dans son couloir (appelé après la séparation, qui pousse les unités de côté).
+# Une unité sur la route n'entre que dans une case de route ; une unité dans l'herbe n'entre jamais dans une case
+# occupée par un bâtiment.
+func _contenir(nuee: Nuee) -> void:
+	if _couloirs.is_empty():
+		return
+	var demi: float = MAILLE / 2.0 - 0.02
+	for i: int in nuee.suivants.size():
+		if nuee.modeles[i].volant:
+			continue
+		var lieu: Vector2 = nuee.suivants[i]
+		var case := Vector2i((lieu / MAILLE).round())
+		if _couloirs.has(case):
+			var couloir: Rect2 = _couloirs[case]
+			nuee.suivants[i] = lieu.clamp(couloir.position, couloir.end)
+			continue
+		var avant := Vector2i((nuee.lieux[i] / MAILLE).round())
+		if _couloirs.has(avant):
+			var couloir: Rect2 = _couloirs[avant]
+			nuee.suivants[i] = lieu.clamp(couloir.position, couloir.end)
+		elif _occupees.has(case) and not _occupees.has(avant):
+			var centre: Vector2 = Vector2(avant) * MAILLE
+			nuee.suivants[i] = lieu.clamp(centre - Vector2(demi, demi), centre + Vector2(demi, demi))
 
 
 # Cases de chemin situées sur un trajet entrée → horloge (en remontant les distances décroissantes depuis
@@ -311,6 +459,7 @@ func avancer(dt: float) -> void:
 
 	for nuee: Nuee in _camps:
 		_separer(nuee, dt)
+		_contenir(nuee)
 		nuee.lieux = nuee.suivants
 	for camp: int in [ALLIE, ENNEMI]:
 		var nuee: Nuee = _camps[camp]
@@ -418,10 +567,16 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 		return
 	nuee.recharges[i] = maxf(0.0, recharge - dt)
 	var destination: Vector2
-	if cible >= 0 and meilleur < POURSUITE * POURSUITE:
+	# Playtest 3 : on ne poursuit en ligne droite que si le trajet reste sur la route ; sinon on suit la route
+	# (plus de raccourci par l'herbe entre deux boucles du chemin).
+	var en_vue: bool = cible >= 0 and meilleur < POURSUITE * POURSUITE
+	if en_vue and _voie_libre(lieu, adverse.lieux[cible]):
 		destination = adverse.lieux[cible]
 	else:
-		destination = _objectif_flux(camp, lieu, nuee.choix[i], melee)
+		# Ennemi en vue mais derrière un virage : on le rejoint par la route, même au-delà du poste de garde
+		# (comme le faisait la poursuite en ligne droite). Sans cela, la garde tenait les jouets immobiles à un
+		# mètre d'un ennemi caché par le coin (banc : la vague 6 passait).
+		destination = _objectif_flux(camp, lieu, nuee.choix[i], melee, en_vue)
 	if destination != lieu:
 		nuee.suivants[i] = lieu.move_toward(destination, modele.vitesse * dt)
 		nuee.angles[i] = (destination - lieu).angle()
@@ -457,7 +612,7 @@ func _tracer_pistes() -> void:
 					file.append(voisin)
 
 
-func _objectif_flux(camp: int, lieu: Vector2, choix: int, melee: bool = false) -> Vector2:
+func _objectif_flux(camp: int, lieu: Vector2, choix: int, melee: bool = false, en_poursuite: bool = false) -> Vector2:
 	var case := Vector2i((lieu / MAILLE).round())
 	var limite: float = garde_ratio * _distance_max
 	if camp == ALLIE and _distances.has(case):
@@ -466,7 +621,7 @@ func _objectif_flux(camp: int, lieu: Vector2, choix: int, melee: bool = false) -
 		var pas: Vector2i = _pistes[0 if melee else 1].get(case, case)
 		if pas != case:
 			var distance_pas: int = _distances.get(pas, -1)
-			if distance_pas <= limite or distance_pas < _distances[case]:
+			if en_poursuite or distance_pas <= limite or distance_pas < _distances[case]:
 				return Vector2(pas) * MAILLE
 			# Pas interdit (il sortirait du poste) : on tient la position. Sinon la patrouille pouvait l'envoyer
 			# sur l'autre branche d'une fourche, d'où la piste le ramenait : aller-retour sans fin (relecture T13a).

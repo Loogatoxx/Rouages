@@ -183,7 +183,7 @@ func _remplir_stats(piece: PieceDef) -> void:
 				_ajouter_stat("cadence", "⏱", "+%d %%" % roundi(piece.bonus_voisins_tourelle * facteur * 100.0), detail)
 	if piece.type == PieceDef.Type.GENERATEUR:
 		var Energie = preload("res://game/board/energie.gd")
-		var capacite: int = piece.capacite_generateur + piece.capacite_par_niveau * (_plateau.niveau_de(_case) - 1)
+		var capacite: int = Energie.capacite_du_generateur(_plateau, _case)
 		_ajouter_stat("engrenage_or", "⚙", "%d/%d" % [Energie.consommateurs_du_generateur(_plateau, _case), capacite],
 				tr("Pièces alimentées / capacité du générateur") + "\n" + tr(piece.description))
 	if piece.type != PieceDef.Type.HORLOGE:

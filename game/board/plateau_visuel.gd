@@ -8,12 +8,17 @@ const ExtensionDef = preload("res://game/board/extension_def.gd")
 const Extension = preload("res://game/board/extension.gd")
 const ChampFlux = preload("res://game/swarm/champ_flux.gd")
 const Materiaux = preload("res://game/core/materiaux.gd")
+const DecoupeTourelle = preload("res://game/board/decoupe_tourelle.gd")
 const MODELE_HORLOGE := "res://assets/final/horloge/horloge.glb"
 
 # Masques des rigoles mesurées sur les socles exportés (N, E, S, O).
 const PORTS_DU_KIT := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage_t": 11, &"engrenage_croix": 15,
 		&"pont": 10, &"generateur": 15}
 const VOISINS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
+## Tourelles dont la tête pivote seule (playtest 3) : [seuil de coupe (fraction de la hauteur), découpe par morceaux,
+## le fût regarde vers +Z dans le modèle]. Une tourelle absente d'ici ne pivote pas (le carillon est un clocher).
+const TETES := {&"tourelle_canon": [0.2, false, true], &"tourelle_mortier": [0.5, true, true]}
+static var _decoupes: Dictionary[StringName, DecoupeTourelle.Decoupe] = {}
 const ECHELLE_PLATEAU := GrilleMonde.TAILLE_CASE / 2.0
 
 @onready var _source: PlateauNoeud = get_parent()
@@ -58,8 +63,9 @@ func _ecouter_tirs() -> void:
 		partie.sim.tir.connect(_sur_tir)
 
 
-# Visée et recul : la tourelle tourne vers l'impact (le socle est rond, la dent de laiton du port reste en place),
-# puis se tasse et revient comme un ressort. Procédural en attendant les animations Hyper3D (R1, exception c).
+# Visée et recul (playtest 3) : seule la tête de la tourelle (nœud « Tete », voir `_separer_tete`) pivote vers
+# l'impact ; le socle reste fixe. Puis la tête se tasse et revient comme un ressort. Une tourelle sans tête séparée
+# (carillon) ne pivote pas : elle se tasse seulement.
 func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
 	var case := Vector2i((depart / GrilleMonde.TAILLE_CASE).round())
 	var racine: Node3D = _tourelles.get(case)
@@ -71,18 +77,78 @@ func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
 	var precedent: Tween = _tirs_tourelles.get(case)
 	if precedent != null and precedent.is_valid():
 		precedent.kill()
-	var direction: Vector2 = arrivee - depart
-	# Le canon des modèles du kit regarde vers −Z : angle de lacet qui l'aligne sur la cible.
-	var cap: float = atan2(-direction.x, -direction.y)
-	if modele.get_meta(&"face_plus_z", false):
-		cap += PI
-	var actuel: float = modele.rotation.y
-	cap = actuel + wrapf(cap - actuel, -PI, PI)
-	var animation: Tween = modele.create_tween()
+	var tete: Node3D = modele.find_child("Tete", true, false) as Node3D
+	var mobile: Node3D = tete if tete != null else modele
+	var repos: Vector3 = mobile.get_meta(&"echelle_repos", mobile.scale)
+	mobile.set_meta(&"echelle_repos", repos)
+	var animation: Tween = mobile.create_tween()
 	_tirs_tourelles[case] = animation
-	animation.tween_property(modele, "rotation:y", cap, 0.08).set_trans(Tween.TRANS_SINE)
-	animation.tween_property(modele, "scale", Vector3(1.08, 0.86, 1.08), 0.05)
-	animation.tween_property(modele, "scale", Vector3.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if tete != null:
+		var direction: Vector2 = arrivee - depart
+		# Lacet (dans le repère de la case) qui aligne le fût sur la cible, selon que le modèle regarde vers +Z ou −Z.
+		var cap: float = atan2(direction.x, direction.y) if tete.get_meta(&"avant_plus_z", false) \
+				else atan2(-direction.x, -direction.y)
+		cap -= modele.rotation.y  # la tête est un enfant du modèle, déjà tourné selon ses ports
+		var actuel: float = tete.rotation.y
+		cap = actuel + wrapf(cap - actuel, -PI, PI)
+		animation.tween_property(tete, "rotation:y", cap, 0.08).set_trans(Tween.TRANS_SINE)
+	animation.tween_property(mobile, "scale", repos * Vector3(1.08, 0.86, 1.08), 0.05)
+	animation.tween_property(mobile, "scale", repos, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+# Sépare le maillage d'une tourelle en socle fixe + tête pivotante (une seule découpe par modèle, gardée en mémoire).
+func _separer_tete(modele: Node3D, id: StringName) -> void:
+	if not TETES.has(id):
+		return
+	var volume: MeshInstance3D = _premier_maillage(modele)
+	if volume == null:
+		return
+	var reglage: Array = TETES[id]
+	if not _decoupes.has(id):
+		_decoupes[id] = DecoupeTourelle.decouper(volume.mesh, reglage[0], reglage[1])
+	var decoupe: DecoupeTourelle.Decoupe = _decoupes[id]
+	if decoupe == null:
+		return
+	volume.mesh = decoupe.socle
+	var tete := Node3D.new()
+	tete.name = "Tete"
+	tete.set_meta(&"avant_plus_z", reglage[2])
+	volume.get_parent().add_child(tete)
+	# Même repère que le socle, déplacé sur le pivot : la tête tourne autour de son propre axe.
+	tete.transform = volume.transform.translated_local(decoupe.pivot)
+	var haut := MeshInstance3D.new()
+	haut.mesh = decoupe.tete
+	haut.position = -decoupe.pivot
+	tete.add_child(haut)
+
+
+# Playtest 3 (« les troupes traversent le Pont ») : le tablier est tourné dans le sens de la route et élargi, les
+# unités marchent dessus (`SwarmSim.relief`) ; l'arbre de laiton, lui, passe dessous, d'une rive d'herbe à l'autre.
+# Le dessus du tablier est dégagé (paliers et arceaux de l'ancien arbre) pour que rien ne traverse les jouets.
+static var _tablier_degage: Mesh
+
+func _amenager_pont(modele: Node3D) -> void:
+	var structure := modele.find_child("Pont_Structure", true, false) as MeshInstance3D
+	var arbre := modele.find_child("Arbre_Engrenage", true, false) as Node3D
+	if structure == null or arbre == null:
+		return
+	if _tablier_degage == null:
+		_tablier_degage = DecoupeTourelle.degager(structure.mesh, 0.57, 0.36)
+	structure.mesh = _tablier_degage
+	structure.rotation.y = PI / 2.0
+	structure.scale = Vector3(1.0, 1.0, 1.6)
+	arbre.position.y = 0.2
+	arbre.scale = Vector3(1.0, 0.9, 0.9)
+
+
+func _premier_maillage(noeud: Node) -> MeshInstance3D:
+	if noeud is MeshInstance3D and (noeud as MeshInstance3D).mesh != null:
+		return noeud
+	for enfant: Node in noeud.get_children():
+		var trouve: MeshInstance3D = _premier_maillage(enfant)
+		if trouve != null:
+			return trouve
+	return null
 
 
 ## Grande table d'établi sous la maquette : sans elle, le plateau flotte sur un fond uni (DA v2, « maquette posée »).
@@ -404,6 +470,8 @@ func _reconstruire() -> void:
 				null if _source.alimentees.has(c) else _gris)
 		_pieces.add_child(racine)
 		racine.position = GrilleMonde.vers_monde(c)
+		if _source.surcharge.has(c):
+			_marquer_plein(racine)
 		if piece.type == PieceDef.Type.ATELIER:
 			_ateliers[c] = racine
 		elif piece.type == PieceDef.Type.TOURELLE:
@@ -416,6 +484,33 @@ func _reconstruire() -> void:
 			var rotor := racine.find_child("Rotor", true, false) as Node3D
 			if rotor != null:
 				_rotors.append(rotor)
+
+
+# Playtest 3 : bâtiment relié à un générateur déjà plein. Il reste gris, avec un écriteau « Plein » qui flotte et un
+# liseré rouge au sol : on comprend tout de suite que c'est LUI qui ne tourne pas, et pourquoi.
+func _marquer_plein(racine: Node3D) -> void:
+	var rouge := StandardMaterial3D.new()
+	rouge.albedo_color = Color("#D9483B")
+	rouge.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	var anneau := TorusMesh.new()
+	anneau.inner_radius = 0.84
+	anneau.outer_radius = 0.96
+	_ajouter_forme(racine, anneau, Vector3.UP * 0.05, rouge).scale.y = 0.2
+	var ecriteau := Label3D.new()
+	ecriteau.text = tr("Plein")
+	ecriteau.font = preload("res://game/ui/theme_rouages.tres").default_font
+	ecriteau.font_size = 96
+	ecriteau.pixel_size = 0.006
+	ecriteau.modulate = Color("#D9483B")
+	ecriteau.outline_modulate = Color("#FFF6E2")
+	ecriteau.outline_size = 28
+	ecriteau.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	ecriteau.no_depth_test = true
+	ecriteau.position.y = 2.2
+	racine.add_child(ecriteau)
+	var flottement: Tween = ecriteau.create_tween().set_loops().set_trans(Tween.TRANS_SINE)
+	flottement.tween_property(ecriteau, "position:y", 2.45, 0.6)
+	flottement.tween_property(ecriteau, "position:y", 2.2, 0.6)
 
 
 # Le modèle de l'horloge a sa porte (cadran + arche) vers le nord (-Z). On la tourne vers la case de chemin qui la touche
@@ -455,7 +550,10 @@ func creer_piece(piece: PieceDef, ports: int, teinte: Material = null) -> Node3D
 			if PieceDef.tourner_ports(ports_origine, tour) == ports:
 				modele.rotate_y(-tour * PI / 2.0)
 				break
+		if piece.sur_route:
+			_amenager_pont(modele)
 		if piece.type == PieceDef.Type.TOURELLE:
+			_separer_tete(modele, piece.id)
 			_colorer_rarete(modele, piece.rarete)
 			# Tourelle Hyper3D : au repos, le fût regarde vers l'extérieur (dos au port), comme le kit.
 			if modele.get_meta(&"face_plus_z", false):
