@@ -19,6 +19,7 @@ Run="*res://game/core/run.gd"
 Sons="*res://game/core/sons.gd"
 Fenetre="*res://game/core/fenetre.gd"
 Graphismes="*res://game/core/graphismes.gd"
+Touches="*res://game/core/touches.gd"
 
 [display]
 

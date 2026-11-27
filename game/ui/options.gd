@@ -12,6 +12,10 @@ var _general: Array[Control] = []
 var _page_graphismes: VBoxContainer
 var _onglets: Array[Button] = []
 var _choix: Dictionary[StringName, Button] = {}
+var _page_touches: VBoxContainer
+var _boutons_touches: Dictionary[StringName, Button] = {}
+## Action en attente d'une nouvelle touche (vide si aucune).
+var _ecoute: StringName = &""
 
 
 func _ready() -> void:
@@ -36,9 +40,9 @@ func _creer_onglets() -> void:
 	barre.alignment = BoxContainer.ALIGNMENT_CENTER
 	barre.add_theme_constant_override(&"separation", 10)
 	var groupe := ButtonGroup.new()
-	for i: int in 2:
+	for i: int in 3:
 		var onglet := Button.new()
-		onglet.text = ["Général", "Graphismes"][i]
+		onglet.text = ["Général", "Graphismes", "Touches"][i]
 		onglet.toggle_mode = true
 		onglet.button_group = groupe
 		onglet.custom_minimum_size = Vector2(180, 0)
@@ -66,7 +70,51 @@ func _creer_onglets() -> void:
 	_ajouter_choix(grille, &"msaa", "Lisse les bords des objets 3D (anticrénelage).")
 	_ajouter_choix(grille, &"echelle", "Résolution de la scène 3D : plus basse = beaucoup moins de calcul.")
 	Graphismes.change.connect(_ecrire_graphismes)
+	_creer_page_touches(colonne)
 	_montrer_page(0)
+
+
+# Page « Touches » (P2-13) : chaque action, sa touche ; un clic puis une touche (ou un bouton de souris) la remplace.
+func _creer_page_touches(colonne: VBoxContainer) -> void:
+	_page_touches = VBoxContainer.new()
+	_page_touches.add_theme_constant_override(&"separation", 8)
+	colonne.add_child(_page_touches)
+	colonne.move_child(_page_touches, 3)
+	var grille := GridContainer.new()
+	grille.columns = 4
+	grille.add_theme_constant_override(&"h_separation", 10)
+	grille.add_theme_constant_override(&"v_separation", 6)
+	_page_touches.add_child(grille)
+	for ligne: Array in Touches.ACTIONS:
+		var libelle := Label.new()
+		libelle.text = ligne[1]
+		libelle.custom_minimum_size.x = 210
+		libelle.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		libelle.add_theme_font_size_override(&"font_size", 16)
+		grille.add_child(libelle)
+		var bouton := Button.new()
+		bouton.custom_minimum_size = Vector2(130, 0)
+		bouton.add_theme_font_size_override(&"font_size", 16)
+		bouton.pressed.connect(_ecouter.bind(ligne[0]))
+		grille.add_child(bouton)
+		_boutons_touches[ligne[0]] = bouton
+	var remettre := Button.new()
+	remettre.text = "Touches d’origine"
+	remettre.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	remettre.pressed.connect(func() -> void:
+		Touches.reinitialiser()
+		_ecrire_touches())
+	_page_touches.add_child(remettre)
+
+
+func _ecouter(action: StringName) -> void:
+	_ecoute = action
+	_ecrire_touches()
+
+
+func _ecrire_touches() -> void:
+	for action: StringName in _boutons_touches:
+		_boutons_touches[action].text = tr("Appuie…") if action == _ecoute else Touches.nom_touche(action)
 
 
 func _ajouter_choix(parent: Container, cle: StringName, aide: String) -> void:
@@ -82,6 +130,10 @@ func _montrer_page(indice: int) -> void:
 	for controle: Control in _general:
 		controle.visible = indice == 0
 	_page_graphismes.visible = indice == 1
+	if _page_touches != null:
+		_page_touches.visible = indice == 2
+		_ecoute = &""
+		_ecrire_touches()
 	_onglets[indice].set_pressed_no_signal(true)
 	_ecrire_graphismes()
 
@@ -146,6 +198,19 @@ func ouvrir() -> void:
 
 
 func _input(evenement: InputEvent) -> void:
+	if visible and _ecoute != &"":
+		# En attente d'une touche : Échap annule, toute autre touche ou bouton de souris devient la nouvelle touche.
+		var touche := evenement as InputEventKey
+		var clic := evenement as InputEventMouseButton
+		if (touche != null and touche.pressed and not touche.echo) or (clic != null and clic.pressed):
+			get_viewport().set_input_as_handled()
+			if touche != null and touche.keycode == KEY_ESCAPE:
+				_ecoute = &""
+			else:
+				Touches.assigner(_ecoute, evenement)
+				_ecoute = &""
+			_ecrire_touches()
+		return
 	if visible and (evenement.is_action_pressed(&"annuler") or evenement.is_action_pressed(&"pause")):
 		get_viewport().set_input_as_handled()
 		_fermer()

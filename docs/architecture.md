@@ -311,3 +311,6 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
 - **Banc** : pose un canon avant la V4 et un mortier avant la V7 en bord de route (tourelles des coffres, alimentation
   supposée) ; 6e argument `sans_tourelles`. V6 adoucie (6 cuirassés). Repères : moyen 0-36 PV, parfait 0-4 PV ; le
   résultat bascule vite autour du seuil (une cadence ×0,9 fait mourir le profil parfait en V6).
+- **Touches** (P2-13, autoload `Touches`) : 16 actions réassignables (clavier ou souris), seule la touche principale est
+  remplacée, une touche reprise est retirée à l'ancienne action, enregistrement dans `reglages.cfg` [touches]
+  (`chemin_reglages` remplaçable par les tests), « Touches d'origine ». Onglet « Touches » dans les Options.

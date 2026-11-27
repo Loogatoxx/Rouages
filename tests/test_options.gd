@@ -49,3 +49,26 @@ func _retablir_reglages(chemin: String) -> void:
 	Sons._chemin_reglages = Sons.REGLAGES
 	Sons._lire_reglages()
 	DirAccess.remove_absolute(chemin)
+
+
+## Réassignation des touches (P2-13) : la nouvelle touche remplace la principale, est retirée à l'action qui l'avait,
+## survit à une relecture et « Touches d'origine » rend tout.
+func test_reassignation_touches() -> String:
+	var chemin: String = OS.get_temp_dir().path_join("rouages-touches-%d.cfg" % Time.get_ticks_usec())
+	Touches.chemin_reglages = chemin
+	var touche := InputEventKey.new()
+	touche.physical_keycode = KEY_J
+	Touches.assigner(&"boutique", touche)
+	var ok_assigne: bool = InputMap.action_get_events(&"boutique")[0].is_match(touche, true)
+	Touches.assigner(&"pause", touche)
+	var retiree: bool = InputMap.action_get_events(&"boutique").is_empty() \
+			or not InputMap.action_get_events(&"boutique")[0].is_match(touche, true)
+	Touches.reinitialiser()
+	var origine: bool = not InputMap.action_get_events(&"pause")[0].is_match(touche, true)
+	Touches.chemin_reglages = Touches.REGLAGES
+	DirAccess.remove_absolute(chemin)
+	if not ok_assigne:
+		return "La touche choisie doit devenir la touche principale."
+	if not retiree:
+		return "Une touche reprise par une autre action doit être retirée de la première."
+	return "" if origine else "« Touches d'origine » doit rendre les touches du projet."
