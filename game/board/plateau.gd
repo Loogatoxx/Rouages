@@ -17,6 +17,12 @@ var _rotations: Dictionary[Vector2i, int] = {}
 ## dernier qui reste éteinte, jamais une pièce déjà en marche.
 var _ordres: Dictionary[Vector2i, int] = {}
 var _prochain_ordre: int = 0
+## Poste de garde choisi par le joueur pour un atelier (case de route) ; absent = poste par défaut, devant l'atelier.
+var _postes: Dictionary[Vector2i, Vector2i] = {}
+## Valeur de `poste_de` quand le joueur n'a rien choisi.
+const SANS_POSTE := Vector2i(-99999, -99999)
+## Distance maximale (en cases, sans diagonale) entre un atelier et le poste de garde qu'on lui choisit.
+const PORTEE_POSTE := 3
 
 
 ## Définit le sol d’une case et signale tout changement.
@@ -45,6 +51,7 @@ func dupliquer() -> Plateau:
 	copie._rotations = _rotations.duplicate()
 	copie._niveaux = _niveaux.duplicate()
 	copie._ordres = _ordres.duplicate()
+	copie._postes = _postes.duplicate()
 	copie._prochain_ordre = _prochain_ordre
 	return copie
 
@@ -91,6 +98,7 @@ func retirer(coord: Vector2i) -> PieceDef:
 	_niveaux.erase(coord)
 	_rotations.erase(coord)
 	_ordres.erase(coord)
+	_postes.erase(coord)
 	modifie.emit()
 	return piece
 
@@ -122,6 +130,26 @@ func tourner(coord: Vector2i) -> bool:
 ## Rang de pose de la pièce (plus petit = posée plus tôt) ; une case libre a le rang le plus récent.
 func ordre_de(coord: Vector2i) -> int:
 	return _ordres.get(coord, _prochain_ordre)
+
+
+## Poste de garde choisi pour l'atelier de `coord` (case de route), ou `SANS_POSTE`.
+func poste_de(coord: Vector2i) -> Vector2i:
+	return _postes.get(coord, SANS_POSTE)
+
+
+## Vrai si `route` est une case de route assez proche de l'atelier de `coord` pour y planter son drapeau.
+func poste_possible(coord: Vector2i, route: Vector2i) -> bool:
+	return sol_de(route) == Sol.CHEMIN and absi(route.x - coord.x) + absi(route.y - coord.y) <= PORTEE_POSTE
+
+
+## Fixe le poste de garde d'un atelier sur une case de route (playtest 3 : le joueur choisit où l'on se bat).
+func definir_poste(coord: Vector2i, route: Vector2i) -> bool:
+	var piece: PieceDef = piece_de(coord)
+	if piece == null or piece.type != PieceDef.Type.ATELIER or not poste_possible(coord, route):
+		return false
+	_postes[coord] = route
+	modifie.emit()
+	return true
 
 
 ## Retrouve la pièce posée sur la case.

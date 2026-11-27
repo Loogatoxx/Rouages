@@ -21,6 +21,11 @@ var _rotations_valides: Dictionary[Vector2i, int] = {}
 ## Anneau de portée au sol (P2-21) : à la pose d'une tourelle, sur la tourelle choisie ou survolée.
 var _portee: Node3D = Node3D.new()
 var _rayon_portee: float = -1.0
+## Playtest 3 : atelier dont on choisit le poste de garde (le prochain clic sur une route à portée y plante son
+## drapeau), et repères au sol des cases possibles.
+const SANS_ATELIER := Vector2i(-99999, -99999)
+var _atelier_drapeau: Vector2i = SANS_ATELIER
+var _reperes_drapeau: Node3D
 
 
 func _ready() -> void:
@@ -34,6 +39,7 @@ func _ready() -> void:
 	_teinte.render_priority = 1
 	_teinte.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_teinte.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_panneau.poste_demande.connect(_choisir_poste)
 	Events.tuile_choisie.connect(_choisir)
 	Events.phase_changee.connect(_changer_phase)
 	Events.plateau_modifie.connect(_actualiser_marqueurs)
@@ -44,7 +50,42 @@ func _pose_autorisee(phase: int) -> bool:
 	return phase == Run.Phase.CONSTRUCTION or phase == Run.Phase.VAGUE
 
 
+# Entre dans le choix du poste de garde de l'atelier `case` : les cases de route à portée sont surlignées.
+func _choisir_poste(case: Vector2i) -> void:
+	_quitter_poste()
+	Events.tuile_choisie.emit(&"")
+	_atelier_drapeau = case
+	_reperes_drapeau = Node3D.new()
+	add_child(_reperes_drapeau)
+	var bleu := StandardMaterial3D.new()
+	bleu.albedo_color = Color("#6FB1E8", 0.6)
+	bleu.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	bleu.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	var dalle := BoxMesh.new()
+	dalle.size = Vector3(GrilleMonde.TAILLE_CASE * 0.82, 0.04, GrilleMonde.TAILLE_CASE * 0.82)
+	var portee: int = _source.plateau.PORTEE_POSTE
+	for dx: int in range(-portee, portee + 1):
+		for dy: int in range(-portee, portee + 1):
+			var route: Vector2i = case + Vector2i(dx, dy)
+			if _source.plateau.poste_possible(case, route) and _source.plateau.piece_de(route) == null:
+				var repere := MeshInstance3D.new()
+				repere.mesh = dalle
+				repere.material_override = bleu
+				repere.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				repere.position = GrilleMonde.vers_monde(route) + Vector3.UP * 0.07
+				_reperes_drapeau.add_child(repere)
+	Events.message_joueur.emit(tr("Clique sur une case de route en bleu : l’escouade ira tenir ce poste."))
+
+
+func _quitter_poste() -> void:
+	_atelier_drapeau = SANS_ATELIER
+	if _reperes_drapeau != null:
+		_reperes_drapeau.queue_free()
+		_reperes_drapeau = null
+
+
 func _changer_phase(phase: int) -> void:
+	_quitter_poste()
 	_panneau.fermer()
 	if not _pose_autorisee(phase):
 		Events.tuile_choisie.emit(&"")
@@ -56,6 +97,8 @@ func _verifier_stock() -> void:
 
 
 func _choisir(id: StringName) -> void:
+	if id != &"":
+		_quitter_poste()
 	_panneau.fermer()
 	if _fantome != null:
 		_fantome.hide()
@@ -225,6 +268,18 @@ func _construire_portee(rayon: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _atelier_drapeau != SANS_ATELIER:
+		if event.is_action_pressed("annuler") or event.is_action_pressed("tourner_tuile"):
+			_quitter_poste()
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("poser_tuile") and _survoler():
+			if _source.plateau.definir_poste(_atelier_drapeau, _case):
+				Sons.jouer(&"pose", 0.05)
+				_quitter_poste()
+			else:
+				Events.message_joueur.emit(tr("Le poste doit être une case de route à 3 cases de l’atelier au plus."))
+			get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("annuler"):
 		if _choix != null:
 			Events.tuile_choisie.emit(&"")

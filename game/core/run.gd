@@ -358,6 +358,16 @@ func choisir_lot(i: int) -> void:
 	changer_phase(Phase.CONSTRUCTION)
 
 
+## Dents d'énergie de l'Horloge (playtest 3, « Tic-tac ») : capacité partagée par les ateliers et les tourelles.
+## Elle grandit après certaines vagues tenues ; en bac à sable elle est illimitée (-1).
+var dents: int:
+	get:
+		if bac_a_sable:
+			return -1
+		var tenues: int = vague_actuelle - (1 if phase == Phase.VAGUE else 0)
+		return regles.dents_apres(tenues) + depart.dents_bonus + int(_bonus(&"dents"))
+
+
 ## Change de phase et prévient les systèmes qui en dépendent.
 func changer_phase(nouvelle: Phase) -> void:
 	if nouvelle != phase:

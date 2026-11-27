@@ -3,21 +3,27 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-27 au soir, après playtest 3, autonomie totale)
-- **Après playtest 3** : cap « Tenir la ligne » (`docs/game_design_p3.md`), roadmap § « Après playtest 3 » (P3-xx).
-  **Lot 1 fait et commité** : chemins stricts, bâtiments contournés, Pont praticable, têtes de tourelles, Générateur
-  légendaire et surcharge inversée, joueur automatique. 130 tests.
-  **Suite (lot 2)** : P3-22 Tic-tac (énergie de l'Horloge en dents : le mécanisme existe déjà dans `Energie`,
-  `cout_energie` + ordre de pose), P3-23 ateliers à 0,5 jouet/s et plafond 5, P3-24 vagues refondues ; puis
-  postes de garde (P3-25), carillon qui ralentit (P3-26), coup de carillon (P3-27), preuve anti-spam (P3-28).
+## État (mis à jour le 2026-11-27, 20 h, après playtest 3, autonomie totale)
+- **Après playtest 3** : cap « Tenir la ligne » (`docs/game_design_p3.md`, § 9 pour les réglages retenus et les
+  mesures), roadmap § « Après playtest 3 » (P3-xx).
+  **Lots 1 et 2 faits et commités** : chemins stricts, Pont, têtes de tourelles, Générateur légendaire ; énergie de
+  l'Horloge en dents, postes de garde (fanions, choix à la souris), ateliers à 0,5 jouet/s, vagues par paquets,
+  joueur automatique à 4 styles, banc refait. 137 tests.
+  **Suite** : lot 3 = P3-26 (carillon qui ralentit, icônes de rôle), P3-27 (coup de carillon), P3-29 (impacts),
+  P3-28 (film d'une vague, durée des vagues : 85 s en V4, 130 s en V10) ; lot 4 = P3-30 (menu en liste + aperçu),
+  P3-31 (aide traduite) ; lot 5 = cadrage, décor, vie ambiante, cartes à mécaniques.
+  **Attend Carlos** : valider `art_refs/hyper3d/lot2/tourelle_carillon.png` et `tourelle_mortier.png` avant la
+  génération Hyper3D ; tester les builds (Windows surtout) ; jouer Boîte à musique et Grand atelier (le joueur
+  automatique ne sait pas poser de Pont).
 - **Joueur automatique** (le juge de l'équilibrage) : sans fenêtre
   `Godot --headless --path . --script res://scripts/joueur_auto.gd -- --fenetre <dossier> <plateau 0-5> <spam|tactique> <graine> 0`
-  (30 s par partie) ; avec captures : `--windowed --resolution 1600x900` et `1` à la place du `0` final (×4, variable
-  `VITESSE=1` pour filmer avec `--write-movie`). Référence avant refonte : 6 victoires sur 6, 150 à 260 jouets vivants.
+  (30 s par partie ; styles `spam`, `masse`, `moyen`, `tactique` ; `CARTE=1` pour le plan du plateau) ; avec captures :
+  `--windowed --resolution 1600x900` et `1` à la place du `0` final (×4, `VITESSE=1` pour filmer avec `--write-movie`).
+  Références : avant refonte, spam 6/6 avec 150 à 260 jouets ; après le lot 2, spam 0/6, masse 0/9, moyen 3/12,
+  tactique 9/12. Toujours 3 graines ou plus : le résultat bascule vite (une ligne tient ou cède).
 - **Pièges du lot 1** : `Engine.time_scale` multiplie le pas physique (multiplier aussi `physics_ticks_per_second`) ;
   `trait` est un mot réservé en GDScript ; `surface_get_arrays` renvoie des tableaux vides en `--headless` pour les
-  maillages `.res` (la découpe des tourelles ne se teste qu'avec une fenêtre) ; le banc entasse ses ateliers autour de
-  l'horloge → depuis que les jouets contournent les bâtiments, ses chiffres ne valent plus (à refaire au lot 2) ;
+  maillages `.res` (la découpe des tourelles ne se teste qu'avec une fenêtre) ; le banc a été refait au lot 2 (`parfait` / `moyen`, plan fixe sur Prairie) ;
   Codex : limite d'usage atteinte à 17 h 30 (fiche de relecture prête : `taches/T14a_relecture_playtest3_lot1.md`).
 
 ## État précédent (2026-11-27 après-midi)

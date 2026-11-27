@@ -15,6 +15,9 @@ class Bilan:
 	var surcharge: Array[Vector2i] = []
 	## Générateur autonome → dents d'énergie consommées sur lui.
 	var charges: Dictionary[Vector2i, int] = {}
+	## Dents consommées sur l'Horloge, et bâtiments qu'elle n'a pas pu servir (compris dans `surcharge`).
+	var charge_horloge: int = 0
+	var surcharge_horloge: Array[Vector2i] = []
 
 
 ## Calcule les pièces alimentées (voir `Bilan.alimentees` pour le sens des valeurs).
@@ -22,12 +25,14 @@ class Bilan:
 ## - les pièces à `portee_generateur` pièces de lui au plus (chaîne courte) ;
 ## - des ateliers et tourelles dans la limite de sa capacité, **dans l'ordre où ils ont été posés** : quand il est
 ##   plein, c'est le dernier bâtiment posé qui reste éteint, jamais un bâtiment déjà en marche.
-static func calculer(plateau: Plateau) -> Dictionary:
-	return analyser(plateau).alimentees
+static func calculer(plateau: Plateau, dents_horloge: int = -1) -> Dictionary:
+	return analyser(plateau, dents_horloge).alimentees
 
 
-## Calcul complet : pièces alimentées, bâtiments en surcharge et charge de chaque générateur.
-static func analyser(plateau: Plateau) -> Bilan:
+## Calcul complet : pièces alimentées, bâtiments en surcharge et charge de chaque source.
+## `dents_horloge` (playtest 3, « Tic-tac ») : énergie de l'Horloge, servie aux ateliers et tourelles de son réseau
+## dans l'ordre de pose ; négatif = illimitée (tests anciens, bac à sable).
+static func analyser(plateau: Plateau, dents_horloge: int = -1) -> Bilan:
 	var bilan := Bilan.new()
 	var horloges: Array[Vector2i] = []
 	var generateurs: Array[Vector2i] = []
@@ -38,6 +43,7 @@ static func analyser(plateau: Plateau) -> Bilan:
 			PieceDef.Type.GENERATEUR:
 				generateurs.append(coord)
 	_propager(plateau, horloges, bilan.alimentees)
+	_rationner_horloge(plateau, bilan, dents_horloge)
 	generateurs.sort()
 	for coord: Vector2i in generateurs:
 		if bilan.alimentees.has(coord):
@@ -88,6 +94,27 @@ static func _propager(plateau: Plateau, sources: Array[Vector2i], profondeurs: D
 			file.append(voisine)
 
 
+# Tic-tac : les bâtiments du réseau de l'Horloge se partagent ses dents, les plus anciens d'abord. Celui qui ne
+# peut pas être servi sort des pièces alimentées (il reste éteint, signalé « Plein »). Un générateur relié au réseau
+# de l'Horloge n'ajoute rien : il transmet comme un engrenage.
+static func _rationner_horloge(plateau: Plateau, bilan: Bilan, dents: int) -> void:
+	var batiments: Array[Vector2i] = []
+	for coord: Vector2i in bilan.alimentees:
+		if _consomme(plateau.piece_de(coord)):
+			batiments.append(coord)
+	batiments.sort_custom(func(a: Vector2i, b: Vector2i) -> bool: return plateau.ordre_de(a) < plateau.ordre_de(b))
+	var reste: int = dents
+	for coord: Vector2i in batiments:
+		var cout: int = plateau.piece_de(coord).cout_energie
+		if dents < 0 or cout <= reste:
+			reste -= cout
+			bilan.charge_horloge += cout
+		else:
+			bilan.alimentees.erase(coord)
+			bilan.surcharge.append(coord)
+			bilan.surcharge_horloge.append(coord)
+
+
 # Réseau d'un générateur autonome : chaîne courte, capacité servie dans l'ordre de pose.
 static func _alimenter_generateur(plateau: Plateau, source: Vector2i, bilan: Bilan) -> void:
 	var piece: PieceDef = plateau.piece_de(source)
@@ -102,7 +129,7 @@ static func _alimenter_generateur(plateau: Plateau, source: Vector2i, bilan: Bil
 		if portee > 0 and distances[coord] >= portee:
 			continue
 		for voisine: Vector2i in _voisines_reliees(plateau, coord):
-			if distances.has(voisine) or bilan.alimentees.has(voisine):
+			if distances.has(voisine) or bilan.alimentees.has(voisine) or bilan.surcharge_horloge.has(voisine):
 				continue
 			distances[voisine] = distances[coord] + 1
 			if _consomme(plateau.piece_de(voisine)):

@@ -374,3 +374,34 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
 - **Rareté Légendaire** (P3-11) : 4e valeur de `PieceDef.Rarete`, teinte corail, médaillon `rarete_legendaire.png`
   (dérivé de l'épique en attendant Gemini), cadre de carte ; Générateur hors pioche (coffre poids 0,6, recette
   1 atelier + 2 croix), niveau 2 au plus (25 ressorts).
+
+## Après playtest 3 — lot 2 (« Tenir la ligne » : énergie comptée, postes de garde, équilibrage joué)
+- **Tic-tac** (P3-22) : `Regles.dents_depart` (4), `vagues_dent` ([2, 4, 6, 8, 11, 13]), `dents_apres(vagues_tenues)` ;
+  `DepartDef.dents_bonus` par plateau ; `Run.dents` (-1 en bac à sable) ; `PieceDef.cout_energie` (ateliers et mortier
+  2, canon et carillon 1) et `consomme()`. `Energie.analyser(plateau, dents_horloge)` : `_rationner_horloge` sert les
+  bâtiments du réseau de l'Horloge dans l'ordre de pose, les refusés vont dans `Bilan.surcharge` et
+  `surcharge_horloge`. `PlateauNoeud` recalcule quand `Run.dents` change (signal `phase_changee`) et annonce « +1 dent ».
+  HUD : `_creer_dents` (jauge « utilisées / total », rouge si un bâtiment est éteint) ; `PieceDef.decrire(objet)`
+  ajoute le coût en dents à toutes les infobulles ; badge de dents sur les cartes de tirage.
+  → Même mécanisme que la surcharge du Générateur : une seule règle à apprendre.
+- **Postes de garde** (P3-25) : `Plateau.definir_poste` / `poste_de` / `poste_possible` (3 cases, `PORTEE_POSTE`),
+  retiré avec l'atelier. `SwarmSim._tracer_postes` : poste choisi, sinon `_route_proche` (route voisine où passent le
+  plus d'entrées — `_compter_passages` —, puis la plus proche de l'Horloge ; jamais la case de l'Horloge) ; une piste
+  par poste (`_pistes_postes`). Dans `_decider`, un jouet qui a une origine tient sa place (`_vers_poste`, point fixe
+  tiré de son numéro de hasard, rayon `RAYON_RANG`) et ne va au contact que d'un ennemi entré dans `RAYON_GARDE`
+  (3,2 m) en ligne droite sur la route ; les tireurs ne quittent pas leur place. Les jouets sans origine (tests)
+  gardent l'ancien comportement (`garde_ratio`). Visuel : `PlateauVisuel._planter_drapeau` (fanion du kit) ;
+  interface : `PanneauPiece.poste_demande` → `PoseControleur._choisir_poste` (cases bleues, clic, Échap).
+  → Avant, tous les jouets allaient se battre à la sortie des tiroirs, loin des tourelles : aucune zone de tir.
+- **Jouets par niveau** (P3-23) : `Production.unite_de_niveau` (copie du modèle, PV et dégâts ×(1 + 0,15 × niveau),
+  gardée en mémoire ; même `id`, donc même lot de rendu).
+- **Vagues** (P3-24) : `VagueDef.groupe` (paquets, `DirecteurVagues.ECART_GROUPE`, durée totale inchangée),
+  `multiplicateur_degats` (contre les jouets seulement) ; `UniteDef.degats_horloge` (prix fixe d'une fuite).
+- **Joueur automatique** : styles `spam`, `masse`, `moyen`, `tactique` ; `_case_ideale` (meilleure case atteignable
+  par le réseau) puis `_relier` (un engrenage en croix par appel, fabriqué avec 2 droits ou acheté) ; `_planter_drapeaux`
+  (tactique) ; `CARTE=1` imprime le plan du plateau et les postes ; `serie.sh` du scratchpad = 4 parties en parallèle.
+  Limite : il ne pose ni Pont ni extension (Boîte à musique et Grand atelier non mesurés).
+- **Banc** (`scripts/banc_equilibrage.gd`) refait : plan de défense fixe sur Prairie (2 escouades sur le tronc commun,
+  jusqu'à 4 canons), profils `parfait` et `moyen`, dents et niveaux simulés. Repères : parfait 2 à 26 PV perdus,
+  moyen arrêté en V8-V10.
+- **Mesures de référence** (table h, 3 cartes × 4 graines) : spam 0/6, masse 0/9, moyen 3/12, tactique 9/12.

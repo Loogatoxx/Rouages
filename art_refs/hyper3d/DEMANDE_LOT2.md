@@ -10,5 +10,5 @@ Gemini s'est épuisé avant le carillon et le mortier (prompts ci-dessous, à re
 | 1 | `atelier_soldats.png` | maison-atelier, toit corail, clé de remontoir, colombages | ✅ validée, générée, en jeu |
 | 2 | `atelier_billes.png` | tour ronde menthe, dôme laiton, panier de billes | ✅ validée, générée, en jeu |
 | 3 | `tourelle_canon.png` | canon à billes laiton, affût bleu ciel, socle rond | ✅ validée, générée, en jeu |
-| 4 | `tourelle_carillon.png` | kiosque à colonnettes, dôme bleu ciel, clochettes laiton | à générer (quota Gemini) |
-| 5 | `tourelle_mortier.png` | mortier trapu doré (épique), affût bleu ciel, trois billes de bronze | à générer (quota Gemini) |
+| 4 | `tourelle_carillon.png` | kiosque à colonnettes, dôme bleu ciel, clochettes laiton | 🟡 image prête (2026-11-27) : **à valider par Carlos** |
+| 5 | `tourelle_mortier.png` | mortier trapu doré (épique), affût bleu ciel sur plateau tournant de laiton, socle carré séparé, trois billes de bronze | 🟡 image prête (2026-11-27) : **à valider par Carlos** |

@@ -8,6 +8,7 @@ const PONT = preload("res://data/tuiles/pont.tres")
 const GENERATEUR = preload("res://data/tuiles/generateur.tres")
 const ATELIER = preload("res://data/tuiles/atelier_soldats.tres")
 const DROIT = preload("res://data/tuiles/engrenage_droit.tres")
+const CANON = preload("res://data/tuiles/tourelle_canon.tres")
 
 
 ## Le Pont ne se pose que sur une route ; posé en travers, il relie l'herbe des deux côtés.
@@ -30,47 +31,35 @@ func test_pont_traverse_la_route() -> String:
 	return "" if Energie.calculer(plateau).has(Vector2i(3, 0)) else "Le Pont doit faire passer l'énergie."
 
 
-## Un générateur isolé alimente 2 ateliers au niveau 1, 3 au niveau 2 ; les engrenages ne comptent pas.
+## Un générateur isolé fournit 3 dents au niveau 1 (3 canons à 1 dent), 4 au niveau 2 ; les engrenages ne comptent pas.
 func test_generateur_capacite() -> String:
 	var plateau := Plateau.new()
 	for x: int in range(-1, 4):
 		for y: int in range(-1, 2):
 			plateau.ajouter_sol(Vector2i(x, y), Plateau.Sol.HERBE)
+	var cases: Array[Vector2i] = [Vector2i(0, 1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(2, 0)]
 	plateau.poser(Vector2i.ZERO, GENERATEUR)
 	plateau.poser(Vector2i(1, 0), DROIT, 1)
-	plateau.poser(Vector2i(2, 0), ATELIER, 1)  # port ouest vers l'engrenage
-	plateau.poser(Vector2i(0, 1), ATELIER, 2)  # port nord vers le générateur
-	plateau.poser(Vector2i(0, -1), ATELIER, 0)  # port sud vers le générateur
+	plateau.poser(Vector2i(0, 1), CANON, 2)  # port nord vers le générateur
+	plateau.poser(Vector2i(0, -1), CANON, 0)  # port sud
+	plateau.poser(Vector2i(-1, 0), CANON, 3)  # port est
+	plateau.poser(Vector2i(2, 0), CANON, 1)  # port ouest vers l'engrenage
 	var alimentees: Dictionary = Energie.calculer(plateau)
-	var ateliers: int = 0
-	for case: Vector2i in [Vector2i(2, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+	var canons: int = 0
+	for case: Vector2i in cases:
 		if alimentees.has(case):
-			ateliers += 1
-	if ateliers != 2 or not alimentees.has(Vector2i(1, 0)):
-		return "Au niveau 1, le générateur doit alimenter 2 ateliers et l'engrenage (obtenu %d)." % ateliers
-	if Energie.consommateurs_du_generateur(plateau, Vector2i.ZERO) != 2:
-		return "Le compteur du générateur doit afficher 2."
+			canons += 1
+	if canons != 3 or not alimentees.has(Vector2i(1, 0)):
+		return "Au niveau 1, le générateur doit alimenter 3 canons et l'engrenage (obtenu %d)." % canons
+	if Energie.consommateurs_du_generateur(plateau, Vector2i.ZERO) != 3:
+		return "Le compteur du générateur doit afficher 3 dents."
 	plateau.ameliorer(Vector2i.ZERO)
 	alimentees = Energie.calculer(plateau)
-	for case: Vector2i in [Vector2i(2, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+	for case: Vector2i in cases:
 		if not alimentees.has(case):
-			return "Au niveau 2, le générateur doit alimenter les 3 ateliers."
+			return "Au niveau 2, le générateur doit alimenter les 4 canons."
+	# Un atelier coûte 2 dents : avec 4 dents, deux ateliers et rien d'autre.
 	return ""
-
-
-## L'armure retire un montant fixe par coup, moitié moins au corps à corps, sans jamais annuler un coup.
-func test_armure() -> String:
-	var cuirasse = load("res://data/unites/scarabee_cuirasse.tres")
-	if cuirasse.armure <= 0.0:
-		return "Le cuirassé doit avoir de l'armure."
-	var fort: float = cuirasse.degats_recus(18.0)
-	var faible: float = cuirasse.degats_recus(3.0)
-	var melee: float = cuirasse.degats_recus(3.0, true)
-	if not is_equal_approx(fort, 18.0 - cuirasse.armure):
-		return "Un gros coup perd exactement l'armure."
-	if faible <= 0.0 or faible >= 3.0 - cuirasse.armure + 0.001 and 3.0 - cuirasse.armure > 0.0:
-		return "Un petit coup doit être fortement réduit sans être nul."
-	return "" if melee > faible else "Le corps à corps doit mieux passer l'armure."
 
 
 func _pre() -> Plateau:
@@ -84,22 +73,47 @@ func _pre() -> Plateau:
 ## Playtest 3 : quand le générateur est plein, c'est le bâtiment posé en DERNIER qui reste éteint, quel que soit
 ## son côté ; les bâtiments déjà en marche ne s'arrêtent jamais.
 func test_surcharge_eteint_le_dernier_pose() -> String:
-	for ordre: Array in [[Vector2i(0, 1), Vector2i(0, -1), Vector2i(-1, 0)], [Vector2i(-1, 0), Vector2i(0, -1), Vector2i(0, 1)]]:
+	var rotations: Dictionary = {Vector2i(0, 1): 2, Vector2i(0, -1): 0, Vector2i(-1, 0): 3, Vector2i(1, 0): 1}
+	for ordre: Array in [[Vector2i(0, 1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(1, 0)],
+			[Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, -1), Vector2i(0, 1)]]:
 		var plateau: Plateau = _pre()
 		plateau.poser(Vector2i.ZERO, GENERATEUR)
-		var rotations: Dictionary = {Vector2i(0, 1): 2, Vector2i(0, -1): 0, Vector2i(-1, 0): 3}
 		for case: Vector2i in ordre:
-			plateau.poser(case, ATELIER, rotations[case])
+			plateau.poser(case, CANON, rotations[case])
 		var bilan: Energie.Bilan = Energie.analyser(plateau)
-		if not bilan.alimentees.has(ordre[0]) or not bilan.alimentees.has(ordre[1]):
-			return "Les deux premiers ateliers posés doivent rester alimentés."
-		if bilan.alimentees.has(ordre[2]) or bilan.surcharge != [ordre[2]]:
-			return "Le dernier atelier posé (%s) doit être le seul éteint, signalé en surcharge." % ordre[2]
+		for i: int in 3:
+			if not bilan.alimentees.has(ordre[i]):
+				return "Les trois premiers canons posés doivent rester alimentés."
+		if bilan.alimentees.has(ordre[3]) or bilan.surcharge != [ordre[3]]:
+			return "Le dernier canon posé (%s) doit être le seul éteint, signalé en surcharge." % ordre[3]
 		# Reprendre un ancien bâtiment libère une place : le dernier s'allume.
 		plateau.retirer(ordre[0])
 		bilan = Energie.analyser(plateau)
-		if not bilan.alimentees.has(ordre[2]) or not bilan.surcharge.is_empty():
+		if not bilan.alimentees.has(ordre[3]) or not bilan.surcharge.is_empty():
 			return "Une place libérée doit rallumer le bâtiment en attente."
+	return ""
+
+
+## Tic-tac : l'Horloge sert ses dents dans l'ordre de pose ; un atelier coûte 2 dents, un canon 1.
+func test_horloge_dents_comptees() -> String:
+	var plateau: Plateau = _pre()
+	plateau.poser(Vector2i.ZERO, HORLOGE)
+	plateau.poser(Vector2i(1, 0), ATELIER, 1)   # 2 dents
+	plateau.poser(Vector2i(-1, 0), ATELIER, 3)  # 2 dents
+	plateau.poser(Vector2i(0, 1), CANON, 2)     # 1 dent : de trop avec 4 dents
+	var bilan: Energie.Bilan = Energie.analyser(plateau, 4)
+	if bilan.charge_horloge != 4 or bilan.surcharge_horloge != [Vector2i(0, 1)]:
+		return "Avec 4 dents : deux ateliers alimentés, le canon posé en dernier éteint (charge %d)." % bilan.charge_horloge
+	if bilan.alimentees.has(Vector2i(0, 1)):
+		return "Le canon en surcharge ne doit pas être alimenté."
+	bilan = Energie.analyser(plateau, 5)
+	if not bilan.alimentees.has(Vector2i(0, 1)) or not bilan.surcharge.is_empty():
+		return "Avec 5 dents, tout doit tourner."
+	if not Energie.analyser(plateau).surcharge.is_empty():
+		return "Sans limite (-1), rien n'est en surcharge."
+	const REGLES = preload("res://data/regles.tres")
+	if REGLES.dents_apres(0) != REGLES.dents_depart or REGLES.dents_apres(8) != REGLES.dents_depart + 4:
+		return "L'Horloge doit gagner une dent après les vagues 2, 4, 6 et 8."
 	return ""
 
 

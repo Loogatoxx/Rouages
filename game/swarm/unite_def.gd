@@ -29,6 +29,10 @@ enum Camp { ALLIE, ENNEMI }
 @export var aura_armure: float = 0.0
 @export var rayon_aura: float = 0.0
 
+## PV retirés à l'Horloge quand cet ennemi l'atteint ; 0 = ses dégâts ordinaires. Le directeur de vagues le fixe
+## avant de relever les dégâts d'une vague, pour qu'une fuite coûte toujours le même prix.
+@export var degats_horloge: float = 0.0
+
 ## Part minimale d'un coup qui passe toujours l'armure (un coup n'est jamais totalement nul).
 const PLANCHER_ARMURE := 0.15
 

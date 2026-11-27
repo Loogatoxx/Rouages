@@ -472,6 +472,8 @@ func _reconstruire() -> void:
 		racine.position = GrilleMonde.vers_monde(c)
 		if _source.surcharge.has(c):
 			_marquer_plein(racine)
+		if piece.type == PieceDef.Type.ATELIER and _source.alimentees.has(c):
+			_planter_drapeau(c)
 		if piece.type == PieceDef.Type.ATELIER:
 			_ateliers[c] = racine
 		elif piece.type == PieceDef.Type.TOURELLE:
@@ -484,6 +486,35 @@ func _reconstruire() -> void:
 			var rotor := racine.find_child("Rotor", true, false) as Node3D
 			if rotor != null:
 				_rotors.append(rotor)
+
+
+# Playtest 3 (postes de garde) : un petit fanion sur la route, là où l'escouade de cet atelier se range. Planté au
+# bord de la case, du côté de l'atelier, pour ne pas gêner les jouets ; il flotte doucement.
+func _planter_drapeau(case: Vector2i) -> void:
+	var partie: Node = get_tree().get_first_node_in_group(&"partie")
+	if partie == null:
+		return
+	var poste: Vector2 = partie.sim.poste(case)
+	if poste == Vector2.INF:
+		return
+	var fanion: Node3D = _instancier(&"marqueur_extension")
+	if fanion == null:
+		return
+	_pieces.add_child(fanion)
+	var vers_atelier: Vector2 = Vector2(case) * GrilleMonde.TAILLE_CASE - poste
+	var decalage: Vector2 = Vector2.ZERO
+	if vers_atelier.length() > 0.01:
+		# Vers le bord de la case le plus proche de l'atelier (axe dominant), à 0,8 m du centre.
+		decalage = Vector2(signf(vers_atelier.x), 0.0) if absf(vers_atelier.x) >= absf(vers_atelier.y) \
+				else Vector2(0.0, signf(vers_atelier.y))
+	fanion.position = Vector3(poste.x + decalage.x * 0.8, 0.0, poste.y + decalage.y * 0.8)
+	fanion.scale = Vector3.ONE * 0.7
+	var toile := fanion.find_child("Fanion*", true, false) as Node3D
+	if toile != null:
+		var repos: float = toile.rotation.z
+		var vent: Tween = toile.create_tween().set_loops().set_trans(Tween.TRANS_SINE)
+		vent.tween_property(toile, "rotation:z", repos + 0.06, 0.8)
+		vent.tween_property(toile, "rotation:z", repos - 0.04, 0.8)
 
 
 # Playtest 3 : bâtiment relié à un générateur déjà plein. Il reste gris, avec un écriteau « Plein » qui flotte et un

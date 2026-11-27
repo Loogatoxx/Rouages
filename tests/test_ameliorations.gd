@@ -104,7 +104,7 @@ func test_gains_des_batiments() -> String:
 	for rang: int in 5:
 		if not is_equal_approx(Placement.cadence_atelier(plateau, {}, CENTRE, REGLES), 1.0 + 0.2 * rang):
 			return "Cadence de l'atelier incorrecte"
-		if Placement.plafond_atelier(plateau, {}, CENTRE) != 3 * rang:
+		if Placement.plafond_atelier(plateau, {}, CENTRE) != REGLES.plafond_niveau_atelier * rang:
 			return "Plafond de l'atelier incorrect"
 		if not is_equal_approx(Placement.degats_tourelle(plateau, Vector2i.UP, REGLES), 1.0 + 0.25 * rang):
 			return "Dégâts de la tourelle incorrects"
@@ -128,8 +128,10 @@ func test_engrenages_niveau_trois() -> String:
 		alimentes[case] = true
 	if not is_equal_approx(Placement.cadence_atelier(plateau, alimentes, CENTRE, REGLES), 1.30):
 		return "Le bonus du démultiplicateur de niveau 3 doit atteindre 30 %"
-	if Placement.plafond_atelier(plateau, alimentes, CENTRE) != 8:
-		return "Le répartiteur de niveau 3 doit ajouter huit places"
+	# Répartiteur de niveau 3 : son bonus de base × (1 + 2 niveaux × gain par niveau).
+	var places: int = roundi(preload("res://data/tuiles/engrenage_t.tres").bonus_voisins_plafond * (1.0 + 2.0 * REGLES.gain_niveau_engrenage))
+	if Placement.plafond_atelier(plateau, alimentes, CENTRE) != places:
+		return "Le répartiteur de niveau 3 doit ajouter %d places" % places
 	if not is_equal_approx(Placement.cadence_tourelle(plateau, alimentes, Vector2i.RIGHT * 2), 1.4):
 		return "Le moyeu de niveau 3 doit ajouter 40 % de cadence"
 	return "" if is_equal_approx(Placement.cadence_atelier(plateau, {}, CENTRE, REGLES), 1.0) else "Bonus sans énergie"

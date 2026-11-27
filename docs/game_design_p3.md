@@ -148,3 +148,37 @@ Chaque carte arrive avec son décor (§ 6) : la variété se voit avant de se jo
 3. Pilier 2 (postes de garde), puis pilier 3 (carillon qui ralentit), puis pilier 4 (coup de carillon).
 4. Interface (§ 5 du brief), puis « l'établi habité », puis les cartes à mécaniques.
 Chaque étape : tests, captures avant/après, 3 graines au joueur automatique, commit.
+
+## 9. Lot 2 : ce qui est en jeu, réglé en jouant (2026-11-27, soir)
+Piliers 1 (Tic-tac) et 2 (postes de garde) sont dans le jeu. Les chiffres ci-dessous remplacent les cibles du § 5 :
+ils viennent de plus de 300 parties jouées par le joueur automatique, pas d'un calcul.
+
+| Réglage | Retenu | Pourquoi (ce que les parties ont montré) |
+|---|---|---|
+| Énergie de l'Horloge | 4 dents, +1 après V2, V4, V6, V8 (11 et 13 en Longue route) | à 8 dents : 2 escouades et 4 tourelles |
+| Coûts | ateliers 2, mortier 2, canon 1, carillon 1 ; Générateur : +3 dents (4 amélioré) | une tourelle doit valoir son dent |
+| Ateliers | soldats 0,5 jouet/s, lance-billes 0,3 ; plafond 5 (+1 par niveau) | demande de Carlos ; 14 à 35 jouets vivants au lieu de 150 à 260 |
+| Soldat | PV 34, dégâts 2, 1 coup/s ; +15 % PV et dégâts par niveau d'atelier | il **tient**, il ne tue pas : sans tourelles, la ligne finit par céder |
+| Lance-bille | PV 10, dégâts 7, portée 2,4 m | seul jouet à toucher les libellules |
+| Canon / carillon / mortier | 20 dégâts à 0,6 tir/s · 4 de zone · 24 de zone | le canon perce l'armure (6) des cuirassés |
+| Cuirassé | PV 26, armure 6 | un soldat lui fait 0,3 : il **faut** un canon ou un mortier |
+| Vagues | V1 8 ennemis → V10 36 + 10 cuirassés + 10 libellules + boss, par paquets de 2 à 7 | un paquet met la ligne à l'épreuve ; un filet d'ennemis isolés, jamais |
+| Fuite | scarabée, fourmi, libellule 1 PV ; cuirassé 3 ; boss 12 | une ligne qui cède coûte quelques PV, pas la partie |
+| Boutique | canon (16) et carillon (20) achetables | les tourelles sont au cœur du jeu, plus un cadeau de coffre |
+| Cartes à plusieurs entrées | Jardin d'hiver +2 dents, Boîte à musique +1, Grand atelier +3 (et un Pont) | une escouade par entrée sans tronc commun |
+
+### Mesures (3 cartes × 4 graines, difficulté normale)
+| Style du joueur automatique | Ce qu'il fait | Victoires | Lecture |
+|---|---|---|---|
+| **spam** (rien que des ateliers de soldats) | l'ancienne stratégie gagnante | 0 sur 6 | les libellules passent toutes |
+| **masse** (soldats + lance-billes, aucune tourelle) | la quantité avec le minimum de variété | 0 sur 9 | la ligne cède en V8-V10 : personne ne tue les cuirassés |
+| **moyen** (bonne composition, cases au hasard, niveau 2 au plus, fanions par défaut) | un joueur qui ne réfléchit pas à ses placements | 3 sur 12 | perd entre la V7 et la V10 |
+| **tactique** (2 escouades au bon endroit, 3 canons, 1 carillon, tout amélioré) | « tenir la ligne » | 9 sur 12, 4 à 28 PV restants | la composition et la place décident |
+Jamais plus de 39 jouets vivants, 14 le plus souvent. Avant le lot : 6 victoires sur 6 pour le spam, 150 à 260 jouets.
+
+### Ce qui reste à régler
+- **Durée des vagues** : 23 s (V1) à 130 s (V10), au-dessus de la cible (35 à 70 s) à partir de la V4 ; la V10 est
+  une vague de boss, mais la V4 (85 s pour 19 ennemis) traîne tant qu'on n'a qu'un canon.
+- **Lance-billes** : moins rentables par dent que deux canons ; à revoir avec le pilier 3 (carillon qui ralentit).
+- **Boîte à musique et Grand atelier** : le joueur automatique ne sait pas poser de Pont, ces deux cartes ne sont donc
+  pas mesurées (jouables à la main, à vérifier par Carlos).

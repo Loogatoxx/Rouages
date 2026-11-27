@@ -6,14 +6,14 @@
 script = ExtResource("1")
 id = &"generateur"
 nom = "Générateur autonome"
-description = "Légendaire et unique. Alimente sans horloge 2 bâtiments tout proches (3 une fois amélioré), sans les bonus des engrenages."
+description = "Légendaire et unique. Fournit 3 dents d'énergie sans horloge (4 une fois amélioré) à des bâtiments tout proches, sans les bonus des engrenages."
 type = 4
 niveau_max = 2
 prix_amelioration = 25
 ports = 15
 transmet = true
 rarete = 3
-capacite_generateur = 2
+capacite_generateur = 3
 capacite_par_niveau = 1
 portee_generateur = 2
 unique = true

@@ -12,6 +12,7 @@ const NOMS_RARETE: Array[String] = ["Commune", "Rare", "Épique", "Légendaire"]
 const ICONE_RESSORT: Texture2D = preload("res://assets/ui/icones/ressort.png")
 const ICONE_PV: Texture2D = preload("res://assets/ui/icones/horloge_pv.png")
 const ICONE_CHANCE: Texture2D = preload("res://assets/ui/icones/chance.png")
+const ICONE_DENTS: Texture2D = preload("res://assets/ui/icones/engrenage_or.png")
 const VITESSE_NORMALE: Texture2D = preload("res://assets/ui/icones/vitesse_x1.png")
 const VITESSE_DOUBLE: Texture2D = preload("res://assets/ui/icones/vitesse_x2.png")
 const MEDAILLONS: Array[Texture2D] = [
@@ -43,6 +44,9 @@ var _boss_visible: bool = false
 ## Choix du joueur (bouton ou touche B) gardé toute la run : la boutique ne se rouvre pas toute seule s'il l'a fermée.
 var _boutique_ouverte: bool = true
 var _plaque_chance: PanelContainer
+## Tic-tac (playtest 3) : jauge « dents utilisées / dents de l'Horloge » dans la barre du haut.
+var _plaque_dents: PanelContainer
+var _dents: Label
 var _chance: Label
 var _porte_bonheur: Button
 var _apercu_vague: PanelContainer
@@ -84,6 +88,7 @@ func _ready() -> void:
 	Interface.apparaitre(%Tableau)
 	_creer_barre_boss()
 	_creer_chance()
+	_creer_dents()
 	_creer_apercu_vague()
 	var astuces := Astuces.new()
 	astuces.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
@@ -174,6 +179,36 @@ func _notification(quoi: int) -> void:
 		%Annonce.text = tr(_cle_annonce) if _valeur_annonce < 0 else tr(_cle_annonce) % _valeur_annonce
 	if $Fin.visible:
 		_actualiser_bilan()
+
+
+# Jauge d'énergie de l'Horloge, juste après les PV : dents consommées par les ateliers et tourelles / dents
+# disponibles. Elle passe au rouge quand un bâtiment reste éteint faute de dents.
+func _creer_dents() -> void:
+	_plaque_dents = PanelContainer.new()
+	_plaque_dents.theme_type_variation = &"Plaque"
+	var ligne := HBoxContainer.new()
+	ligne.add_theme_constant_override(&"separation", 4)
+	_plaque_dents.add_child(ligne)
+	ligne.add_child(_icone(ICONE_DENTS, 34))
+	_dents = Label.new()
+	_dents.theme_type_variation = &"Nombre"
+	ligne.add_child(_dents)
+	%Tableau.add_child(_plaque_dents)
+	%Tableau.move_child(_plaque_dents, %PV.get_parent().get_parent().get_index() + 1)
+	Events.energie_recalculee.connect(func(_cases: Array[Vector2i]) -> void: _actualiser_dents())
+	_actualiser_dents.call_deferred()
+
+
+func _actualiser_dents() -> void:
+	var noeud: Node = get_tree().get_first_node_in_group(&"plateau_noeud")
+	if noeud == null or noeud.dents < 0:
+		_plaque_dents.visible = false  # bac à sable : énergie illimitée
+		return
+	_plaque_dents.visible = true
+	var pleine: bool = not noeud.surcharge.is_empty()
+	_dents.text = "%d / %d" % [noeud.charge_horloge, noeud.dents]
+	_dents.add_theme_color_override(&"font_color", Color("#C0392B") if pleine else Color("#3B2A1A"))
+	_plaque_dents.tooltip_text = tr("Énergie de l’Horloge : %d dents utilisées sur %d.\nUn atelier en consomme 2, une petite tourelle 1. Les engrenages n’en consomment pas.\nL’Horloge gagne une dent après les vagues 2, 4, 6 et 8.") % [noeud.charge_horloge, noeud.dents]
 
 
 # Compteur de chance (trèfle) dans la barre du haut, et porte-bonheur dans la boutique (benchmark D4).
@@ -418,7 +453,7 @@ func _actualiser_solde(total: int) -> void:
 		_ventes[i].modulate = Color(1, 1, 1, 0.55) if _ventes[i].disabled else Color.WHITE
 		var entete: String = tr("%s ×%d — %d ressorts") % [tr(lot.objet.get("nom")), lot.quantite, lot.prix]
 		_ventes[i].tooltip_text = entete + "\n" + (tr("Disponible à la vague %d") % lot.vague_min
-				if verrouille else tr(lot.objet.get("description")))
+				if verrouille else PieceDef.decrire(lot.objet))
 
 
 # Début de chapitre (P2-50) : fiche « Nouveau ! » avec la vignette et le nom de chaque pièce débloquée.
@@ -454,7 +489,7 @@ func _annoncer_nouveautes() -> void:
 		nom.text = tr(piece.get("nom"))
 		nom.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		case.add_child(nom)
-		case.tooltip_text = tr(piece.get("description"))
+		case.tooltip_text = PieceDef.decrire(piece)
 	add_child(fiche)
 	fiche.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE, 70)
 	fiche.grow_horizontal = Control.GROW_DIRECTION_BOTH
@@ -493,7 +528,7 @@ func _actualiser_noms_lots() -> void:
 		if piece != null and (Run.offre_coffre or piece.rarete != PieceDef.Rarete.COMMUNE):
 			entete = tr("%s · %s") % [entete, tr(NOMS_RARETE[piece.rarete])]
 		# Playtest 2 : la carte ne montre que l'image et le nom ; tout le détail passe dans l'infobulle.
-		carte.tooltip_text = entete + "\n" + tr(lot.objet.get("description"))
+		carte.tooltip_text = entete + "\n" + PieceDef.decrire(lot.objet)
 		carte.accessibility_name = entete
 		carte.accessibility_description = tr(lot.objet.get("description"))
 
@@ -573,6 +608,21 @@ class Carte extends Button:
 			badge.theme_type_variation = &"Badge"
 			badge.text = "×%d" % lot.quantite
 			insigne.add_child(badge)
+		# Tic-tac (playtest 3) : le coût en dents d'énergie se lit sur la carte, à droite (icône du réseau + nombre).
+		if piece != null and piece.consomme():
+			var ressort := Control.new()
+			ressort.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			insigne.add_child(ressort)
+			var dent := TextureRect.new()
+			dent.texture = ICONE_DENTS
+			dent.custom_minimum_size = Vector2(26, 26)
+			dent.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			dent.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			insigne.add_child(dent)
+			var cout := Label.new()
+			cout.theme_type_variation = &"Badge"
+			cout.text = str(piece.cout_energie)
+			insigne.add_child(cout)
 		# Grande vignette : elle remplit l'espace libre en gardant ses proportions (jamais rognée).
 		_vignette.texture = Interface.vignette_de(lot.objet)
 		_vignette.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

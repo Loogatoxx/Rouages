@@ -17,6 +17,9 @@ var _stats: HBoxContainer = HBoxContainer.new()
 var _ameliorer: Button
 var _tourner: Button
 var _reprendre: Button
+## Playtest 3 : « planter le drapeau » d'un atelier (son poste de garde sur la route). Le contrôleur de pose écoute.
+signal poste_demande(case: Vector2i)
+var _poste: Button
 var _prix: Dictionary[Button, Label] = {}
 
 
@@ -47,6 +50,10 @@ func _ready() -> void:
 	_ameliorer = _ajouter_action(actions, preload("res://assets/ui/icones/ameliorer.png"), _acheter_niveau)
 	_tourner = _ajouter_action(actions, preload("res://assets/ui/icones/tourner.png"), _tourner_piece)
 	_reprendre = _ajouter_action(actions, preload("res://assets/ui/icones/deplacer.png"), _reprendre_piece)
+	_poste = _ajouter_action(actions, preload("res://assets/ui/icones/poste.png"), func() -> void:
+		var case: Vector2i = _case
+		fermer()
+		poste_demande.emit(case))
 	Events.ressorts_changes.connect(_solde_change)
 	Events.plateau_modifie.connect(_actualiser)
 
@@ -137,6 +144,8 @@ func _actualiser() -> void:
 	_afficher_prix(_ameliorer, Run.prix_amelioration(_plateau, _case), mobile and niveau < piece.niveau_max)
 	_afficher_prix(_tourner, Run.prix_rotation, mobile)
 	_afficher_prix(_reprendre, Run.prix_deplacement, mobile)
+	_poste.visible = piece.type == PieceDef.Type.ATELIER
+	_poste.tooltip_text = tr("Poste de garde : choisis la case de route que tient cette escouade (3 cases au plus)")
 	_ameliorer.tooltip_text = tr("Améliorer") if niveau < piece.niveau_max else tr("Niveau maximal")
 	_tourner.tooltip_text = tr("Tourner")
 	_reprendre.tooltip_text = tr("Reprendre la pièce") + ("\n" + tr("Reprendre ramène la pièce au niveau 1.") if niveau > 1 else "")
@@ -186,6 +195,10 @@ func _remplir_stats(piece: PieceDef) -> void:
 		var capacite: int = Energie.capacite_du_generateur(_plateau, _case)
 		_ajouter_stat("engrenage_or", "⚙", "%d/%d" % [Energie.consommateurs_du_generateur(_plateau, _case), capacite],
 				tr("Pièces alimentées / capacité du générateur") + "\n" + tr(piece.description))
+	if piece.consomme():
+		var eteint: bool = noeud != null and noeud.surcharge.has(_case)
+		_ajouter_stat("engrenage_or", "⚙", str(piece.cout_energie) + (" ✕" if eteint else ""),
+				tr("Dents d’énergie consommées") + ("\n" + tr("Éteint : sa source d’énergie est pleine.") if eteint else ""))
 	if piece.type != PieceDef.Type.HORLOGE:
 		_ajouter_stat("revendre", "↺", str(Run.valeur_demontage(piece)), tr("Valeur de revente (en ressorts) une fois reprise"))
 

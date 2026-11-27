@@ -12,6 +12,8 @@ const TEXTES := {
 	&"libellule": "Des libellules volent ! Les soldats ne peuvent pas les toucher : pose des lance-billes ou des tourelles.",
 	&"chance": "Le trèfle montre ta chance : plus elle est haute, plus les coffres proposent de raretés.",
 	&"craft": "Tu peux assembler des pièces en trop (bouton « Assembler ») ou en démonter une d’un clic droit contre des ressorts.",
+	&"dents": "L’Horloge n’a qu’un nombre limité de dents d’énergie (la roue dentée en haut). Un atelier en prend 2, une petite tourelle 1 : choisis bien, puis améliore.",
+	&"poste": "Chaque escouade tient la route devant son atelier, là où flotte son fanion. Clique sur l’atelier puis sur le fanion du panneau pour choisir une autre case.",
 }
 
 var plateau_noeud: Node
@@ -81,6 +83,11 @@ func _fermer() -> void:
 
 
 func _sur_phase(phase: int) -> void:
+	# Playtest 3 : les deux règles de « Tenir la ligne » s'expliquent dès la première construction.
+	if phase == Run.Phase.CONSTRUCTION and Run.dents >= 0:
+		proposer(&"dents")
+		if Run.vague_actuelle >= 1:
+			proposer(&"poste")
 	if phase != Run.Phase.CONSTRUCTION or Run.vague_actuelle < 1:
 		return
 	if plateau_noeud != null and plateau_noeud.plateau.coords_pieces().size() > 1:

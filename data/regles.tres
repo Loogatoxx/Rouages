@@ -134,6 +134,19 @@ objet = ExtResource("t")
 quantite = 1
 prix = 7
 
+[sub_resource type="Resource" id="vente_canon"]
+script = ExtResource("lot")
+objet = ExtResource("canon")
+quantite = 1
+prix = 16
+
+[sub_resource type="Resource" id="vente_carillon"]
+script = ExtResource("lot")
+objet = ExtResource("carillon")
+quantite = 1
+vague_min = 3
+prix = 20
+
 [sub_resource type="Resource" id="lot_canon"]
 script = ExtResource("lot")
 objet = ExtResource("canon")
@@ -186,13 +199,13 @@ departs = Array[ExtResource("depart")]([ExtResource("prairie"), ExtResource("mea
 garde_ratio = 0.55
 prix_rotation = 2
 gain_niveau_atelier = 0.2
-plafond_niveau_atelier = 3
+plafond_niveau_atelier = 1
 gain_niveau_tourelle = 0.25
 gain_niveau_engrenage = 0.5
 prix_deplacement = 3
 prix_deplacement_pas = 2
 pv_horloge = 30
-plafond_allies_par_atelier = 15
+plafond_allies_par_atelier = 5
 multiplicateur_acceleration = 2.0
 choix_par_draft = 3
 vagues_coffre = Array[int]([3, 6, 9])
@@ -210,5 +223,5 @@ recettes = Array[ExtResource("recette")]([ExtResource("recette_engrenage_croix")
 demontage_engrenage = 1
 demontage_atelier = 6
 demontage_tourelle = 8
-boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("vente_t"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes")])
+boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("vente_t"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes"), SubResource("vente_canon"), SubResource("vente_carillon")])
 vagues = Array[ExtResource("vague")]([ExtResource("vague_1"), ExtResource("vague_2"), ExtResource("vague_3"), ExtResource("vague_4"), ExtResource("vague_5"), ExtResource("vague_6"), ExtResource("vague_7"), ExtResource("vague_8"), ExtResource("vague_9"), ExtResource("vague_10")])

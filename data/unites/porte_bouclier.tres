@@ -17,3 +17,4 @@ rayon = 0.42
 armure = 1.0
 aura_armure = 3.0
 rayon_aura = 2.5
+degats_horloge = 2.0

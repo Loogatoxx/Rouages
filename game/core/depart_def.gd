@@ -11,6 +11,9 @@ const HORLOGE = preload("res://data/tuiles/horloge.tres")
 @export var chemins: Array[Vector2i] = []
 @export var horloge: Vector2i
 @export var reserve: Array[Lot] = []
+## Dents d'énergie en plus au départ sur ce plateau (playtest 3) : un plateau à plusieurs entrées sans tronc commun
+## demande une escouade par entrée, donc plus d'énergie dès la première vague.
+@export var dents_bonus: int = 0
 ## Ennemis propres à ce plateau (playtest 2 : plus de variété), mêlés aux scarabées à partir de `vague_speciaux`.
 @export var ennemis_speciaux: Array[Resource] = []
 ## Part des scarabées ordinaires remplacés par ces ennemis (0,1 = un sur dix).

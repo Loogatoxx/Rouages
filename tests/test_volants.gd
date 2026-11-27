@@ -65,7 +65,10 @@ func test_tourelle() -> String:
 func test_vague_06() -> String:
 	var sim := SwarmSim.new()
 	var directeur := DirecteurVagues.new()
-	directeur.commencer(VAGUE_06, [Vector2i.ZERO, Vector2i(10, 0)])
+	# Rythme régulier pour compter les apparitions une à une (le rythme par paquets est testé dans test_vagues).
+	var reguliere: Resource = VAGUE_06.duplicate()
+	reguliere.groupe = 1
+	directeur.commencer(reguliere, [Vector2i.ZERO, Vector2i(10, 0)])
 	var attendu: int = VAGUE_06.nombre + VAGUE_06.nombre_renforts + VAGUE_06.nombre_volants
 	if directeur.total() != attendu or directeur.restants(sim) != attendu:
 		return "Le compteur initial de la V6 doit inclure ses libellules."

@@ -173,3 +173,14 @@
   pivote ; Générateur légendaire, unique, à chaîne courte, sans bonus d'engrenage, et surcharge qui éteint le dernier
   bâtiment posé (écriteau « Plein »). 130 tests. Captures avant/après dans `art_refs/playtest3/`.
 - **Objectif** : un jeu propre et lisible, puis (lot 2) un jeu où l'on gagne en plaçant mieux, pas en ayant plus.
+
+## 2026-11-27 (soir) — « Continue avec le lot 2 et les suivants » (Carlos, relayé par la session principale)
+- **Demande** : anti-spam, ateliers à ~0,5 jouet/s, équilibrage en conditions réelles, puis interface, vide et cartes,
+  restes du playtest 2 ; relancer Codex et Gemini ; ne s'arrêter que pour ce qui exige Carlos.
+- **Fait (lot 2)** : énergie de l'Horloge comptée en dents (jauge, coûts, écriteau « Plein ») ; postes de garde avec
+  fanions et choix de la case à la souris ; ateliers à 0,5 jouet/s, escouades de 5, jouets plus solides par niveau ;
+  vagues par paquets (V10 : 56 ennemis et un boss au lieu de 261) ; canon et carillon en boutique ; joueur automatique
+  à 4 styles et banc refait. Plus de 300 parties jouées : spam 0/6, masse 0/9, moyen 3/12, tactique 9/12.
+  Gemini revenu : images du carillon et du mortier générées (à valider par Carlos), icônes « poste » et
+  « légendaire ». 137 tests.
+- **Objectif** : on gagne en plaçant mieux, plus en ayant plus ; l'écran montre des escouades rangées, pas une cohue.

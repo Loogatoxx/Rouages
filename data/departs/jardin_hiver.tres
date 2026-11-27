@@ -10,7 +10,7 @@
 [sub_resource type="Resource" id="lot_0"]
 script = ExtResource("lot")
 objet = ExtResource("atelier_soldats")
-quantite = 1
+quantite = 2
 poids = 1.0
 
 [sub_resource type="Resource" id="lot_1"]
@@ -35,3 +35,4 @@ horloge = Vector2i(0, 0)
 reserve = Array[ExtResource("lot")]([SubResource("lot_0"), SubResource("lot_1"), SubResource("lot_2")])
 ennemis_speciaux = Array[Resource]([ExtResource("sp_taupe")])
 part_speciaux = 0.12
+dents_bonus = 2

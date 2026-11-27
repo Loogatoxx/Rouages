@@ -75,7 +75,7 @@ func _decrire(case_plateau: Vector2i) -> String:
 		if _source.plateau.sol_de(case_plateau) == _source.Plateau.Sol.CHEMIN:
 			return tr("Chemin des scarabées")
 		return ""
-	var texte: String = tr("%s\n%s") % [tr(piece.nom), tr(piece.description)]
+	var texte: String = tr("%s\n%s") % [tr(piece.nom), PieceDef.decrire(piece)]
 	if piece.type == PieceDef.Type.TOURELLE:
 		var degats: float = piece.degats_tir * Placement.degats_tourelle(_source.plateau, case_plateau, Run.regles)
 		texte += "\n" + tr("Portée %s m · Dégâts %s") % [String.num(piece.portee_tir), String.num(degats, 2)]

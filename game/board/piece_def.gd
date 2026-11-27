@@ -48,6 +48,21 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var bonus_voisins_tourelle: float = 0.0
 
 
+## Vrai si la pièce consomme de l'énergie (atelier ou tourelle) : c'est elle que compte le Tic-tac.
+func consomme() -> bool:
+	return (type == Type.ATELIER or type == Type.TOURELLE) and cout_energie > 0
+
+
+## Description traduite d'un objet de jeu, suivie de son coût en dents d'énergie s'il en consomme (infobulles).
+static func decrire(objet: Resource) -> String:
+	if objet == null:
+		return ""
+	var texte: String = TranslationServer.translate(objet.get("description"))
+	if objet is PieceDef and objet.consomme():
+		texte += "\n" + TranslationServer.translate("Énergie : %d dents de l’Horloge") % objet.cout_energie
+	return texte
+
+
 ## Oriente le masque des ports par quarts de tour dans le sens horaire.
 static func tourner_ports(ports: int, rotation: int) -> int:
 	var r: int = posmod(rotation, 4)

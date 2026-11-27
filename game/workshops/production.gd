@@ -18,6 +18,8 @@ const DIRECTIONS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 ## pour rester utilisable par les tests et le banc d'équilibrage.
 var bonus_cadence: float = 1.0
 var _progressions: Dictionary[Vector2i, float] = {}
+# Modèles de jouets renforcés par niveau d'atelier : [modèle de base, niveau] → copie aux PV et dégâts relevés.
+var _renforces: Dictionary = {}
 
 
 ## Plafond de jouets vivants d'un atelier : base des règles + bonus de placement et de niveau.
@@ -40,13 +42,29 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 		var sortis: int = 0
 		if places > 0 and progression >= 1.0:
 			var sortie: Vector2 = _sortie(case, plateau, sim)
+			var unite: Plateau.PieceDef.UniteDef = unite_de_niveau(atelier.unite_produite, plateau.niveau_de(case), regles)
 			for i: int in mini(floori(progression), places):
-				if not sim.ajouter(atelier.unite_produite, sortie, case):
+				if not sim.ajouter(unite, sortie, case):
 					break
 				sortis += 1
 				jouet_produit.emit(case)
 		# Un atelier plein garde au plus un jouet « prêt » : il ressort dès qu'une place se libère, sans rafale.
 		_progressions[case] = minf(progression - sortis, 1.0)
+
+
+## Modèle du jouet que sort un atelier de ce niveau (playtest 3 : améliorer rend les jouets plus solides, pas
+## seulement plus nombreux — « mieux, pas plus »). PV et dégâts × (1 + `gain_niveau_unite` × (niveau − 1)).
+func unite_de_niveau(base: Plateau.PieceDef.UniteDef, niveau: int, regles: Regles) -> Plateau.PieceDef.UniteDef:
+	if niveau <= 1 or regles.gain_niveau_unite <= 0.0:
+		return base
+	var cle: Array = [base, niveau]
+	if not _renforces.has(cle):
+		var copie: Plateau.PieceDef.UniteDef = base.duplicate()
+		var facteur: float = 1.0 + regles.gain_niveau_unite * (niveau - 1)
+		copie.pv *= facteur
+		copie.degats *= facteur
+		_renforces[cle] = copie
+	return _renforces[cle]
 
 
 # Un atelier en bord de route lâche ses jouets sur la route (front immédiat) ; sinon, du côté d'une case libre qui

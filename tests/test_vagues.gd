@@ -11,14 +11,58 @@ const Regles = preload("res://game/core/regles.gd")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
 const CUIRASSE = preload("res://data/unites/scarabee_cuirasse.tres")
 const FOURMI = preload("res://data/unites/fourmi.tres")
-const RENFORTS := [0, 0, 12, 6, 5, 6, 10, 12, 18, 20]  # V6 adoucie au playtest 2 (armure des cuirassés, mortier en V7)
+const RENFORTS := [0, 0, 6, 3, 4, 5, 6, 7, 9, 10]
 const DONNEES_REGLES = preload("res://data/regles.tres")
-## Courbe de difficulté (équilibrée au banc ; dernière passe : playtest 1, banc mixte soldats + lance-billes, pic de la V5
-## lissé, milieu de partie durci) : [nombre, intervalle, × PV].
+## Courbe de difficulté (playtest 3, « Tenir la ligne » : moins d'ennemis, plus solides, par paquets ; réglée en
+## jouant de vraies parties avec `scripts/joueur_auto.gd`) : [nombre, intervalle, × PV].
 const COURBE := [
-	[14, 1.25, 1.0], [36, 0.5, 1.1], [54, 0.37, 1.15], [80, 0.3, 1.4], [100, 0.26, 1.4],
-	[140, 0.25, 1.85], [150, 0.25, 2.0], [160, 0.25, 2.4], [190, 0.23, 2.65], [229, 0.21, 2.55],
+	[8, 2.2, 1.0], [12, 1.7, 1.4], [14, 1.4, 1.9], [16, 1.3, 2.5], [18, 1.2, 3.1],
+	[20, 1.1, 3.8], [24, 1.0, 4.4], [28, 0.95, 4.9], [32, 0.9, 5.2], [36, 0.85, 5.4],
 ]
+
+
+# Copie d'une vague des données, ramenée au rythme régulier (un ennemi par intervalle) : les tests du directeur
+# vérifient l'ordre et la répartition ; le rythme par paquets a son propre test.
+func _reguliere(source: VagueDef) -> VagueDef:
+	var vague: VagueDef = source.duplicate()
+	vague.groupe = 1
+	return vague
+
+
+## Playtest 3 : les ennemis arrivent par paquets serrés, puis une pause ; la durée totale ne change pas.
+func test_paquets() -> String:
+	var directeur: DirecteurVagues = DirecteurVagues.new()
+	var sim: SwarmSim = SwarmSim.new()
+	var vague: VagueDef = DONNEES_REGLES.vagues[0].duplicate()
+	vague.nombre = 6
+	vague.intervalle = 2.0
+	vague.groupe = 3
+	directeur.commencer(vague, [Vector2i.ZERO])
+	directeur.avancer(0.0, sim)
+	directeur.avancer(DirecteurVagues.ECART_GROUPE * 2.0 + 0.01, sim)
+	if sim.nombre(SwarmSim.ENNEMI) != 3:
+		return "Le premier paquet de 3 doit être entré en deux écarts courts (obtenu %d)." % sim.nombre(SwarmSim.ENNEMI)
+	directeur.avancer(2.0, sim)
+	if sim.nombre(SwarmSim.ENNEMI) != 3:
+		return "Après un paquet, le directeur doit marquer une pause."
+	directeur.avancer(2.0 * 3 - DirecteurVagues.ECART_GROUPE * 2.0 - 2.0, sim)
+	if sim.nombre(SwarmSim.ENNEMI) != 4:
+		return "Le second paquet doit commencer une durée de paquet (3 × intervalle) après le premier."
+	return ""
+
+
+## Une fuite coûte à l'Horloge le prix fixé dans les données, même quand la vague relève les dégâts des ennemis.
+func test_fuite_a_prix_fixe() -> String:
+	var directeur: DirecteurVagues = DirecteurVagues.new()
+	var sim: SimulationTemoin = SimulationTemoin.new()
+	var vague: VagueDef = DONNEES_REGLES.vagues[9].duplicate()
+	vague.boss = null
+	directeur.commencer(vague, [Vector2i.ZERO])
+	directeur.avancer(0.0, sim)
+	var recu: UniteDef = sim.unite_recue
+	if not is_equal_approx(recu.degats, SCARABEE.degats * vague.multiplicateur_degats):
+		return "Les dégâts contre les jouets doivent suivre le multiplicateur de la vague."
+	return "" if is_equal_approx(recu.degats_horloge, SCARABEE.degats_horloge) else "Le prix d'une fuite ne doit pas changer."
 
 
 ## Observe la définition reçue à l'apparition pour vérifier ses PV sans simuler un combat.
@@ -35,7 +79,7 @@ class SimulationTemoin extends SwarmSim:
 func test_ressources() -> String:
 	var regles: Regles = load("res://data/regles.tres") as Regles
 	if (regles == null or regles.pv_horloge != 30
-			or regles.plafond_allies_par_atelier != 15 or regles.multiplicateur_acceleration != 2.0):
+			or regles.plafond_allies_par_atelier != 5 or regles.multiplicateur_acceleration != 2.0):
 		return "Règles de partie incorrectes."
 	if regles.vagues.size() != COURBE.size():
 		return "La run doit compter %d vagues, pas %d." % [COURBE.size(), regles.vagues.size()]
@@ -79,7 +123,7 @@ func test_alternance_et_fin() -> String:
 	for case: Vector2i in entrees:
 		plateau.ajouter_sol(case, Plateau.Sol.CHEMIN)
 	sim.configurer(plateau)
-	var vague: VagueDef = DONNEES_REGLES.vagues[0]
+	var vague: VagueDef = _reguliere(DONNEES_REGLES.vagues[0])
 	directeur.commencer(vague, entrees)
 	if directeur.est_terminee(sim):
 		return "La vague doit attendre ses premières apparitions."
@@ -124,7 +168,7 @@ func test_multiplicateur_pv() -> String:
 func test_renforts_repartis_et_comptes() -> String:
 	var directeur: DirecteurVagues = DirecteurVagues.new()
 	var sim: SimulationTemoin = SimulationTemoin.new()
-	var vague: VagueDef = DONNEES_REGLES.vagues[3]
+	var vague: VagueDef = _reguliere(DONNEES_REGLES.vagues[3])
 	var total: int = vague.nombre + vague.nombre_renforts
 	var cuirasses: int = 0
 	var plateau: Plateau = Plateau.new()

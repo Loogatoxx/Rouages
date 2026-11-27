@@ -28,6 +28,10 @@ const HAUTEUR_PONT := 0.6
 const RAMPE_PONT := 0.3
 ## Pas d'échantillonnage (mètres) pour vérifier qu'une poursuite en ligne droite reste sur la route.
 const PAS_VOIE := 0.5
+## Postes de garde (playtest 3, « Tenir la ligne ») : une escouade ne s'éloigne pas de son poste de plus de
+## `RAYON_GARDE` mètres pour attaquer, et chaque jouet y a sa place à `RAYON_RANG` mètres du centre au plus.
+const RAYON_GARDE := 3.2
+const RAYON_RANG := 0.75
 
 
 ## Une cellule de deux mètres conserve les indices locaux et son rectangle occupé.
@@ -112,6 +116,11 @@ var _libres: Dictionary[Vector2i, Vector2i] = {}
 var _profondeurs_libres: Dictionary[Vector2i, int] = {}
 var _occupees: Dictionary[Vector2i, bool] = {}
 var _ponts: Array[PackedVector2Array] = []
+# Postes de garde : atelier → case de route où son escouade se range ; et, pour chaque case de poste, la case
+# suivante à prendre depuis n'importe quelle case de route (parcours en largeur depuis le poste).
+var _postes: Dictionary[Vector2i, Vector2i] = {}
+var _pistes_postes: Dictionary[Vector2i, Dictionary] = {}
+var _passages: Dictionary[Vector2i, int] = {}
 # Armure prêtée à chaque ennemi par un porte-bouclier voisin (même indice que les ennemis), recalculée à chaque pas.
 var _boucliers := PackedFloat32Array()
 
@@ -211,6 +220,112 @@ func _tracer_couloirs(plateau: Plateau) -> void:
 			_libres[voisin] = case
 			_objectifs[ALLIE][voisin] = Vector2(case) * MAILLE
 			file.append(voisin)
+	_tracer_postes(plateau)
+
+
+# Playtest 3 (pilier 2) : chaque atelier a un poste de garde sur la route — la case choisie par le joueur
+# (`Plateau.poste_de`), sinon la case de route la plus proche de sa sortie. Ses jouets s'y rangent et y tiennent
+# la ligne : le combat a lieu là où le joueur a construit, devant ses tourelles, plus au bord du plateau.
+func _tracer_postes(plateau: Plateau) -> void:
+	_postes.clear()
+	_pistes_postes.clear()
+	_compter_passages(plateau)
+	for case: Vector2i in plateau.coords_pieces():
+		if plateau.piece_de(case).type != Plateau.PieceDef.Type.ATELIER:
+			continue
+		var route: Vector2i = plateau.poste_de(case)
+		if not _couloirs.has(route) or _distances.get(route, 0) <= 0:
+			route = _route_proche(case)
+		if route == SANS_ORIGINE:
+			continue
+		_postes[case] = route
+		if _pistes_postes.has(route):
+			continue
+		var piste: Dictionary[Vector2i, Vector2i] = {route: route}
+		var file: Array[Vector2i] = [route]
+		var tete: int = 0
+		while tete < file.size():
+			var courante: Vector2i = file[tete]
+			tete += 1
+			for direction: Vector2i in ChampFlux.VOISINS:
+				var voisin: Vector2i = courante + direction
+				if not piste.has(voisin) and _distances.has(voisin):
+					piste[voisin] = courante
+					file.append(voisin)
+		_pistes_postes[route] = piste
+
+
+# Nombre d'entrées dont le plus court trajet vers l'horloge passe par chaque case de route.
+func _compter_passages(plateau: Plateau) -> void:
+	_passages.clear()
+	for entree: Vector2i in ChampFlux.entrees(plateau, _distances):
+		var case: Vector2i = entree
+		var garde_fou: int = 0
+		while _distances.get(case, 0) > 0 and garde_fou < 400:
+			_passages[case] = _passages.get(case, 0) + 1
+			var suivante: Vector2i = case
+			for direction: Vector2i in ChampFlux.VOISINS:
+				if _distances.get(case + direction, 1 << 30) < _distances[suivante]:
+					suivante = case + direction
+			if suivante == case:
+				break
+			case = suivante
+			garde_fou += 1
+
+
+## Poste de garde par défaut d'un atelier posé sur `case` : parmi les cases de route voisines, celle où passent le
+## plus d'entrées (tenir un tronc commun vaut mieux qu'une seule branche), puis la plus proche de l'horloge ; sinon
+## la route la plus proche de sa sortie en suivant les cases libres. Jamais la case de l'horloge.
+func _route_proche(case: Vector2i) -> Vector2i:
+	var meilleure: Vector2i = SANS_ORIGINE
+	var profondeur_min: int = 1 << 30
+	for direction: Vector2i in ChampFlux.VOISINS:
+		var voisin: Vector2i = case + direction
+		var profondeur: int = _profondeurs_libres.get(voisin, -1)
+		if profondeur < 0 or profondeur > profondeur_min or _distances.get(voisin, 1) == 0:
+			continue
+		if profondeur == profondeur_min and meilleure != SANS_ORIGINE and profondeur == 0:
+			# Deux routes voisines : la plus passante, puis la plus proche de l'horloge.
+			var gagne: bool = _passages.get(voisin, 0) > _passages.get(meilleure, 0) or (
+					_passages.get(voisin, 0) == _passages.get(meilleure, 0) and _distances[voisin] < _distances[meilleure])
+			if not gagne:
+				continue
+		elif profondeur == profondeur_min:
+			continue
+		profondeur_min = profondeur
+		meilleure = voisin
+	var garde_fou: int = 0
+	while meilleure != SANS_ORIGINE and _libres.has(meilleure) and garde_fou < 200:
+		meilleure = _libres[meilleure]
+		garde_fou += 1
+	if meilleure != SANS_ORIGINE and _distances.get(meilleure, 1) == 0:
+		return SANS_ORIGINE  # la seule route voisine est la case de l'horloge
+	return meilleure
+
+
+## Nombre d'entrées dont le trajet passe par cette case de route (0 hors des trajets) : pour l'aide au placement.
+func passage(case: Vector2i) -> int:
+	return _passages.get(case, 0)
+
+
+## Poste de garde de l'atelier `origine`, en mètres (`Vector2.INF` s'il n'en a pas) : pour le visuel (drapeau).
+func poste(origine: Vector2i) -> Vector2:
+	return Vector2(_postes[origine]) * MAILLE if _postes.has(origine) else Vector2.INF
+
+
+# Place d'un jouet dans son escouade : un point fixe autour du centre du poste, tiré de son numéro de hasard
+# (chacun le sien : l'escouade se range au lieu de se marcher dessus). Hors du poste : la case suivante par la route.
+func _vers_poste(lieu: Vector2, poste_case: Vector2i, choix: int) -> Vector2:
+	var case := Vector2i((lieu / MAILLE).round())
+	if case == poste_case:
+		var alea: int = choix & 0x7FFFFFFF
+		var place: Vector2 = Vector2(poste_case) * MAILLE + Vector2.from_angle((alea % 628) / 100.0) \
+				* (RAYON_RANG * (0.25 + 0.75 * ((alea / 628) % 100) / 100.0))
+		return lieu if lieu.distance_squared_to(place) <= 0.04 else place
+	var piste: Dictionary = _pistes_postes.get(poste_case, {})
+	if piste.has(case):
+		return Vector2(piste[case]) * MAILLE
+	return _objectifs[ALLIE].get(case, Vector2(poste_case) * MAILLE)
 
 
 ## Point de sortie des jouets d'un atelier (playtest 3) : sur la route s'il la borde, sinon du côté de la case libre
@@ -476,7 +591,8 @@ func _verifier_arrivee(ennemis: Nuee, i: int) -> void:
 	var lieu: Vector2 = ennemis.lieux[i]
 	var case := Vector2i((lieu / MAILLE).round())
 	if _distances.get(case, -1) == 0 and lieu.distance_squared_to(Vector2(case) * MAILLE) < 1.0:
-		var degats: float = ennemis.modeles[i].degats
+		var modele: UniteDef = ennemis.modeles[i]
+		var degats: float = modele.degats_horloge if modele.degats_horloge > 0.0 else modele.degats
 		ennemis._retirer(i)
 		ennemi_arrive.emit(degats)
 
@@ -567,6 +683,21 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 		return
 	nuee.recharges[i] = maxf(0.0, recharge - dt)
 	var destination: Vector2
+	# Playtest 3 (postes de garde) : un jouet sorti d'un atelier tient son poste. Il ne va au contact que d'un
+	# ennemi entré dans le rayon de garde du poste, en ligne droite sur la route ; les tireurs ne quittent pas leur
+	# place. Sinon il rejoint (ou garde) sa place dans l'escouade.
+	var poste_case: Vector2i = _postes.get(nuee.origines[i], SANS_ORIGINE) if camp == ALLIE else SANS_ORIGINE
+	if poste_case != SANS_ORIGINE:
+		var centre: Vector2 = Vector2(poste_case) * MAILLE
+		if melee and cible >= 0 and adversaires[cible].distance_squared_to(centre) <= RAYON_GARDE * RAYON_GARDE \
+				and _voie_libre(lieu, adversaires[cible]):
+			destination = adversaires[cible]
+		else:
+			destination = _vers_poste(lieu, poste_case, nuee.choix[i])
+		if destination != lieu:
+			nuee.suivants[i] = lieu.move_toward(destination, modele.vitesse * dt)
+			nuee.angles[i] = (destination - lieu).angle()
+		return
 	# Playtest 3 : on ne poursuit en ligne droite que si le trajet reste sur la route ; sinon on suit la route
 	# (plus de raccourci par l'herbe entre deux boucles du chemin).
 	var en_vue: bool = cible >= 0 and meilleur < POURSUITE * POURSUITE

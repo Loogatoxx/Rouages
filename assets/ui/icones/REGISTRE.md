@@ -4,7 +4,7 @@
 
 ---
 
-## 1. Icônes disponibles (`assets/ui/icones/*.png` — 28 fichiers)
+## 1. Icônes disponibles (`assets/ui/icones/*.png` — 30 fichiers)
 
 | Fichier | Statut | Concept unique | Où il sert |
 |---|---|---|---|
@@ -28,7 +28,7 @@
 | `rarete_commune.png` | Conservée | **Rareté Commune** | Badge de rareté sur cartes et infobulles |
 | `rarete_rare.png` | Conservée | **Rareté Rare** | Badge de rareté sur cartes et infobulles |
 | `rarete_epique.png` | Conservée | **Rareté Épique** | Badge de rareté sur cartes et infobulles |
-| `rarete_legendaire.png` | Dérivée de l'épique (émail corail, playtest 3) ; à redessiner par Gemini | **Rareté Légendaire** | Badge de rareté sur cartes et infobulles |
+| `rarete_legendaire.png` | **Nouvelle** *(playtest 3)* | **Rareté Légendaire** (médaillon étoilé laiton à liseré enrichi, émail corail `#E0795C` et étoile laiton à 4 branches) | Badge de rareté sur cartes et infobulles |
 | `monnaie_or.png` | **Nouvelle** *(v3)* | **Engrenages d'or (monnaie méta)** (pièce dorée à bord lisse frappée d'un engrenage en relief) | Compteur de monnaie méta inter-parties et déblocages permanents |
 | `assembler.png` | **Nouvelle** *(v3)* | **Assembler / craft** (deux pièces de laiton s'emboîtant + petit marteau d'horloger) | Action / onglet d'assemblage et de fabrication de pièces |
 | `plafond_jouets.png` | **Nouvelle** *(v3)* | **Plafond de jouets d'un atelier** (trois silhouettes de soldats-jouets serrées sous une barre/toit) | Indicateur de capacité maximale de jouets actifs par atelier |
@@ -37,6 +37,7 @@
 | `cadence.png` | **Nouvelle** *(v3)* | **Cadence / fréquence** (petit métronome en bois et laiton, balancier incliné) | Statistique de cadence de tir / fréquence de production d'un atelier |
 | `portee.png` | **Nouvelle** *(v3)* | **Portée de tir** (deux cercles concentriques en pointillés laiton autour d'un point central, vus de 3/4 dessus) | Statistique / indicateur de portée de tir des tourelles et ateliers |
 | `armure.png` | **Nouvelle** *(v3)* | **Armure / carapace** (petit bouclier de bronze riveté en forme de carapace de scarabée) | Statistique de résistance / réduction de dégâts des ennemis ou pièces |
+| `poste.png` | **Nouvelle** *(playtest 3)* | **Poste de garde d'une escouade** (fanion triangulaire bleu ciel pastel sur hampe de laiton plantée dans un pavé crème + petit soldat-jouet) | Action / repère de positionnement du poste de garde d'une escouade sur la route |
 
 ---
 
@@ -47,4 +48,4 @@
 3. **Lisibilité corrigée — `ressort.png`** : l'ancienne spirale plate a été remplacée par un **ressort hélicoïdal de laiton vu de 3/4**.
 4. **Concepts séparés — `vague.png` vs `ennemis_restants.png`** : `vague.png` désigne la **vague d'ennemis** (3 scarabées + fanion, sans chiffre) et `ennemis_restants.png` le **décompte d'ennemis actifs** (1 scarabée + sablier).
 
-**Bilan d'unicité** : **28 fichiers disponibles = 28 concepts strictement disjoints** (0 doublon).
+**Bilan d'unicité** : **30 fichiers disponibles = 30 concepts strictement disjoints** (0 doublon).

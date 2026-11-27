@@ -284,14 +284,14 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 | ID | Tâche | Prio | Qui | Dépendances | État |
 |---|---|---|---|---|---|
 | P3-20 | **Réflexion de fond** : diagnostic du spam, jeux de référence, « le truc qui manque », solution « Tenir la ligne ». | P0 | Fable | — | ✅ `docs/game_design_p3.md` |
-| P3-21 | **Joueur automatique** : vraies parties (tirages, boutique, pose, améliorations, vagues), 2 styles, captures en cours de vague, bilan par vague ; sert de juge à tout l'équilibrage. | P0 | Fable | — | ✅ `scripts/joueur_auto.gd` (à enrichir : extensions, drapeaux) |
-| P3-22 | **Pilier 1 — le Tic-tac** : énergie de l'Horloge comptée en dents (4 au départ, +1 après V2, V4, V6, V8), coût par bâtiment, dernier posé éteint si plein, jauge dans le HUD, coût sur les cartes. | P0 | Fable | P3-12 (même mécanisme) | |
-| P3-23 | **Ralentir les ateliers** : soldats 0,5 jouet/s (au lieu de 1,1), lance-billes 0,3 ; plafond 5 par atelier (+1 par niveau) ; soldats plus solides (PV 26, dégâts 4). | P0 | Fable (joueur auto + banc) | P3-22 | |
-| P3-24 | **Vagues refondues** : moins d'ennemis, plus solides (V1 8, V5 30, V10 70 + boss), mêmes contres ; toutes les cartes rejouées en 3 graines. | P0 | Fable | P3-23 | |
-| P3-25 | **Pilier 2 — postes de garde** : un drapeau par atelier, déplaçable sur la route (3 cases), escouade qui s'y range et bloque ; anneau de portée ; bouton dans le panneau de pièce. | P1 | Fable → Codex (interface) | P3-23 | |
-| P3-26 | **Pilier 3 — rôles nets** : le carillon ralentit (35 %, 1,5 s), le canon perce l'armure, le mortier rase ; textes et icônes de rôle sur les cartes. | P1 | Fable | P3-24 | |
+| P3-21 | **Joueur automatique** : vraies parties (tirages, boutique, pose, améliorations, vagues), 2 styles, captures en cours de vague, bilan par vague ; sert de juge à tout l'équilibrage. | P0 | Fable | — | ✅ `scripts/joueur_auto.gd` : 4 styles (spam, masse, moyen, tactique), réseau d'engrenages tracé vers la meilleure case, fanions, variable `CARTE=1` |
+| P3-22 | **Pilier 1 — le Tic-tac** : énergie de l'Horloge comptée en dents (4 au départ, +1 après V2, V4, V6, V8), coût par bâtiment, dernier posé éteint si plein, jauge dans le HUD, coût sur les cartes. | P0 | Fable | P3-12 (même mécanisme) | ✅ 4 dents (+1 après V2, V4, V6, V8), coûts 1 ou 2, jauge dans le HUD, coût sur les cartes et infobulles, écriteau « Plein » |
+| P3-23 | **Ralentir les ateliers** : soldats 0,5 jouet/s (au lieu de 1,1), lance-billes 0,3 ; plafond 5 par atelier (+1 par niveau) ; soldats plus solides (PV 26, dégâts 4). | P0 | Fable (joueur auto + banc) | P3-22 | ✅ 0,5 et 0,3 jouet/s, plafond 5 (+1/niveau), soldat PV 34 / dégâts 2, jouets +15 % par niveau d'atelier |
+| P3-24 | **Vagues refondues** : moins d'ennemis, plus solides (V1 8, V5 30, V10 70 + boss), mêmes contres ; toutes les cartes rejouées en 3 graines. | P0 | Fable | P3-23 | ✅ V1 8 → V10 36 + 10 + 10 + boss, par paquets, dégâts relevés par vague, fuite à prix fixe ; 6 cartes jouées |
+| P3-25 | **Pilier 2 — postes de garde** : un drapeau par atelier, déplaçable sur la route (3 cases), escouade qui s'y range et bloque ; anneau de portée ; bouton dans le panneau de pièce. | P1 | Fable → Codex (interface) | P3-23 | ✅ poste par défaut sur la route la plus passante, fanion visible, bouton du panneau + clic sur une case bleue (3 cases) |
+| P3-26 | **Pilier 3 — rôles nets** : le carillon ralentit (35 %, 1,5 s), le canon perce l'armure, le mortier rase ; textes et icônes de rôle sur les cartes. | P1 | Fable | P3-24 | 🟡 canon perce l'armure, cuirassé armure 6 ; reste : carillon qui ralentit, icônes de rôle |
 | P3-27 | **Pilier 4 — Coup de carillon** : pouvoir de l'Horloge (étourdit 2,5 s dans 3 m, recharge 25 s), bouton et touche réassignable. | P1 | Fable → Codex | P3-25 | |
-| P3-28 | **Preuve anti-spam** : critères de `game_design_p3.md` § 5 mesurés (spam ≤ tactique, ≤ 35 jouets vivants, profil moyen V6-V10, profil soigné 5-20 PV) sur 3 cartes × 3 graines ; film d'une vague (`--write-movie`). | P0 | Fable | P3-22 à P3-26 | |
+| P3-28 | **Preuve anti-spam** : critères de `game_design_p3.md` § 5 mesurés (spam ≤ tactique, ≤ 35 jouets vivants, profil moyen V6-V10, profil soigné 5-20 PV) sur 3 cartes × 3 graines ; film d'une vague (`--write-movie`). | P0 | Fable | P3-22 à P3-26 | 🟡 mesuré sur 3 cartes × 4 graines : spam 0/6, masse 0/9, moyen 3/12, tactique 9/12 (4-28 PV) ; reste : film d'une vague, durée des vagues |
 | P3-29 | **Game feeling** : impacts (ressort qui saute, poussière, recul), secousse, sons de blocage, lisibilité du front ; jugé sur film. | P1 | Fable | P3-25 | |
 
 ## Moyen terme — §5 du brief : interface et localisation (P1)
@@ -325,7 +325,7 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 | P2-58 | Lore en BD (3-4 cases par chapitre) | Fable → Gemini | quota Gemini |
 | P2-22 | Chasse au texte continue, distinction des éléments du plateau | Fable + Gemini | avec P3-32 |
 | P2-11 | Vitrine de l'écran titre à revoir | Fable | avec P3-30 |
-| PT-51 | Lot 2 Hyper3D : carillon et mortier (images à générer puis **à valider par Carlos**) | Gemini → Carlos → Hyper3D | quota Gemini ; le mortier Hyper3D devra garder un fût séparable (P3-05) |
+| PT-51 | Lot 2 Hyper3D : carillon et mortier | Gemini → Carlos → Hyper3D | 🟡 images générées le 2026-11-27 (`art_refs/hyper3d/lot2/tourelle_carillon.png`, `tourelle_mortier.png`) : **attendent la validation de Carlos** avant la génération 3D (1 crédit pour les deux) |
 | PT-51b | Pont Hyper3D (tablier dans le sens de la route, arche pour l'arbre) | Gemini → Carlos → Hyper3D | après PT-51 |
 | PT-53 | Animations générées (marche, tir, ateliers, horloge) | Hyper3D + Gemini | PT-51 |
 | PT-54 | Micro-décors 3D | Gemini | quota Gemini ; sert P3-42 |
@@ -355,6 +355,6 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 | Restes | P2-40, P2-55, P2-56, P2-58, P2-22, P2-11, PT-51 (carillon + mortier), PT-53, PT-54 | tableau « Restes du playtest 2 » |
 
 ## Ordre d'exécution (autonomie)
-Lot 1 : P3-20, 21, 40 + P3-01 à 05 + P3-10 à 12 → commit ✅ · Lot 2 : P3-22, 23, 24 → joueur automatique + banc →
-commit · Lot 3 : P3-25, 26, 27, 29 → P3-28 (preuve) → builds Mac/Windows · Lot 4 : P3-30, 31, 32 · Lot 5 : P3-41, 50,
+Lot 1 : P3-20, 21, 40 + P3-01 à 05 + P3-10 à 12 → commit ✅ · Lot 2 : P3-22, 23, 24, 25 → joueur automatique + banc →
+commit ✅ · Lot 3 : P3-26, 27, 29 → P3-28 (film, durée des vagues) → builds Mac/Windows · Lot 4 : P3-30, 31, 32 · Lot 5 : P3-41, 50,
 42, 43, 44 → P3-46, 47 · puis restes du playtest 2 et cartes P3-48, 49. PT-51 dès que le quota Gemini revient.

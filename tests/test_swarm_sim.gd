@@ -39,11 +39,13 @@ func test_arrivee() -> String:
 	if sim.nombre(SwarmSim.ENNEMI) != 0:
 		return "Le scarabée aurait dû atteindre l'horloge après 3,5 s."
 	sim.avancer(1.0)
-	return "" if impacts == [SCARABEE.degats] else "Un seul impact de deux dégâts était attendu."
+	return "" if impacts == [SCARABEE.degats_horloge] else "Un seul impact, au prix d'une fuite de scarabée, était attendu."
 
 
-## Rejoue le duel et vérifie le quatrième coup de soldat à 2,5 secondes.
+## Rejoue le duel : le scarabée tombe au coup de soldat prévu par les données (PV ÷ dégâts), pas avant.
 func test_duel() -> String:
+	var coups: int = ceili(SCARABEE.pv / SOLDAT.degats)
+	var pas_attendus: int = roundi((coups - 1) / SOLDAT.cadence / PAS)
 	for essai: int in 2:
 		var sim := SwarmSim.new()
 		var morts: Array = []
@@ -51,15 +53,16 @@ func test_duel() -> String:
 			morts.append([camp, position, def]))
 		sim.ajouter(SCARABEE, Vector2(0.5, 0))
 		sim.ajouter(SOLDAT, Vector2.ZERO)
-		for i: int in 150:
+		for i: int in pas_attendus - 2:
 			sim.avancer(PAS)
 		if not morts.is_empty():
-			return "Trois coups de soldat ne doivent pas tuer le scarabée."
-		sim.avancer(PAS)
+			return "%d coups de soldat ne doivent pas tuer le scarabée." % (coups - 1)
+		for i: int in 4:
+			sim.avancer(PAS)
 		if morts != [[SwarmSim.ENNEMI, Vector2(0.5, 0), SCARABEE]]:
 			return "Le signal de mort doit identifier le scarabée et sa position."
 		if sim.nombre(SwarmSim.ALLIE) != 1 or sim.nombre(SwarmSim.ENNEMI) != 0:
-			return "Le quatrième coup de soldat doit terminer le duel."
+			return "Le dernier coup de soldat doit terminer le duel."
 	return ""
 
 

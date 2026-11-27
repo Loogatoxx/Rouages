@@ -70,6 +70,16 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 ## tiennent leur poste quand les tiroirs s'ouvrent (sinon ils arriveraient un à un dans la mêlée et tomberaient seuls).
 @export var delai_premier_ennemi: float = 5.0
 @export var multiplicateur_acceleration: float
+@export_group("Tic-tac : énergie de l'Horloge (playtest 3)")
+## Dents d'énergie que fournit l'Horloge au début d'une partie. Chaque atelier ou tourelle en consomme
+## (`PieceDef.cout_energie`) ; les engrenages ne consomment rien. Pourquoi : sans rareté, « un atelier de plus »
+## était toujours la meilleure dépense (spam). Avec des dents comptées, on choisit et on améliore.
+@export var dents_depart: int = 4
+## L'Horloge se remonte : elle gagne une dent après chacune de ces vagues.
+@export var vagues_dent: Array[int] = [2, 4, 6, 8, 11, 13]
+## Jouets plus solides par niveau de leur atelier (PV et dégâts, en part du niveau 1).
+@export var gain_niveau_unite: float = 0.15
+@export_group("")
 @export var ressorts_depart: int
 @export var recompense_vague: int
 @export var recompense_par_vague: int
@@ -87,3 +97,12 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var vagues_coffre: Array[int] = [3, 6, 9]
 @export var coffre: Array[Lot] = []
 @export var vagues: Array[VagueDef] = []
+
+
+## Dents d'énergie de l'Horloge après `vagues_tenues` vagues (sans les bonus de l'Établi).
+func dents_apres(vagues_tenues: int) -> int:
+	var total: int = dents_depart
+	for vague: int in vagues_dent:
+		if vagues_tenues >= vague:
+			total += 1
+	return total

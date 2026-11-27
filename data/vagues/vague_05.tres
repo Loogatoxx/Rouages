@@ -10,9 +10,11 @@
 script = ExtResource("vague")
 unite = ExtResource("scarabee")
 renfort = ExtResource("cuirasse")
-nombre_renforts = 5
-nombre = 100
-intervalle = 0.26
-multiplicateur_pv = 1.4
+nombre_renforts = 4
+nombre = 18
+intervalle = 1.2
+multiplicateur_pv = 3.1
 boss = ExtResource("boss")
-pv_boss_facteur = 0.4
+pv_boss_facteur = 0.45
+groupe = 5
+multiplicateur_degats = 1.3

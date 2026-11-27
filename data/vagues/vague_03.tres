@@ -8,7 +8,9 @@
 script = ExtResource("vague")
 unite = ExtResource("scarabee")
 renfort = ExtResource("fourmi")
-nombre_renforts = 12
-nombre = 54
-intervalle = 0.37
-multiplicateur_pv = 1.15
+nombre_renforts = 6
+nombre = 14
+intervalle = 1.4
+multiplicateur_pv = 1.9
+groupe = 4
+multiplicateur_degats = 1.1

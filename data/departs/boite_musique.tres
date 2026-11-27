@@ -42,3 +42,4 @@ horloge = Vector2i(0, 0)
 reserve = Array[ExtResource("lot")]([SubResource("lot_0"), SubResource("lot_1"), SubResource("lot_2"), SubResource("lot_3")])
 ennemis_speciaux = Array[Resource]([ExtResource("sp_porte_bouclier")])
 part_speciaux = 0.08
+dents_bonus = 1

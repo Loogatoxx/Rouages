@@ -6,6 +6,9 @@ const UniteDef = preload("res://game/swarm/unite_def.gd")
 const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const GrilleMonde = preload("res://game/board/grille_monde.gd")
 
+## Écart (secondes) entre deux ennemis d'un même paquet.
+const ECART_GROUPE := 0.35
+
 var facteur_pv: float = 1.0
 var _vague: VagueDef
 var _unite: UniteDef
@@ -59,6 +62,11 @@ func commencer(vague: VagueDef, entrees: Array[Vector2i], delai: float = 0.0, sp
 func _modele_vague(source: UniteDef) -> UniteDef:
 	var modele: UniteDef = source.duplicate() as UniteDef
 	modele.pv *= _vague.multiplicateur_pv * facteur_pv
+	# Une fuite coûte toujours le même prix à l'Horloge, quelle que soit la vague (playtest 3 : une ligne qui cède
+	# coûte quelques PV, pas la partie). La valeur vient des données, sinon des dégâts d'origine.
+	if modele.degats_horloge <= 0.0:
+		modele.degats_horloge = source.degats
+	modele.degats *= _vague.multiplicateur_degats
 	return modele
 
 
@@ -103,7 +111,14 @@ func avancer(dt: float, sim: SwarmSim) -> void:
 		else:
 			_progression_renfort = progression % _total_sol
 		_apparues += 1
-		_delai += _vague.intervalle
+		# Par paquets : écart court à l'intérieur d'un paquet, puis le reste du temps du paquet en pause.
+		var taille: int = maxi(1, _vague.groupe)
+		if taille <= 1:
+			_delai += _vague.intervalle
+		elif _apparues % taille == 0:
+			_delai += maxf(ECART_GROUPE, _vague.intervalle * taille - ECART_GROUPE * (taille - 1))
+		else:
+			_delai += minf(ECART_GROUPE, _vague.intervalle)
 
 
 ## Indique que toute la vague est entrée et que le dernier ennemi a disparu.

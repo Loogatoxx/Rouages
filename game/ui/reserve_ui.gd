@@ -98,7 +98,7 @@ func _actualiser_texte(bouton: Button, objet: Resource, quantite: int) -> void:
 		nombre.text = "×%d" % quantite
 	else:
 		bouton.text = tr("%s ×%d") % [tr(objet.get("nom")), quantite]
-	bouton.tooltip_text = tr(objet.get("nom")) + "\n" + tr(objet.get("description"))
+	bouton.tooltip_text = tr(objet.get("nom")) + "\n" + PieceDef.decrire(objet)
 	var valeur: int = Run.valeur_demontage(objet)
 	var vendable: bool = Run.phase == Run.Phase.CONSTRUCTION and valeur > 0
 	if vendable:

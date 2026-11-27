@@ -92,3 +92,7 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Générateur légendaire et unique | Il n'existe qu'un seul moteur de boîte à musique dans tout l'atelier : celui de la boîte de Lise. Son ressort est court (deux bâtiments tout proches) et trop doux pour entraîner les engrenages savants d'Anselme. |
 | Écriteau « Plein » | Quand le moteur n'en peut plus, le dernier jouet branché attend son tour, comme les apprentis devant l'établi. |
 | Tête des tourelles | Les socles sont vissés à la maquette ; seuls les fûts tournent sur leur plateau de laiton. |
+| Dents de l'Horloge (Tic-tac) | L'Horloge-Mère n'a qu'une couronne de dents : chaque atelier qu'elle entraîne en prend deux, chaque petite tourelle une. Anselme disait : « Une horloge qui entraîne tout ne sonne plus l'heure. » À chaque paire de sonneries tenues, elle se remonte d'un cran et libère une dent. |
+| Postes de garde et fanions | Les soldats de plomb d'Anselme ne courent pas après l'ennemi : ils gardent le pavé qu'on leur a confié, sous le fanion bleu de leur atelier, comme les sentinelles de la boîte à musique. |
+| Soldats qui tiennent, canons qui cassent | Lise avait remarqué que les petites baïonnettes glissent sur le bronze des cuirassés : « Eux retiennent, le canon réveille. » |
+| Scarabées par paquets | Les scarabées sortent des tiroirs par nichées : ceux d'un même tiroir ont été remontés ensemble, ils marchent ensemble. |

@@ -8,22 +8,39 @@ var plateau: Plateau
 var alimentees: Dictionary = {}
 ## Bâtiments reliés à un générateur plein : éteints, signalés par le visuel (playtest 3).
 var surcharge: Array[Vector2i] = []
+## Tic-tac : dents de l'Horloge (-1 = illimitées) et dents consommées, lues par le HUD.
+var dents: int = -1
+var charge_horloge: int = 0
 
 
 func _ready() -> void:
 	add_to_group(&"plateau_noeud")
 	plateau = Run.depart.creer_plateau()
 	plateau.modifie.connect(_actualiser)
+	# Les dents de l'Horloge changent après certaines vagues : l'énergie se recalcule quand la phase change.
+	Events.phase_changee.connect(func(_phase: int) -> void:
+		if Run.dents == dents:
+			return
+		if Run.dents > dents and dents >= 0:
+			# Après le bandeau « Vague tenue » (et celui d'un éventuel tiroir).
+			get_tree().create_timer(3.4).timeout.connect(func() -> void:
+				Events.message_joueur.emit(tr("L’Horloge se remonte : +1 dent d’énergie !")))
+		_actualiser())
 	_actualiser()
 
 
 func _actualiser() -> void:
-	var bilan: Energie.Bilan = Energie.analyser(plateau)
+	dents = Run.dents
+	var bilan: Energie.Bilan = Energie.analyser(plateau, dents)
 	alimentees = bilan.alimentees
-	# Un bâtiment vient de dépasser la capacité du générateur : on le dit tout de suite, en clair.
+	charge_horloge = bilan.charge_horloge
+	# Un bâtiment vient de dépasser la capacité de sa source : on le dit tout de suite, en clair.
 	for case: Vector2i in bilan.surcharge:
 		if not surcharge.has(case):
-			Events.message_joueur.emit(tr("Générateur plein : ce bâtiment reste éteint. Améliore le générateur ou reprends un bâtiment."))
+			if bilan.surcharge_horloge.has(case):
+				Events.message_joueur.emit(tr("Horloge pleine (%d dents) : ce bâtiment reste éteint. Reprends-en un autre, ou attends que l’Horloge se remonte.") % dents)
+			else:
+				Events.message_joueur.emit(tr("Générateur plein : ce bâtiment reste éteint. Améliore le générateur ou reprends un bâtiment."))
 			Sons.jouer(&"horloge_touchee")
 			break
 	surcharge = bilan.surcharge
