@@ -15,4 +15,4 @@ nombre_volants = 6
 nombre_renforts = 10
 nombre = 150
 intervalle = 0.25
-multiplicateur_pv = 1.8
+multiplicateur_pv = 2.0

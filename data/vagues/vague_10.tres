@@ -17,6 +17,6 @@ nombre_volants = 12
 nombre_renforts = 20
 nombre = 229
 intervalle = 0.21
-multiplicateur_pv = 2.4
+multiplicateur_pv = 2.55
 boss = ExtResource("boss")
 pv_boss_facteur = 1.0

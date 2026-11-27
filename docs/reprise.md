@@ -24,8 +24,9 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
   plein écran), progression méta (Établi, engrenages d'or, `user://progression.cfg`), boss Grand Scarabée (V5, V10, barre de vie),
   DA v2 (étude `art_refs/etude_da_v2.md`, kit 3D `assets/final/kit_v2/`, kit UI `assets/ui/`, vue inclinée par défaut, table
   d'établi). 73 tests. Builds Mac + Windows réexportés (Mac testé). Voir `docs/architecture.md` § Étape 10.
-- **Banc** : profil moyen `1,1,1,2,2,3,3,3,4,4`, profil parfait `1,1,2,2,3,3,4,4,5,5` (script prêt à l'emploi : boucle sur
-  3 graines, lancer en `bash`). Repères actuels : parfait 0-7 PV perdus ; moyen premières fuites V3-V5, mort vers V7-V8.
+- **Banc** : profil moyen `1,1,1,2,2,3,3,3,4,4`, profil parfait `1,1,2,2,3,3,4,4,5,5` (boucle sur 3 graines, lancer en
+  `bash`). Depuis le playtest 1 le banc joue **mixte** (étapes 3 et 5 = lance-billes ; 4e argument `soldats` pour l'ancien).
+  Repères (2026-11-27) : parfait 0-1 PV ; moyen meurt entre V5 et V10 (V8 en moyenne).
 - **Pièges nouveaux** : la logique (production, sim) ne doit jamais lire un autoload (le banc en `--script` n'en a pas) ;
   les tests isolent la progression (`tests/run_tests.gd`) ; les captures qui finissent une partie écrivent dans la vraie
   progression → supprimer `~/Library/Application Support/Godot/app_userdata/Rouages/progression.cfg` après ; une plaque 9-patch

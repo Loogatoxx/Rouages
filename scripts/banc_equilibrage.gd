@@ -25,17 +25,20 @@ const Regles = preload("res://game/core/regles.gd")
 const DepartDef = preload("res://game/core/depart_def.gd")
 const ATELIER = preload("res://data/tuiles/atelier_soldats.tres")
 const CROIX = preload("res://data/tuiles/engrenage_croix.tres")
+const BILLES = preload("res://data/tuiles/atelier_billes.tres")
 const SENTIER = preload("res://data/extensions/sentier.tres")
 const DT := 1.0 / 30.0
 
-## Chaque étape ajoute un atelier alimenté : [x, y, "A" atelier | "X" croix, rotation].
+## Chaque étape ajoute un atelier alimenté : [x, y, "A" atelier de soldats | "B" lance-billes | "X" croix, rotation].
+## Par défaut le banc joue « mixte » (les étapes 3 et 5 posent des lance-billes, comme un joueur qui répond aux
+## libellules) ; 4e argument `soldats` pour l'ancien banc tout soldats.
 ## Port de l'atelier : rotation 0 = sud, 1 = ouest, 2 = nord, 3 = est.
 const ETAPES := [
 	[[-1, 0, "A", 3]],
 	[[0, 1, "A", 2]],
-	[[0, -1, "X", 0], [-1, -1, "A", 3]],
+	[[0, -1, "X", 0], [-1, -1, "B", 3]],
 	[[1, -1, "A", 1]],
-	[[0, -2, "X", 0], [0, -3, "A", 0]],
+	[[0, -2, "X", 0], [0, -3, "B", 0]],
 	[[-1, -2, "A", 3]],
 	[[1, -2, "A", 1]],
 ]
@@ -46,6 +49,7 @@ func _initialize() -> void:
 	var profil: PackedStringArray = (args[0] if args.size() > 0 else "1,1,2,2,3,3,4,4,5,5").split(",")
 	seed(int(args[1]) if args.size() > 1 else 1)
 	var vague_extension: int = int(args[2]) if args.size() > 2 else 0
+	var mixte: bool = not (args.size() > 3 and args[3] == "soldats")
 	var regles: Regles = load("res://data/regles.tres")
 	var remontage: float = float(OS.get_environment("REMONTAGE")) if OS.get_environment("REMONTAGE") != "" else regles.remontage_lancement
 	var depart: DepartDef = load("res://data/depart.tres")
@@ -62,7 +66,8 @@ func _initialize() -> void:
 	for i: int in regles.vagues.size():
 		while etapes_faites < mini(int(profil[mini(i, profil.size() - 1)]), ETAPES.size()):
 			for p: Array in ETAPES[etapes_faites]:
-				plateau.poser(Vector2i(p[0], p[1]), ATELIER if p[2] == "A" else CROIX, p[3])
+				var piece: Resource = CROIX if p[2] == "X" else (BILLES if p[2] == "B" and mixte else ATELIER)
+				plateau.poser(Vector2i(p[0], p[1]), piece, p[3])
 			etapes_faites += 1
 		if i + 1 == vague_extension and not Extension.appliquer(plateau, SENTIER, Vector2i(6, 2), 1):
 			push_error("Extension refusée : le banc ne correspond plus au plateau de départ.")

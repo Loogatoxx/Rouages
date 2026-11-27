@@ -13,10 +13,11 @@ const CUIRASSE = preload("res://data/unites/scarabee_cuirasse.tres")
 const FOURMI = preload("res://data/unites/fourmi.tres")
 const RENFORTS := [0, 0, 12, 6, 5, 10, 10, 12, 18, 20]  # rééquilibré au banc après la garde des jouets (T09a)
 const DONNEES_REGLES = preload("res://data/regles.tres")
-## Courbe de difficulté (équilibrée au banc ; dernière passe : T09a, ennemis visibles grâce à la garde) : [nombre, intervalle, × PV].
+## Courbe de difficulté (équilibrée au banc ; dernière passe : playtest 1, banc mixte soldats + lance-billes, pic de la V5
+## lissé, milieu de partie durci) : [nombre, intervalle, × PV].
 const COURBE := [
-	[14, 1.25, 1.0], [36, 0.5, 1.1], [54, 0.37, 1.15], [80, 0.3, 1.4], [123, 0.26, 1.4],
-	[140, 0.25, 1.7], [150, 0.25, 1.8], [160, 0.25, 2.0], [190, 0.23, 2.25], [229, 0.21, 2.4],
+	[14, 1.25, 1.0], [36, 0.5, 1.1], [54, 0.37, 1.15], [80, 0.3, 1.4], [100, 0.26, 1.4],
+	[140, 0.25, 1.85], [150, 0.25, 2.0], [160, 0.25, 2.4], [190, 0.23, 2.65], [229, 0.21, 2.55],
 ]
 
 
