@@ -117,3 +117,8 @@
 - **Fait** : build Mac relancé (démarre). Audit UI par Gemini (63 défauts) et corrections majeures (rubans, contraste,
   HUD). Boutique et réserve en vignettes rendues depuis le kit 3D. Benchmark web sourcé → décisions D1-D8. Placement par
   rapport à la route, engrenages à identité, encombrement (module `Placement`, testé, mesuré au banc).
+- **Suite** : chance (poids des raretés, porte-bonheur, trèfle), libellule volante (T11c, Codex), engrenages d'or plus
+  exigeants, lore v1 relu par Gemini puis Codex (T11e), améliorations à 3/5 niveaux avec panneau contextuel (T11d,
+  Codex), chantier d'extension (Gemini), aperçu de la vague suivante, demande Hyper3D groupée (prompts, budget),
+  poussière et pétales d'ambiance. Builds réexportés, Mac relancé. Gemini hors quota en fin de session.
+- **Objectif** : un jeu qui récompense la stratégie plutôt que le spam, lisible et prêt pour le pipeline Hyper3D.

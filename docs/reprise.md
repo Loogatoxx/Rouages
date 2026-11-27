@@ -5,12 +5,15 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
 
 ## État (mis à jour le 2026-11-26 tard le soir, autonomie totale)
 - **Après playtest 1** : la roadmap `docs/roadmap.md` § « Après playtest 1 » liste 100 % du brief de Carlos (PT-01 à PT-65,
-  règles R1-R7, table de vérification brief → tâches). Faits et commités : PT-01 à 05 (bugs P0), 12, 13, 14, 16, 17, 20, 21,
-  30, 31, 32, 40, 41 + engrenage en T en boutique. 80 tests. Builds Mac/Windows réexportés (non relancés).
-  **Prochain** : PT-10 audit UI (Gemini, captures à lui fournir dans `art_refs/`), PT-15 refonte boutique (grille d'icônes),
-  PT-18 icônes d'abord + infobulles, PT-34 benchmark web → PT-35/36/37/38, PT-33 engrenages d'or.
+  règles R1-R7, table de vérification brief → tâches). **Faits et commités** (2026-11-27, ~0 h) : PT-01 à 05, 10, 12 à 18,
+  20, 21, 30 à 38, 40, 41, 50, 55, 64, 65 ; partiels : PT-11 (suivi dans `art_refs/audit_ui_v1/AUDIT.md`), 51 (ornements
+  faits main), 52 (prompts prêts), 54 (particules). 95 tests. Builds Mac/Windows réexportés, Mac relancé (OK).
+  **Reste** : PT-39 craft enrichi, PT-53 animations et PT-51 modèles de paliers (après Hyper3D), PT-54 micro-décors 3D,
+  PT-56 table, PT-60 à 63 (long terme), fin de PT-11 (liens en cartouches, gabarit commun tirage/coffre).
+  **Attend Carlos** : valider les images puis générer le lot 1 Hyper3D (`art_refs/hyper3d/DEMANDE_LOT1.md`) ; test Windows.
+  **Gemini** : quota épuisé le 2026-11-26 vers 23 h 50 (Neon XHigh et High) → relancer d'abord les images du lot 1.
   Gemini : `agy-bridge` uniquement (le CLI `agy` avec saut de permissions est refusé) ; un `delegate` tient ~12 min,
-  un `follow_up` expire à 5 min → découper finement.
+  un `follow_up` expire à 5 min, `web_lookup` à 2 min → découper finement.
 - **Captures** : ajouter `-- --fenetre` après le script (`Godot --path . --windowed --resolution 1600x900 --script res://x.gd
   -- --fenetre`), sinon l'autoload `Fenetre` applique le plein écran enregistré et la fenêtre ne dessine plus pendant la
   transition. Dans un script de capture, `load()` les scripts du jeu après le premier `await` (un `preload` compile avant
