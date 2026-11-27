@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PieceDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/piece_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"generateur"
+nom = "Générateur autonome"
+description = "Alimente sans horloge 2 ateliers ou tourelles (+1 par amélioration). Introuvable en boutique."
+type = 4
+niveau_max = 3
+prix_amelioration = 10
+ports = 15
+transmet = true
+rarete = 1
+capacite_generateur = 2
+capacite_par_niveau = 1

@@ -59,8 +59,7 @@ func _process(_delta: float) -> void:
 # Aperçu de pose (benchmark D1) : effets de la place visée pour la pièce en main, seulement s'il y en a.
 func _apercu(case_plateau: Vector2i) -> String:
 	var piece: PieceDef = Run.reserve.trouver(_selection) as PieceDef
-	if piece == null or _source.plateau.sol_de(case_plateau) != _source.Plateau.Sol.HERBE \
-			or _source.plateau.piece_de(case_plateau) != null:
+	if piece == null or not _source.plateau.peut_poser(case_plateau, piece):
 		return ""
 	var copie = _source.plateau.dupliquer()
 	copie.poser(case_plateau, piece)

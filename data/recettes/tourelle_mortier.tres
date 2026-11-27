@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="RecetteDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/recette_def.gd" id="recette"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_mortier.tres" id="produit"]
+[ext_resource type="Resource" path="res://data/tuiles/tourelle_canon.tres" id="canon"]
+
+[sub_resource type="Resource" id="e1"]
+script = ExtResource("lot")
+objet = ExtResource("canon")
+quantite = 2
+
+[sub_resource type="Resource" id="sortie"]
+script = ExtResource("lot")
+objet = ExtResource("produit")
+quantite = 1
+
+[resource]
+script = ExtResource("recette")
+id = &"tourelle_mortier"
+entrees = Array[ExtResource("lot")]([SubResource("e1")])
+sortie = SubResource("sortie")

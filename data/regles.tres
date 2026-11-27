@@ -54,12 +54,17 @@
 [ext_resource type="Resource" path="res://data/paliers_extension/atelier_chantier.tres" id="palier_2"]
 [ext_resource type="Resource" path="res://data/paliers_extension/carillon_chantier.tres" id="palier_3"]
 [ext_resource type="Resource" path="res://data/paliers_extension/grande_ouverture.tres" id="palier_4"]
+[ext_resource type="Resource" path="res://data/tuiles/pont.tres" id="pont"]
+[ext_resource type="Resource" path="res://data/tuiles/generateur.tres" id="generateur"]
+[ext_resource type="Resource" path="res://data/recettes/pont.tres" id="recette_pont"]
+[ext_resource type="Resource" path="res://data/recettes/generateur.tres" id="recette_generateur"]
+[ext_resource type="Resource" path="res://data/recettes/tourelle_mortier.tres" id="recette_mortier"]
 [sub_resource type="Resource" id="lot_atelier"]
 script = ExtResource("lot")
 objet = ExtResource("atelier")
 quantite = 1
 poids = 3.0
-prix = 15
+prix = 18
 
 [sub_resource type="Resource" id="lot_billes"]
 script = ExtResource("lot")
@@ -67,7 +72,7 @@ objet = ExtResource("billes")
 quantite = 1
 poids = 2.0
 vague_min = 3
-prix = 22
+prix = 26
 
 [sub_resource type="Resource" id="lot_droit"]
 script = ExtResource("lot")
@@ -92,7 +97,7 @@ script = ExtResource("lot")
 objet = ExtResource("croix")
 quantite = 1
 poids = 1.0
-prix = 6
+prix = 9
 
 [sub_resource type="Resource" id="lot_sentier"]
 script = ExtResource("lot")
@@ -112,19 +117,19 @@ vague_min = 3
 script = ExtResource("lot")
 objet = ExtResource("droit")
 quantite = 2
-prix = 4
+prix = 5
 
 [sub_resource type="Resource" id="vente_coude"]
 script = ExtResource("lot")
 objet = ExtResource("coude")
 quantite = 1
-prix = 3
+prix = 4
 
 [sub_resource type="Resource" id="vente_t"]
 script = ExtResource("lot")
 objet = ExtResource("t")
 quantite = 1
-prix = 5
+prix = 7
 
 [sub_resource type="Resource" id="lot_canon"]
 script = ExtResource("lot")
@@ -143,6 +148,32 @@ script = ExtResource("lot")
 objet = ExtResource("mortier")
 quantite = 1
 poids = 1.0
+
+[sub_resource type="Resource" id="lot_pont"]
+script = ExtResource("lot")
+objet = ExtResource("pont")
+quantite = 1
+poids = 0.5
+vague_min = 4
+
+[sub_resource type="Resource" id="lot_generateur"]
+script = ExtResource("lot")
+objet = ExtResource("generateur")
+quantite = 1
+poids = 0.8
+vague_min = 3
+
+[sub_resource type="Resource" id="coffre_pont"]
+script = ExtResource("lot")
+objet = ExtResource("pont")
+quantite = 1
+poids = 1.5
+
+[sub_resource type="Resource" id="coffre_generateur"]
+script = ExtResource("lot")
+objet = ExtResource("generateur")
+quantite = 1
+poids = 2.0
 
 [resource]
 script = ExtResource("regles")
@@ -169,8 +200,8 @@ plafond_allies_par_atelier = 15
 multiplicateur_acceleration = 2.0
 choix_par_draft = 3
 vagues_coffre = Array[int]([3, 6, 9])
-coffre = Array[ExtResource("lot")]([SubResource("lot_canon"), SubResource("lot_carillon"), SubResource("lot_mortier")])
-pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes")])
+coffre = Array[ExtResource("lot")]([SubResource("lot_canon"), SubResource("lot_carillon"), SubResource("lot_mortier"), SubResource("coffre_pont"), SubResource("coffre_generateur")])
+pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont"), SubResource("lot_generateur")])
 ressorts_depart = 0
 recompense_vague = 6
 recompense_par_vague = 2
@@ -179,7 +210,7 @@ prix_relance = 5
 prix_reparation = 10
 prix_porte_bonheur = 8
 pv_reparation = 5
-recettes = Array[ExtResource("recette")]([ExtResource("recette_engrenage_croix"), ExtResource("recette_engrenage_t"), ExtResource("recette_atelier_billes")])
+recettes = Array[ExtResource("recette")]([ExtResource("recette_engrenage_croix"), ExtResource("recette_engrenage_t"), ExtResource("recette_atelier_billes"), ExtResource("recette_pont"), ExtResource("recette_generateur"), ExtResource("recette_mortier")])
 demontage_engrenage = 1
 demontage_atelier = 6
 demontage_tourelle = 8

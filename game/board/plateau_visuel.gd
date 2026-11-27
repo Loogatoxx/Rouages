@@ -11,12 +11,16 @@ const Materiaux = preload("res://game/core/materiaux.gd")
 const MODELE_HORLOGE := "res://assets/final/horloge/horloge.glb"
 
 # Masques des rigoles mesurées sur les socles exportés (N, E, S, O).
-const PORTS_DU_KIT := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage_t": 11, &"engrenage_croix": 15}
+const PORTS_DU_KIT := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage_t": 11, &"engrenage_croix": 15,
+		&"pont": 10, &"generateur": 15}
 const VOISINS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 const ECHELLE_PLATEAU := GrilleMonde.TAILLE_CASE / 2.0
 
 @onready var _source: PlateauNoeud = get_parent()
 var _ateliers: Dictionary[Vector2i, Node3D] = {}
+## Tourelles posées (P2-34) : elles pivotent vers leur cible et reculent à chaque tir.
+var _tourelles: Dictionary[Vector2i, Node3D] = {}
+var _tirs_tourelles: Dictionary[Vector2i, Tween] = {}
 var _rebonds_ateliers: Dictionary[Vector2i, Tween] = {}
 var _rotors: Array[Node3D] = []
 var _insignes: Dictionary[Vector2i, Node3D] = {}
@@ -41,9 +45,42 @@ func _ready() -> void:
 	Events.plateau_modifie.connect(_actualiser)
 	Events.energie_recalculee.connect(_energie)
 	_poser_table()
+	_ecouter_tirs.call_deferred()
 	# Micro-détails d'ambiance (poussière dorée, pétales) : seulement avec un vrai rendu, pas en headless.
 	if DisplayServer.get_name() != "headless":
 		add_child(preload("res://game/board/ambiance_plateau.gd").new())
+
+
+# Les tirs viennent de la simulation de la partie (signal `tir`) ; le visuel ne fait que les montrer.
+func _ecouter_tirs() -> void:
+	var partie: Node = get_tree().get_first_node_in_group(&"partie")
+	if partie != null and not partie.sim.tir.is_connected(_sur_tir):
+		partie.sim.tir.connect(_sur_tir)
+
+
+# Visée et recul : la tourelle tourne vers l'impact (le socle est rond, la dent de laiton du port reste en place),
+# puis se tasse et revient comme un ressort. Procédural en attendant les animations Hyper3D (R1, exception c).
+func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
+	var case := Vector2i((depart / GrilleMonde.TAILLE_CASE).round())
+	var racine: Node3D = _tourelles.get(case)
+	if racine == null or racine.get_child_count() == 0 or not depart.is_equal_approx(Vector2(case) * GrilleMonde.TAILLE_CASE):
+		return
+	var modele: Node3D = racine.get_child(0) as Node3D
+	if modele == null:
+		return
+	var precedent: Tween = _tirs_tourelles.get(case)
+	if precedent != null and precedent.is_valid():
+		precedent.kill()
+	var direction: Vector2 = arrivee - depart
+	# Le canon des modèles du kit regarde vers −Z : angle de lacet qui l'aligne sur la cible.
+	var cap: float = atan2(-direction.x, -direction.y)
+	var actuel: float = modele.rotation.y
+	cap = actuel + wrapf(cap - actuel, -PI, PI)
+	var animation: Tween = modele.create_tween()
+	_tirs_tourelles[case] = animation
+	animation.tween_property(modele, "rotation:y", cap, 0.08).set_trans(Tween.TRANS_SINE)
+	animation.tween_property(modele, "scale", Vector3(1.08, 0.86, 1.08), 0.05)
+	animation.tween_property(modele, "scale", Vector3.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 
 ## Grande table d'établi sous la maquette : sans elle, le plateau flotte sur un fond uni (DA v2, « maquette posée »).
@@ -319,6 +356,8 @@ func _reconstruire() -> void:
 		animation.kill()
 	_rebonds_ateliers.clear()
 	_ateliers.clear()
+	_tourelles.clear()
+	_tirs_tourelles.clear()
 	_rotors.clear()
 	if _pieces != null:
 		remove_child(_pieces)
@@ -333,6 +372,8 @@ func _reconstruire() -> void:
 		racine.position = GrilleMonde.vers_monde(c)
 		if piece.type == PieceDef.Type.ATELIER:
 			_ateliers[c] = racine
+		elif piece.type == PieceDef.Type.TOURELLE:
+			_tourelles[c] = racine
 		if piece.type == PieceDef.Type.HORLOGE:
 			_horloge = racine
 			if racine.get_child_count() > 0:

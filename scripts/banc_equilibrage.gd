@@ -28,6 +28,14 @@ const CROIX = preload("res://data/tuiles/engrenage_croix.tres")
 const BILLES = preload("res://data/tuiles/atelier_billes.tres")
 const SENTIER = preload("res://data/extensions/sentier.tres")
 const DT := 1.0 / 30.0
+const Tourelles = preload("res://game/workshops/tourelles.gd")
+const CANON = preload("res://data/tuiles/tourelle_canon.tres")
+const MORTIER = preload("res://data/tuiles/tourelle_mortier.tres")
+## Tourelles des coffres (playtest 2) : un joueur reçoit une tourelle aux coffres des V3 et V6. Le banc pose un canon
+## avant la V4 et un mortier avant la V7, en bord de route, et les considère alimentés (approximation : leur chaîne
+## d'engrenages n'est pas simulée). Sans elles, le banc ne pourrait pas contrer l'armure des cuirassés.
+## [vague à partir de laquelle la tourelle est posée, case, pièce]. 6e argument `sans_tourelles` pour l'ancien banc.
+const TOURELLES_COFFRE := [[4, Vector2i(2, 1), "canon"], [7, Vector2i(3, 1), "mortier"]]
 
 ## Variables d'environnement d'essai (sans toucher aux données) : CADENCE (multiplie la cadence des ateliers),
 ## DELAI (secondes avant le premier ennemi), AVANCE (avance de production au lancement, 0 à 1).
@@ -54,6 +62,8 @@ func _initialize() -> void:
 	var mixte: bool = not (args.size() > 3 and args[3] == "soldats")
 	# 5e argument `longue` : Longue route (15 vagues, PT-60).
 	var longue: bool = args.size() > 4 and args[4] == "longue"
+	var avec_tourelles: bool = not (args.size() > 5 and args[5] == "sans_tourelles")
+	var tourelles := Tourelles.new()
 	var regles: Regles = load("res://data/regles.tres")
 	var depart: DepartDef = load("res://data/depart.tres")
 	var plateau: Plateau = depart.creer_plateau()
@@ -78,7 +88,15 @@ func _initialize() -> void:
 			etapes_faites += 1
 		if i + 1 == vague_extension and not Extension.appliquer(plateau, SENTIER, Vector2i(6, 2), 1):
 			push_error("Extension refusée : le banc ne correspond plus au plateau de départ.")
+		if avec_tourelles:
+			for t: Array in TOURELLES_COFFRE:
+				if i + 1 >= t[0] and plateau.piece_de(t[1]) == null:
+					plateau.poser(t[1], CANON if t[2] == "canon" else MORTIER, 0)
 		var alimentees: Dictionary = Energie.calculer(plateau)
+		if avec_tourelles:
+			for t: Array in TOURELLES_COFFRE:
+				if plateau.piece_de(t[1]) != null:
+					alimentees[t[1]] = 1
 		sim.configurer(plateau, regles.garde_ratio)
 		var entrees: Array[Vector2i] = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau))
 		var t: float = 0.0
@@ -98,6 +116,7 @@ func _initialize() -> void:
 			production.avancer(DT, plateau, alimentees, sim, regles)
 			allies = maxi(allies, sim.nombre(SwarmSim.ALLIE))
 			directeur.avancer(DT, sim)
+			tourelles.avancer(DT, plateau, alimentees, sim)
 			sim.avancer(DT)
 			t += DT
 		total += fuites[0]

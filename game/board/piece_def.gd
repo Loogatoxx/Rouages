@@ -3,7 +3,9 @@ class_name PieceDef extends Resource
 
 const UniteDef = preload("res://game/swarm/unite_def.gd")
 
-enum Type { HORLOGE, ENGRENAGE, ATELIER, TOURELLE }
+## GENERATEUR (playtest 2) : source d'énergie autonome, limitée à quelques pièces (ajouté en fin d'énumération pour
+## ne pas décaler les types déjà enregistrés dans les ressources).
+enum Type { HORLOGE, ENGRENAGE, ATELIER, TOURELLE, GENERATEUR }
 enum Rarete { COMMUNE, RARE, EPIQUE }
 
 const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color("#E8B04A")]
@@ -16,6 +18,11 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var prix_amelioration: int = 0
 @export_flags("N", "E", "S", "O") var ports: int
 @export var transmet: bool = true
+## Se pose sur une case de route (le Pont) au lieu de l'herbe ; les unités passent dessous.
+@export var sur_route: bool = false
+## Générateur : nombre d'ateliers et de tourelles qu'il alimente au niveau 1, puis en plus par niveau.
+@export var capacite_generateur: int = 0
+@export var capacite_par_niveau: int = 0
 @export var unite_produite: UniteDef
 @export var cadence_production: float = 0.0
 @export var rarete: Rarete = Rarete.COMMUNE

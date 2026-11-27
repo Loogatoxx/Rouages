@@ -158,8 +158,7 @@ func _process(_delta: float) -> void:
 			libre = _orienter_extension()
 			_actualiser_fantome_extension(libre)
 		else:
-			libre = (_source.plateau.sol_de(_case) == _source.Plateau.Sol.HERBE
-					and _source.plateau.piece_de(_case) == null)
+			libre = _source.plateau.peut_poser(_case, _choix)
 		_teinte.albedo_color = Color("#3D8FD9", 0.62) if libre else Color(1, 0.2, 0.19, 0.65)
 		_fantome.position = GrilleMonde.vers_monde(_case) + Vector3.UP * 0.05
 		# L'aperçu d'extension est déjà construit dans son orientation (raccord compris).

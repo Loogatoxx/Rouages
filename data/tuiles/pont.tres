@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PieceDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/piece_def.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = &"pont"
+nom = "Pont"
+description = "Se pose sur une route : l'énergie passe par-dessus jusqu'à l'herbe d'en face. Introuvable en boutique."
+type = 1
+niveau_max = 1
+ports = 10
+transmet = true
+sur_route = true
+rarete = 2

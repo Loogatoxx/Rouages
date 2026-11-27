@@ -13,3 +13,4 @@ prix_amelioration = 4
 ports = 15
 transmet = true
 bonus_voisins_tourelle = 0.2
+rarete = 1

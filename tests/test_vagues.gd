@@ -11,7 +11,7 @@ const Regles = preload("res://game/core/regles.gd")
 const SCARABEE = preload("res://data/unites/scarabee.tres")
 const CUIRASSE = preload("res://data/unites/scarabee_cuirasse.tres")
 const FOURMI = preload("res://data/unites/fourmi.tres")
-const RENFORTS := [0, 0, 12, 6, 5, 10, 10, 12, 18, 20]  # rééquilibré au banc après la garde des jouets (T09a)
+const RENFORTS := [0, 0, 12, 6, 5, 6, 10, 12, 18, 20]  # V6 adoucie au playtest 2 (armure des cuirassés, mortier en V7)
 const DONNEES_REGLES = preload("res://data/regles.tres")
 ## Courbe de difficulté (équilibrée au banc ; dernière passe : playtest 1, banc mixte soldats + lance-billes, pic de la V5
 ## lissé, milieu de partie durci) : [nombre, intervalle, × PV].

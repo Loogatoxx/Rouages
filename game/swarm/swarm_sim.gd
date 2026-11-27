@@ -193,13 +193,13 @@ func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) ->
 	if cible < 0:
 		return false
 	var impact: Vector2 = ennemis.lieux[cible]
-	ennemis.vies[cible] -= degats
+	ennemis.vies[cible] -= ennemis.modeles[cible].degats_recus(degats)
 	ennemis.touches[cible] = 0.12
 	if zone > 0.0:
 		var rayon_carre: float = zone * zone
 		for i: int in ennemis.lieux.size():
 			if i != cible and ennemis.vies[i] > 0.0 and impact.distance_squared_to(ennemis.lieux[i]) <= rayon_carre:
-				ennemis.vies[i] -= degats
+				ennemis.vies[i] -= ennemis.modeles[i].degats_recus(degats)
 				ennemis.touches[i] = 0.12
 	tir.emit(centre, impact)
 	return true
@@ -380,7 +380,7 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 			# Compte aussi les frappes intermédiaires si un pas dépasse une période.
 			if recharge < dt - 0.000001 or recharge <= 0.0:
 				var coups: int = maxi(1, ceili((dt - recharge - 0.000001) / periode))
-				adverse.vies[cible] -= modele.degats * coups
+				adverse.vies[cible] -= adverse.modeles[cible].degats_recus(modele.degats, melee) * coups
 				adverse.touches[cible] = 0.12
 				if camp == ALLIE and modele.portee >= PORTEE_DISTANCE:
 					for coup: int in coups:

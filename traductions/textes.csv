@@ -259,3 +259,9 @@ Dégâts par tir,Dégâts par tir,Damage per shot,Dano por tiro
 Tirs par seconde,Tirs par seconde,Shots per second,Tiros por segundo
 Portée de tir,Portée de tir,Firing range,Alcance de tiro
 Valeur de revente (en ressorts) une fois reprise,Valeur de revente (en ressorts) une fois reprise,Resale value (in springs) once picked up,Valor de revenda (em molas) depois de retirada
+Pont,Pont,Bridge,Ponte
+Se pose sur une route : l'énergie passe par-dessus jusqu'à l'herbe d'en face. Introuvable en boutique.,Se pose sur une route : l'énergie passe par-dessus jusqu'à l'herbe d'en face. Introuvable en boutique.,Sits on a road: energy crosses over to the grass opposite. Not sold in the shop.,Coloca-se numa estrada: a energia passa por cima até à relva do outro lado. Não se vende na loja.
+Générateur autonome,Générateur autonome,Standalone generator,Gerador autónomo
+Alimente sans horloge 2 ateliers ou tourelles (+1 par amélioration). Introuvable en boutique.,Alimente sans horloge 2 ateliers ou tourelles (+1 par amélioration). Introuvable en boutique.,Powers 2 workshops or turrets without the clock (+1 per upgrade). Not sold in the shop.,Alimenta 2 oficinas ou torres sem relógio (+1 por melhoria). Não se vende na loja.
+Pièces alimentées / capacité du générateur,Pièces alimentées / capacité du générateur,Powered pieces / generator capacity,Peças alimentadas / capacidade do gerador
+Armure : retirée de chaque coup reçu,Armure : retirée de chaque coup reçu,Armour: removed from every hit taken,Armadura: retirada de cada golpe recebido

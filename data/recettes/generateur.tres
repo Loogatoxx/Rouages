@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="RecetteDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/recette_def.gd" id="recette"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/generateur.tres" id="produit"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
+
+[sub_resource type="Resource" id="e1"]
+script = ExtResource("lot")
+objet = ExtResource("atelier")
+quantite = 1
+
+[sub_resource type="Resource" id="e2"]
+script = ExtResource("lot")
+objet = ExtResource("droit")
+quantite = 3
+
+[sub_resource type="Resource" id="sortie"]
+script = ExtResource("lot")
+objet = ExtResource("produit")
+quantite = 1
+
+[resource]
+script = ExtResource("recette")
+id = &"generateur"
+entrees = Array[ExtResource("lot")]([SubResource("e1"), SubResource("e2")])
+sortie = SubResource("sortie")

@@ -82,3 +82,6 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
   défaits au démontage, défi du jour préparé à l'avance, révélation réservée aux auteurs, easter egg au clic).
 | Pause vide, jouets qui sortent un par un | Quand le carillon se tait, les jouets rentrent se reposer dans leurs ateliers ; au coup suivant, l'Horloge les remonte un à un, et les tiroirs attendent cinq tic-tac avant de s'ouvrir. |
 | Porte de l'horloge sans engrenage | La porte de l'Horloge-Mère est réservée au retour d'Anselme : aucun rouage ne doit la bloquer. |
+| Carapace des cuirassés (armure) | Leurs plaques de bronze viennent des anciennes boîtes à outils d'Anselme : les petites billes ricochent, il faut un mortier ou un soldat qui vise les charnières. |
+| Le Pont | Un pont-levis de maquette qu'Anselme n'avait jamais fini de peindre ; son arbre de laiton porte le tic-tac de l'autre côté des routes. |
+| Le Générateur autonome | Un vieux moteur de boîte à musique que Lise remontait en cachette : il fait tourner quelques jouets loin de l'Horloge, pas plus. |

@@ -218,7 +218,7 @@ func valeur_demontage(objet: Resource) -> int:
 				return regles.demontage_engrenage
 			Plateau.PieceDef.Type.ATELIER:
 				return regles.demontage_atelier
-			Plateau.PieceDef.Type.TOURELLE:
+			Plateau.PieceDef.Type.TOURELLE, Plateau.PieceDef.Type.GENERATEUR:
 				return regles.demontage_tourelle
 	return 0
 
@@ -258,7 +258,9 @@ func _tirer_offre() -> void:
 			for lot: Lot in carte:
 				montres.append(lot.objet)
 	else:
-		offre = Draft.tirer(regles.pioche, choix_par_draft, vague_actuelle + 1, rng)
+		# Playtest 2 : la pioche a aussi ses raretés, et la chance agit dessus (plus seulement dans les coffres).
+		offre = Draft.tirer(regles.pioche, choix_par_draft, vague_actuelle + 1, rng, [], chance,
+				Vector2(regles.chance_rare, regles.chance_epique))
 
 
 ## Paie un nouveau tirage et présente les lots dans la même phase de draft.

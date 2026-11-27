@@ -148,3 +148,12 @@
   fermé ; réglages graphiques (images/s, synchro, ombres, effets, résolution 3D, préréglages) avec 60 images/s par défaut
   et 15 en arrière-plan ; export Windows sans `.pck` embarqué, avec icône et métadonnées. 110 tests.
 - **Objectif** : un jeu stable et frais sur le PC Windows de Carlos, qui démarre chaque vague de zéro.
+
+## 2026-11-27 — « Oui je valide, va sur mon Chrome, fais toutes les demandes, reprends la part de Codex » (Carlos)
+- **Demande** : générer le lot 1 Hyper3D via Claude in Chrome, continuer tout ce qui restait (Codex sans crédit,
+  Fable autorisé si nécessaire sans boucle).
+- **Fait** : 7 modèles générés sur hyper3d.ai (4 crédits), récupérés via un récepteur local, allégés à ~3 900 triangles
+  et intégrés aux nuées ; builds Mac et Windows réexportés (Mac relancé). Lot C : armure fixe, lance-billes
+  rééquilibrés, raretés et chance dans les tirages, boutique renchérie, Pont et Générateur (modèles Gemini) avec
+  recettes exclusives, tourelles animées, banc avec tourelles des coffres. 115 tests.
+- **Objectif** : un vrai puzzle tactique où l'armure, les ponts et les générateurs obligent à réfléchir aux placements.

@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="entree"]
 script = ExtResource("lot")
 objet = ExtResource("source")
-quantite = 3
+quantite = 2
 
 [sub_resource type="Resource" id="sortie"]
 script = ExtResource("lot")

@@ -8,9 +8,10 @@ extends SceneTree
 const KIT := "res://assets/final/kit_v2/%s/%s.glb"
 const SORTIE := "res://assets/ui/vignettes/"
 const PIECES: Array[StringName] = [&"atelier_soldats", &"atelier_billes", &"engrenage_droit", &"engrenage_coude",
-		&"engrenage_t", &"engrenage_croix", &"tourelle_canon", &"tourelle_carillon", &"tourelle_mortier"]
+		&"engrenage_t", &"engrenage_croix", &"tourelle_canon", &"tourelle_carillon", &"tourelle_mortier", &"pont", &"generateur"]
 ## Ports (N, E, S, O) des socles du kit, comme `PlateauVisuel.PORTS_DU_KIT` : on y pose les dents de laiton du jeu.
-const PORTS := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage_t": 11, &"engrenage_croix": 15}
+const PORTS := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage_t": 11, &"engrenage_croix": 15, &"pont": 10,
+		&"generateur": 15}
 ## Ennemis (aperçu de la vague suivante) : [modèle du kit, teinte superposée ou transparent], comme `NueeVisuel`.
 const ENNEMIS := {&"scarabee": [&"scarabee", Color.TRANSPARENT], &"fourmi": [&"fourmi", Color.TRANSPARENT],
 		&"scarabee_cuirasse": [&"scarabee_cuirasse", Color.TRANSPARENT],

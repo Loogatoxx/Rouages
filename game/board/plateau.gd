@@ -53,9 +53,16 @@ func sol_de(coord: Vector2i) -> int:
 	return _sols.get(coord, -1)
 
 
-## Pose une pièce sur une case d’herbe libre.
+## Indique si la pièce peut être posée sur la case : herbe libre, ou route libre pour une pièce `sur_route` (Pont).
+func peut_poser(coord: Vector2i, def: PieceDef) -> bool:
+	if def == null or _pieces.has(coord):
+		return false
+	return sol_de(coord) == (Sol.CHEMIN if def.sur_route else Sol.HERBE)
+
+
+## Pose une pièce sur une case libre qui lui convient (voir `peut_poser`).
 func poser(coord: Vector2i, def: PieceDef, rotation: int = 0) -> bool:
-	if def == null or sol_de(coord) != Sol.HERBE or _pieces.has(coord):
+	if not peut_poser(coord, def):
 		return false
 	_pieces[coord] = def
 	_niveaux[coord] = 1

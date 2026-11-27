@@ -290,3 +290,24 @@ Anti-répétition par son, musique en boucle, réglages dans `user://reglages.cf
   blanchit à l'impact (`_shader_texture`). Les jouets Hyper3D ne sont plus teintés par instance (ils portent leurs couleurs).
 - Récupération des archives : la page fabrique un blob que Chrome n'enregistre pas ; un crochet sur
   `URL.createObjectURL` l'envoie à un récepteur local (127.0.0.1:8765) au moment de sa création.
+
+## Après playtest 2 — lot C (puzzle : armure, Pont, Générateur, craft)
+- **Armure** (P2-31) : `UniteDef.armure`, `degats_recus(degats, corps_a_corps)` = max(15 % du coup, coup − armure),
+  moitié de l'armure au corps à corps. Appliqué aux tirs des tourelles (`blesser_zone`) et aux coups des jouets.
+  Cuirassé 32 PV / armure 4, Grand Scarabée armure 3. → Le spam de tirs faibles (lance-billes, carillon) s'écrase
+  contre les cuirassés ; mortier, canon amélioré et soldats aux jointures les cassent.
+- **Lance-billes** (P2-30) : PV 6, dégâts 5, atelier 0,45 jouet/s, 26 ressorts.
+- **Tirages** (P2-36) : la pioche passe par `Draft.tirer(..., chance, facteurs)` ; atelier de lance-billes et croix
+  sont rares (cadre teinté sur la carte).
+- **Pont** (P2-38) : `PieceDef.sur_route`, `Plateau.peut_poser` (route libre pour le Pont, herbe libre sinon) ; Épique,
+  ports E-O, transmet l'énergie par-dessus la route ; pioche (V4+, rare), coffre, recette 2 croix + 1 T.
+- **Générateur** (P2-39) : `PieceDef.Type.GENERATEUR` (ajouté en fin d'énumération), `capacite_generateur` +
+  `capacite_par_niveau` ; `Energie.calculer` propage l'horloge sans limite puis chaque générateur isolé avec un
+  budget d'ateliers/tourelles (`_propager(..., budget)`), `consommateurs_du_generateur` pour le panneau.
+- **Craft** (P2-37) : boutique renchérie (droit 5, coude 4, T 7, croix 9, atelier 18, lance-billes 26) ; croix = 2 droits ;
+  recettes exclusives : Pont, Générateur (1 atelier + 3 droits), Mortier (2 canons).
+- **Tourelles animées** (P2-34) : `PlateauVisuel._sur_tir` (signal `tir` de la simulation) : la tourelle pivote vers
+  l'impact puis se tasse et revient (tween).
+- **Banc** : pose un canon avant la V4 et un mortier avant la V7 en bord de route (tourelles des coffres, alimentation
+  supposée) ; 6e argument `sans_tourelles`. V6 adoucie (6 cuirassés). Repères : moyen 0-36 PV, parfait 0-4 PV ; le
+  résultat bascule vite autour du seuil (une cadence ×0,9 fait mourir le profil parfait en V6).

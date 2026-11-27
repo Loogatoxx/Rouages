@@ -38,22 +38,24 @@ func test_achat_en_boutique() -> String:
 	var stock: int = Run.reserve.quantite(id)
 	if Run.acheter(0) or Run.reserve.quantite(id) != stock:
 		return "Un solde nul doit laisser le lot en boutique."
-	Run.gagner(4)
+	# Prix lu dans les données (playtest 2 : la boutique a été renchérie pour redonner sa place au craft).
+	var prix: int = Run.regles.boutique[0].prix
+	Run.gagner(prix)
 	if Run.acheter(-1) or Run.acheter(Run.regles.boutique.size()):
 		return "Un indice hors boutique doit être refusé."
 	if not Run.acheter(0) or Run.reserve.quantite(id) != stock + 2 or Run.ressorts != 0:
-		return "Quatre ressorts doivent acheter deux engrenages droits."
-	if Run.ressorts_gagnes != 4:
+		return "Le prix du lot doit acheter deux engrenages droits."
+	if Run.ressorts_gagnes != prix:
 		return "Une dépense doit conserver le cumul des gains."
 	Run.lancer_vague()
-	Run.gagner(4)
-	return "" if not Run.acheter(0) and Run.ressorts == 4 else "La boutique doit fermer en vague."
+	Run.gagner(prix)
+	return "" if not Run.acheter(0) and Run.ressorts == prix else "La boutique doit fermer en vague."
 
 
 ## L'atelier de lance-billes devient achetable pendant la préparation de la troisième vague.
 func test_vague_min_boutique() -> String:
 	Run.reinitialiser()
-	Run.gagner(22)
+	Run.gagner(40)
 	# Indice cherché par objet : ajouter un lot en boutique ne doit pas casser le test.
 	var indice: int = -1
 	for i: int in Run.regles.boutique.size():
@@ -71,8 +73,9 @@ func test_vague_min_boutique() -> String:
 	Run.choisir_lot(0)
 	var stock: int = Run.reserve.quantite(&"atelier_billes")
 	var solde_avant: int = Run.ressorts
-	if not Run.acheter(indice) or Run.ressorts != solde_avant - 22 or Run.reserve.quantite(&"atelier_billes") != stock + 1:
-		return "L'atelier doit coûter 22 ressorts dès la préparation de la vague 3."
+	var prix: int = Run.regles.boutique[indice].prix
+	if not Run.acheter(indice) or Run.ressorts != solde_avant - prix or Run.reserve.quantite(&"atelier_billes") != stock + 1:
+		return "L'atelier doit coûter %d ressorts dès la préparation de la vague 3." % prix
 	return ""
 
 
