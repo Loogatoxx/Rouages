@@ -39,6 +39,9 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var degats_tir: float = 0.0
 @export var cadence_tir: float = 0.0
 @export var zone_tir: float = 0.0
+## Ralentissement infligé par chaque tir (carillon, playtest 3) : part de vitesse retirée (0 à 1) et durée en secondes.
+@export var ralentissement: float = 0.0
+@export var duree_ralenti: float = 0.0
 @export_group("Identité d'engrenage (bonus aux voisins alimentés)")
 ## Démultiplicateur : cadence en plus pour chaque atelier voisin (cumul limité à 2 engrenages).
 @export var bonus_voisins_cadence: float = 0.0

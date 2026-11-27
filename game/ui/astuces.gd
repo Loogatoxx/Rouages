@@ -13,6 +13,7 @@ const TEXTES := {
 	&"chance": "Le trèfle montre ta chance : plus elle est haute, plus les coffres proposent de raretés.",
 	&"craft": "Tu peux assembler des pièces en trop (bouton « Assembler ») ou en démonter une d’un clic droit contre des ressorts.",
 	&"dents": "L’Horloge n’a qu’un nombre limité de dents d’énergie (la roue dentée en haut). Un atelier en prend 2, une petite tourelle 1 : choisis bien, puis améliore.",
+	&"carillon": "Pendant la vague, tu peux faire sonner l’Horloge : clique sur la cloche (ou touche C) puis sur la route. Les ennemis proches restent étourdis un instant.",
 	&"poste": "Chaque escouade tient la route devant son atelier, là où flotte son fanion. Clique sur l’atelier puis sur le fanion du panneau pour choisir une autre case.",
 }
 
@@ -99,6 +100,8 @@ func _sur_phase(phase: int) -> void:
 
 
 func _sur_vague(numero: int) -> void:
+	if numero >= 2:
+		proposer(&"carillon")
 	var vague: Resource = Run.vagues[numero - 1]
 	if int(vague.get("nombre_volants")) > 0:
 		proposer(&"libellule")

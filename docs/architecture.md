@@ -405,3 +405,21 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   jusqu'à 4 canons), profils `parfait` et `moyen`, dents et niveaux simulés. Repères : parfait 2 à 26 PV perdus,
   moyen arrêté en V8-V10.
 - **Mesures de référence** (table h, 3 cartes × 4 graines) : spam 0/6, masse 0/9, moyen 3/12, tactique 9/12.
+
+## Après playtest 3 — lot 3 (carillon, coup de carillon, relecture Codex)
+- **Ralentissement** (P3-26) : `Nuee.ralentis` / `freins` (secondes restantes, part de vitesse retirée) ;
+  `SwarmSim.blesser_zone(..., frein, duree)` et `_freiner` (plus fort frein, plus longue durée, moitié pour un boss) ;
+  `PieceDef.ralentissement` / `duree_ralenti` (carillon : 0,35 et 1,5 s). `NueeVisuel` baisse le rouge de la couleur
+  d'instance d'un ennemi ralenti, les deux shaders d'ennemis y ajoutent un voile bleu pâle.
+- **Coup de carillon** (P3-27) : `Regles.carillon_recharge` / `_rayon` / `_duree` ; `Partie.sonner_carillon(point)`
+  (prêt au début de chaque vague) → `SwarmSim.ralentir_zone(point, rayon, 1.0, duree)` (frein 1 = étourdi : ni
+  mouvement ni coup) ; signaux `Events.carillon_vise` (HUD ou touche → `PoseControleur._viser_carillon`, anneau qui
+  suit la souris) et `carillon_sonne` (onde dorée de `PlateauVisuel`, son `carillon`). Action `coup_carillon`
+  (touche C, réassignable). `scripts/generer_sons.py <nom>` ne régénère que le son demandé.
+- **Relecture Codex T14b** (`taches/revues/`) : atelier enfermé = il ne produit plus et le jeu le dit
+  (`Partie._configurer`) ; `_cible_de_garde` choisit le plus proche ennemi **joignable** dans le rayon de garde ;
+  `Run._vagues_tenues` (une vague perdue ne donne pas de dent) ; minuteur du message « +1 dent » enfant du plateau ;
+  charges des générateurs lues dans `PlateauNoeud.charges_generateurs` ; repères bleus aussi sur un Pont.
+  Non retenu : relève d'un bâtiment par un générateur (un bâtiment n'a qu'un port, il ne peut pas être sur deux
+  réseaux) ; durée du dernier paquet incomplet d'une vague (écart de moins d'une seconde).
+- **Mesures** (3 cartes × 3 graines) : masse 0/9, moyen 6/9 (3 à 10 PV restants), tactique 7/9 (5 à 28 PV).

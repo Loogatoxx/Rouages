@@ -129,8 +129,8 @@ static func _alimenter_generateur(plateau: Plateau, source: Vector2i, bilan: Bil
 		if portee > 0 and distances[coord] >= portee:
 			continue
 		for voisine: Vector2i in _voisines_reliees(plateau, coord):
-			if distances.has(voisine) or bilan.alimentees.has(voisine) or bilan.surcharge_horloge.has(voisine):
-				continue
+			if distances.has(voisine) or bilan.alimentees.has(voisine):
+				continue  # (un bâtiment refusé par l'Horloge pleine reste candidat : le générateur peut le relever)
 			distances[voisine] = distances[coord] + 1
 			if _consomme(plateau.piece_de(voisine)):
 				candidats.append(voisine)
@@ -148,7 +148,9 @@ static func _alimenter_generateur(plateau: Plateau, source: Vector2i, bilan: Bil
 			reste -= cout
 			charge += cout
 			bilan.alimentees[coord] = -1 - distances[coord]
-		else:
+			bilan.surcharge.erase(coord)
+			bilan.surcharge_horloge.erase(coord)
+		elif not bilan.surcharge.has(coord):
 			bilan.surcharge.append(coord)
 	bilan.charges[source] = charge
 

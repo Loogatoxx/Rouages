@@ -27,7 +27,7 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim)
 		var degats: float = piece.degats_tir * Placement.degats_tourelle(plateau, case, regles)
 		var cadence: float = piece.cadence_tir * Placement.cadence_tourelle(plateau, alimentees, case)
 		while reste < dt:
-			if not sim.blesser_zone(centre, piece.portee_tir, degats, piece.zone_tir):
+			if not sim.blesser_zone(centre, piece.portee_tir, degats, piece.zone_tir, piece.ralentissement, piece.duree_ralenti):
 				break
 			reste += 1.0 / cadence
 		_recharges[case] = maxf(0.0, reste - dt)

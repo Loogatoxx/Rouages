@@ -45,6 +45,7 @@ var _boss_visible: bool = false
 var _boutique_ouverte: bool = true
 var _plaque_chance: PanelContainer
 ## Tic-tac (playtest 3) : jauge « dents utilisées / dents de l'Horloge » dans la barre du haut.
+var _bouton_carillon: Button
 var _plaque_dents: PanelContainer
 var _dents: Label
 var _chance: Label
@@ -89,6 +90,7 @@ func _ready() -> void:
 	_creer_barre_boss()
 	_creer_chance()
 	_creer_dents()
+	_creer_carillon()
 	_creer_apercu_vague()
 	var astuces := Astuces.new()
 	astuces.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
@@ -179,6 +181,38 @@ func _notification(quoi: int) -> void:
 		%Annonce.text = tr(_cle_annonce) if _valeur_annonce < 0 else tr(_cle_annonce) % _valeur_annonce
 	if $Fin.visible:
 		_actualiser_bilan()
+
+
+# Coup de carillon (pilier 4) : bouton-cloche dans la barre du haut pendant une vague. Prêt : il brille ; sinon il
+# affiche les secondes qui restent. Un clic (ou la touche du carillon) fait viser, le clic suivant sur le plateau sonne.
+func _creer_carillon() -> void:
+	_bouton_carillon = Button.new()
+	_bouton_carillon.icon = preload("res://assets/ui/icones/carillon.png")
+	_bouton_carillon.expand_icon = true
+	_bouton_carillon.custom_minimum_size = Vector2(92, 0)
+	_bouton_carillon.add_theme_constant_override(&"icon_max_width", 34)
+	_bouton_carillon.visible = false
+	_bouton_carillon.pressed.connect(func() -> void: Events.carillon_vise.emit())
+	Interface.preparer_bouton(_bouton_carillon)
+	%Tableau.add_child(_bouton_carillon)
+	%Tableau.move_child(_bouton_carillon, %Vitesse.get_index())
+	Events.phase_changee.connect(func(phase: int) -> void: _bouton_carillon.visible = phase == Run.Phase.VAGUE)
+	var horloge := Timer.new()
+	horloge.wait_time = 0.2
+	horloge.autostart = true
+	horloge.timeout.connect(_actualiser_carillon)
+	add_child(horloge)
+
+
+func _actualiser_carillon() -> void:
+	if not _bouton_carillon.visible:
+		return
+	var partie: Node = get_tree().get_first_node_in_group(&"partie")
+	var attente: float = partie.carillon_attente if partie != null else 0.0
+	_bouton_carillon.text = "" if attente <= 0.0 else str(ceili(attente))
+	_bouton_carillon.modulate = Color.WHITE if attente <= 0.0 else Color(1, 1, 1, 0.6)
+	_bouton_carillon.tooltip_text = tr("Coup de carillon : clique ici puis sur la route pour étourdir les ennemis proches (touche C)") \
+			if attente <= 0.0 else tr("Le carillon se remonte : encore %d s.") % ceili(attente)
 
 
 # Jauge d'énergie de l'Horloge, juste après les PV : dents consommées par les ateliers et tourelles / dents

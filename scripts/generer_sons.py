@@ -73,7 +73,12 @@ def normaliser(son, crete=0.89):
     return son
 
 
+SEULEMENT = set()  # noms passés en arguments : `python3 scripts/generer_sons.py carillon` ne refait que celui-là
+
+
 def ecrire(nom, son, qualite=4):
+    if SEULEMENT and nom not in SEULEMENT:
+        return
     son = normaliser(son)
     os.makedirs(SORTIE, exist_ok=True)
     with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
@@ -171,6 +176,8 @@ def musique_vague():
 
 
 def main():
+    import sys
+    SEULEMENT.update(sys.argv[1:])
     print("Génération des sons dans assets/audio/ :")
     # Pose d'une tuile : « toc » de bois grave + petit cliquet métallique.
     s = bois(320, 0.25, 22, 0.6)
@@ -194,6 +201,11 @@ def main():
     mixer(s, note(hz("A4"), 1.2, 2.8, ((1, 1.0), (2.4, 0.3))), 0.12, 0.8)
     mixer(s, bois(180, 0.3, 14, 0.3), 0.0, 0.5)
     ecrire("horloge_touchee", s)
+    # Coup de carillon (playtest 3) : trois cloches claires qui montent, longue résonance de laiton.
+    s = note(hz("G5"), 1.6, 2.2, ((1, 1.0), (2.76, 0.45), (5.4, 0.2), (8.9, 0.08)))
+    mixer(s, note(hz("C6"), 1.5, 2.4, ((1, 1.0), (2.76, 0.4), (5.4, 0.15))), 0.09, 0.85)
+    mixer(s, note(hz("E6"), 1.4, 2.6, ((1, 1.0), (2.76, 0.35))), 0.18, 0.7)
+    ecrire("carillon", s)
     # Début de vague : arpège montant + bloc de bois.
     s = melodie(["C5", "E5", "G5", "C6"], 0.11, 4.0, 0.9)
     mixer(s, bois(500, 0.2, 25), 0.0, 0.5)

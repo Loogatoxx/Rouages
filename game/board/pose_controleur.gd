@@ -26,6 +26,9 @@ var _rayon_portee: float = -1.0
 const SANS_ATELIER := Vector2i(-99999, -99999)
 var _atelier_drapeau: Vector2i = SANS_ATELIER
 var _reperes_drapeau: Node3D
+## Coup de carillon : vrai pendant que le joueur vise (un anneau suit la souris, le clic fait sonner l'Horloge).
+var _vise_carillon: bool = false
+var _anneau_carillon: MeshInstance3D
 
 
 func _ready() -> void:
@@ -40,6 +43,7 @@ func _ready() -> void:
 	_teinte.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_teinte.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_panneau.poste_demande.connect(_choisir_poste)
+	Events.carillon_vise.connect(_viser_carillon)
 	Events.tuile_choisie.connect(_choisir)
 	Events.phase_changee.connect(_changer_phase)
 	Events.plateau_modifie.connect(_actualiser_marqueurs)
@@ -67,7 +71,7 @@ func _choisir_poste(case: Vector2i) -> void:
 	for dx: int in range(-portee, portee + 1):
 		for dy: int in range(-portee, portee + 1):
 			var route: Vector2i = case + Vector2i(dx, dy)
-			if _source.plateau.poste_possible(case, route) and _source.plateau.piece_de(route) == null:
+			if _source.plateau.poste_possible(case, route):
 				var repere := MeshInstance3D.new()
 				repere.mesh = dalle
 				repere.material_override = bleu
@@ -75,6 +79,53 @@ func _choisir_poste(case: Vector2i) -> void:
 				repere.position = GrilleMonde.vers_monde(route) + Vector3.UP * 0.07
 				_reperes_drapeau.add_child(repere)
 	Events.message_joueur.emit(tr("Clique sur une case de route en bleu : l’escouade ira tenir ce poste."))
+
+
+# Entre (ou sort) du mode « viser le coup de carillon », s'il est prêt.
+func _viser_carillon() -> void:
+	var partie: Node = get_tree().get_first_node_in_group(&"partie")
+	if _vise_carillon or partie == null or Run.phase != Run.Phase.VAGUE:
+		_quitter_carillon()
+		return
+	if partie.carillon_attente > 0.0:
+		Events.message_joueur.emit(tr("Le carillon se remonte : encore %d s.") % ceili(partie.carillon_attente))
+		return
+	_quitter_poste()
+	Events.tuile_choisie.emit(&"")
+	_vise_carillon = true
+	if _anneau_carillon == null:
+		_anneau_carillon = MeshInstance3D.new()
+		var disque := CylinderMesh.new()
+		disque.top_radius = Run.regles.carillon_rayon
+		disque.bottom_radius = Run.regles.carillon_rayon
+		disque.height = 0.03
+		disque.radial_segments = 48
+		_anneau_carillon.mesh = disque
+		var voile := StandardMaterial3D.new()
+		voile.albedo_color = Color(1.0, 0.82, 0.3, 0.32)
+		voile.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		voile.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		_anneau_carillon.material_override = voile
+		_anneau_carillon.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(_anneau_carillon)
+	_anneau_carillon.show()
+
+
+func _quitter_carillon() -> void:
+	_vise_carillon = false
+	if _anneau_carillon != null:
+		_anneau_carillon.hide()
+
+
+# Point du plateau sous la souris, en mètres (sans arrondir à la case) ; `Vector2.INF` hors du plateau ou sur l'interface.
+func _point_souris() -> Vector2:
+	var vue: Viewport = get_viewport()
+	var souris: Vector2 = vue.get_mouse_position()
+	var camera: Camera3D = vue.get_camera_3d()
+	if camera == null or not vue.get_visible_rect().has_point(souris) or vue.gui_get_hovered_control() != null:
+		return Vector2.INF
+	var point: Variant = Plane(Vector3.UP, 0).intersects_ray(camera.project_ray_origin(souris), camera.project_ray_normal(souris))
+	return Vector2.INF if point == null else Vector2(point.x, point.z)
 
 
 func _quitter_poste() -> void:
@@ -86,6 +137,7 @@ func _quitter_poste() -> void:
 
 func _changer_phase(phase: int) -> void:
 	_quitter_poste()
+	_quitter_carillon()
 	_panneau.fermer()
 	if not _pose_autorisee(phase):
 		Events.tuile_choisie.emit(&"")
@@ -191,6 +243,11 @@ func _survoler() -> bool:
 
 
 func _process(_delta: float) -> void:
+	if _vise_carillon and _anneau_carillon != null:
+		var point: Vector2 = _point_souris()
+		_anneau_carillon.visible = point != Vector2.INF
+		if point != Vector2.INF:
+			_anneau_carillon.position = Vector3(point.x, 0.09, point.y)
 	_afficher_portee()
 	if _fantome == null:
 		return
@@ -268,6 +325,21 @@ func _construire_portee(rayon: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("coup_carillon"):
+		_viser_carillon()
+		get_viewport().set_input_as_handled()
+		return
+	if _vise_carillon:
+		if event.is_action_pressed("annuler") or event.is_action_pressed("tourner_tuile"):
+			_quitter_carillon()
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("poser_tuile"):
+			var point: Vector2 = _point_souris()
+			var partie: Node = get_tree().get_first_node_in_group(&"partie")
+			if point != Vector2.INF and partie != null and partie.sonner_carillon(point):
+				_quitter_carillon()
+			get_viewport().set_input_as_handled()
+		return
 	if _atelier_drapeau != SANS_ATELIER:
 		if event.is_action_pressed("annuler") or event.is_action_pressed("tourner_tuile"):
 			_quitter_poste()

@@ -48,6 +48,9 @@ class Nuee:
 	var vies := PackedFloat32Array()
 	var touches := PackedFloat32Array()
 	var recharges := PackedFloat32Array()
+	## Ralentissement (playtest 3) : secondes restantes et part de vitesse retirée (1 = étourdi, ne frappe plus).
+	var ralentis := PackedFloat32Array()
+	var freins := PackedFloat32Array()
 	var choix := PackedInt64Array()
 	var modeles: Array[UniteDef] = []
 	## Atelier d'où sort chaque unité, et effectif vivant par atelier (plafond par bâtiment, playtest 2).
@@ -66,6 +69,8 @@ class Nuee:
 		vies[i] = vies[fin]
 		touches[i] = touches[fin]
 		recharges[i] = recharges[fin]
+		ralentis[i] = ralentis[fin]
+		freins[i] = freins[fin]
 		choix[i] = choix[fin]
 		modeles[i] = modeles[fin]
 		var origine: Vector2i = origines[i]
@@ -76,6 +81,8 @@ class Nuee:
 		vies.resize(fin)
 		touches.resize(fin)
 		recharges.resize(fin)
+		ralentis.resize(fin)
+		freins.resize(fin)
 		choix.resize(fin)
 		modeles.pop_back()
 		origines.pop_back()
@@ -86,6 +93,8 @@ class Nuee:
 		vies.clear()
 		touches.clear()
 		recharges.clear()
+		ralentis.clear()
+		freins.clear()
 		choix.clear()
 		modeles.clear()
 		origines.clear()
@@ -361,6 +370,11 @@ func relief(lieu: Vector2) -> float:
 	return hauteur
 
 
+## Vrai une fois la simulation configurée sur un plateau (les tests de combat pur n'en ont pas).
+func a_un_plateau() -> bool:
+	return not _distances.is_empty()
+
+
 ## Indique si le plateau porte un Pont (évite de calculer le relief pour rien).
 func a_du_relief() -> bool:
 	return not _ponts.is_empty()
@@ -436,6 +450,8 @@ func ajouter(def: UniteDef, position: Vector2, origine: Vector2i = SANS_ORIGINE)
 	nuee.vies.append(def.pv)
 	nuee.touches.append(0.0)
 	nuee.recharges.append(0.0)
+	nuee.ralentis.append(0.0)
+	nuee.freins.append(0.0)
 	nuee.choix.append(randi() if def.camp == ALLIE else 0)
 	nuee.modeles.append(def)
 	nuee.rayon_max = maxf(nuee.rayon_max, def.rayon)
@@ -444,7 +460,8 @@ func ajouter(def: UniteDef, position: Vector2, origine: Vector2i = SANS_ORIGINE)
 
 
 ## Frappe l'ennemi vivant le plus proche, puis ses voisins si le tir a une zone d'effet.
-func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) -> bool:
+## `frein` (0 à 1) et `duree` : ralentissement appliqué aux ennemis touchés (carillon, playtest 3).
+func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float, frein: float = 0.0, duree: float = 0.0) -> bool:
 	if portee < 0.0 or degats <= 0.0:
 		return false
 	var ennemis: Nuee = _camps[ENNEMI]
@@ -462,6 +479,7 @@ func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) ->
 	var impact: Vector2 = ennemis.lieux[cible]
 	ennemis.vies[cible] -= ennemis.modeles[cible].degats_recus(degats, false, _bouclier(cible))
 	ennemis.touches[cible] = 0.12
+	_freiner(ennemis, cible, frein, duree)
 	if zone > 0.0:
 		var rayon_carre: float = zone * zone
 		for i: int in ennemis.lieux.size():
@@ -469,8 +487,40 @@ func blesser_zone(centre: Vector2, portee: float, degats: float, zone: float) ->
 					and impact.distance_squared_to(ennemis.lieux[i]) <= rayon_carre:
 				ennemis.vies[i] -= ennemis.modeles[i].degats_recus(degats, false, _bouclier(i))
 				ennemis.touches[i] = 0.12
+				_freiner(ennemis, i, frein, duree)
 	tir.emit(centre, impact)
 	return true
+
+
+# Ralentit un ennemi : on garde le plus fort des freins et la plus longue des durées. Un boss n'en subit que la moitié.
+func _freiner(ennemis: Nuee, i: int, frein: float, duree: float) -> void:
+	if frein <= 0.0 or duree <= 0.0:
+		return
+	if ennemis.modeles[i].boss:
+		frein *= 0.5
+		duree *= 0.5
+	if ennemis.ralentis[i] <= 0.0:
+		ennemis.freins[i] = frein
+	else:
+		ennemis.freins[i] = maxf(ennemis.freins[i], frein)
+	ennemis.ralentis[i] = maxf(ennemis.ralentis[i], duree)
+
+
+## Ralentit (ou étourdit, `frein` = 1) tous les ennemis à moins de `rayon` mètres de `centre` : le coup de carillon
+## du joueur. Renvoie le nombre d'ennemis touchés. Volants et fouisseurs compris : c'est le son de l'Horloge.
+func ralentir_zone(centre: Vector2, rayon: float, frein: float, duree: float) -> int:
+	var ennemis: Nuee = _camps[ENNEMI]
+	var touches_zone: int = 0
+	for i: int in ennemis.lieux.size():
+		if ennemis.vies[i] > 0.0 and centre.distance_squared_to(ennemis.lieux[i]) <= rayon * rayon:
+			_freiner(ennemis, i, frein, duree)
+			touches_zone += 1
+	return touches_zone
+
+
+## Secondes de ralentissement restantes pour chaque unité du camp (pour teinter les ennemis ralentis).
+func ralentis(camp: int) -> PackedFloat32Array:
+	return _camps[camp].ralentis
 
 
 func _bouclier(i: int) -> float:
@@ -604,6 +654,8 @@ func _indexer(nuee: Nuee, dt: float) -> void:
 	for i: int in nuee.lieux.size():
 		if nuee.touches[i] > 0.0:
 			nuee.touches[i] = maxf(0.0, nuee.touches[i] - dt)
+		if nuee.ralentis[i] > 0.0:
+			nuee.ralentis[i] = maxf(0.0, nuee.ralentis[i] - dt)
 		var lieu: Vector2 = nuee.lieux[i]
 		var case := Vector2i((lieu / MAILLE).floor())
 		var cellule: Cellule = nuee.grille.get(case)
@@ -662,6 +714,13 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 				cible = j
 
 	var recharge: float = nuee.recharges[i]
+	# Ralentissement (carillon) : l'unité avance moins vite ; étourdie (frein ≥ 1), elle ne bouge ni ne frappe.
+	var allure: float = 1.0
+	if nuee.ralentis[i] > 0.0:
+		allure = maxf(0.0, 1.0 - nuee.freins[i])
+		if allure <= 0.01:
+			nuee.recharges[i] = maxf(0.0, recharge - dt)
+			return
 	# Un boss est frappé à son bord : sinon son grand rayon (séparation) tiendrait les jouets hors de portée.
 	var allonge: float = modele.portee
 	if cible >= 0 and adverse.modeles[cible].boss:
@@ -689,9 +748,9 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 	var poste_case: Vector2i = _postes.get(nuee.origines[i], SANS_ORIGINE) if camp == ALLIE else SANS_ORIGINE
 	if poste_case != SANS_ORIGINE:
 		var centre: Vector2 = Vector2(poste_case) * MAILLE
-		if melee and cible >= 0 and adversaires[cible].distance_squared_to(centre) <= RAYON_GARDE * RAYON_GARDE \
-				and _voie_libre(lieu, adversaires[cible]):
-			destination = adversaires[cible]
+		var a_rejoindre: int = _cible_de_garde(lieu, centre, cibles, adverse) if melee else -1
+		if a_rejoindre >= 0:
+			destination = adversaires[a_rejoindre]
 		else:
 			destination = _vers_poste(lieu, poste_case, nuee.choix[i])
 		if destination != lieu:
@@ -709,8 +768,29 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 		# mètre d'un ennemi caché par le coin (banc : la vague 6 passait).
 		destination = _objectif_flux(camp, lieu, nuee.choix[i], melee, en_vue)
 	if destination != lieu:
-		nuee.suivants[i] = lieu.move_toward(destination, modele.vitesse * dt)
+		nuee.suivants[i] = lieu.move_toward(destination, modele.vitesse * allure * dt)
 		nuee.angles[i] = (destination - lieu).angle()
+
+
+# Ennemi au sol le plus proche qu'un garde peut aller frapper : entré dans le rayon de garde de son poste ET
+# joignable en ligne droite sur la route (relecture T14b : l'ennemi le plus proche, caché par un virage, faisait
+# rentrer le garde au poste alors qu'un autre ennemi était à sa portée). -1 s'il n'y en a pas.
+func _cible_de_garde(lieu: Vector2, centre: Vector2, cibles: Array, adverse: Nuee) -> int:
+	var meilleur: float = POURSUITE * POURSUITE
+	var cible: int = -1
+	for cellule: Cellule in cibles:
+		if lieu.distance_squared_to(lieu.clamp(cellule.minimum, cellule.maximum)) > meilleur:
+			continue
+		for j: int in cellule.indices:
+			if adverse.modeles[j].volant or adverse.vies[j] <= 0.0:
+				continue
+			var d: float = lieu.distance_squared_to(adverse.lieux[j])
+			if d >= meilleur or adverse.lieux[j].distance_squared_to(centre) > RAYON_GARDE * RAYON_GARDE:
+				continue
+			if _voie_libre(lieu, adverse.lieux[j]):
+				meilleur = d
+				cible = j
+	return cible
 
 
 # Playtest 2 (jouets « plots ») : chaque case de chemin connaît la case suivante vers l'ennemi le plus proche

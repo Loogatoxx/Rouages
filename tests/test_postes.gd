@@ -115,3 +115,83 @@ func test_jouets_renforces_par_niveau() -> String:
 	if not is_equal_approx(SOLDAT.pv, base_pv) or production.unite_de_niveau(SOLDAT, 1, REGLES) != SOLDAT:
 		return "Le modèle de base ne doit pas changer."
 	return "" if production.unite_de_niveau(SOLDAT, 3, REGLES) == niveau_3 else "Le modèle renforcé doit être gardé en mémoire."
+
+
+## Le carillon ralentit ce qu'il touche ; le coup de carillon du joueur étourdit (plus de mouvement ni de coups).
+func test_ralentissement_et_etourdissement() -> String:
+	var plateau: Plateau = _plateau()
+	var temoin := SwarmSim.new()
+	temoin.configurer(plateau)
+	temoin.ajouter(SCARABEE, Vector2(16, 0))
+	var ralenti := SwarmSim.new()
+	ralenti.configurer(plateau)
+	ralenti.ajouter(SCARABEE, Vector2(16, 0))
+	if not ralenti.blesser_zone(Vector2(16, 2), 3.0, 0.5, 2.0, 0.5, 1.0):
+		return "Le carillon doit toucher le scarabée à portée."
+	for pas: int in 30:
+		temoin.avancer(1.0 / 30.0)
+		ralenti.avancer(1.0 / 30.0)
+	var libre: float = 16.0 - temoin.positions(SwarmSim.ENNEMI)[0].x
+	var freine: float = 16.0 - ralenti.positions(SwarmSim.ENNEMI)[0].x
+	if absf(freine - libre * 0.5) > 0.05:
+		return "Ralenti de moitié pendant 1 s, le scarabée doit avancer deux fois moins (%s contre %s)." % [freine, libre]
+	if ralenti.ralentir_zone(Vector2(15, 0), 3.0, 1.0, 1.0) != 1:
+		return "Le coup de carillon doit toucher le scarabée."
+	var avant: Vector2 = ralenti.positions(SwarmSim.ENNEMI)[0]
+	for pas: int in 25:
+		ralenti.avancer(1.0 / 30.0)
+	if not ralenti.positions(SwarmSim.ENNEMI)[0].is_equal_approx(avant):
+		return "Étourdi, le scarabée ne doit plus bouger."
+	for pas: int in 30:
+		ralenti.avancer(1.0 / 30.0)
+	return "" if ralenti.positions(SwarmSim.ENNEMI)[0].x < avant.x else "L'étourdissement doit finir."
+
+
+## Relecture T14b : un atelier enfermé entre des bâtiments garde ses jouets au lieu de les lâcher à travers ses voisins.
+func test_atelier_enferme_ne_produit_pas() -> String:
+	const Energie = preload("res://game/board/energie.gd")
+	const CROIX = preload("res://data/tuiles/engrenage_croix.tres")
+	var plateau: Plateau = _plateau()
+	# Horloge (0,0) → croix (0,-1) → atelier (0,-2), cerné par trois autres croix : aucune case libre autour de lui.
+	plateau.poser(Vector2i(0, -1), CROIX)
+	plateau.poser(Vector2i(0, -2), ATELIER, 0)
+	for case: Vector2i in [Vector2i(-1, -2), Vector2i(1, -2), Vector2i(0, -3)]:
+		plateau.poser(case, CROIX)
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	if sim.sortie_atelier(Vector2i(0, -2)) != Vector2.INF:
+		return "L'atelier cerné ne doit pas avoir de sortie."
+	var production := Production.new()
+	var alimentees: Dictionary = Energie.calculer(plateau)
+	for pas: int in 300:
+		production.avancer(1.0 / 30.0, plateau, alimentees, sim, REGLES)
+	if sim.nombre(SwarmSim.ALLIE) != 0:
+		return "Un atelier enfermé ne doit sortir aucun jouet."
+	plateau.retirer(Vector2i(1, -2))
+	sim.configurer(plateau)
+	production.avancer(1.0 / 30.0, plateau, alimentees, sim, REGLES)
+	return "" if sim.nombre(SwarmSim.ALLIE) == 1 else "Dès qu'un passage s'ouvre, le jouet prêt doit sortir."
+
+
+## Relecture T14b : une vague perdue ne remonte pas l'Horloge ; une vague tenue, si.
+func test_dents_gagnees_par_les_vagues_tenues() -> String:
+	Run.choisir_depart(0)
+	Run.reinitialiser()
+	var depart: int = REGLES.dents_depart
+	if Run.dents != depart:
+		return "Au départ, l'Horloge doit avoir %d dents (obtenu %d)." % [depart, Run.dents]
+	for vague: int in 2:
+		Run.choisir_lot(0)
+		Run.lancer_vague()
+		if Run.dents != depart:
+			return "Pendant la vague %d, l'Horloge ne doit pas encore avoir gagné de dent." % (vague + 1)
+		Run.terminer_vague()
+	if Run.dents != depart + 1:
+		return "Après la vague 2 tenue, l'Horloge doit gagner une dent."
+	Run.choisir_lot(0)
+	Run.lancer_vague()
+	Run.choisir_lot(0)
+	Run.subir_degats(999)
+	var apres_defaite: int = Run.dents
+	Run.reinitialiser()
+	return "" if apres_defaite == depart + 1 else "Une vague perdue ne doit pas remonter l'Horloge."

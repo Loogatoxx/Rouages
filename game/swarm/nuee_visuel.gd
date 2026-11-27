@@ -8,6 +8,7 @@ const TEINTES := ["jouet_rouge", "jouet_bleu", "jouet_vert", "jouet_prune"]
 const DUREE_VOL := 0.18
 const NOMBRE_BILLES := 48
 const CREME := Color("#FFF3D6")
+const BLEU_RALENTI := Color(0.62, 0.8, 1.0)
 
 var sim: SwarmSim:
 	set(valeur):
@@ -56,6 +57,8 @@ func _ready() -> void:
 		}
 		void fragment() {
 			ALBEDO = couleur.b < 0.99 ? creme.rgb : teinte.rgb;
+			// Ralenti par un carillon (rouge de l'instance baissé, bleu intact) : voile bleu pâle.
+			if (couleur.r < 0.9 && couleur.b >= 0.99) { ALBEDO = mix(ALBEDO, vec3(0.5, 0.72, 1.0), 0.5); }
 			METALLIC = metal;
 			ROUGHNESS = rugosite;
 		}
@@ -74,6 +77,7 @@ func _ready() -> void:
 		void fragment() {
 			vec3 texte = texture(albedo_tex, UV).rgb * teinte.rgb;
 			ALBEDO = couleur.b < 0.99 ? mix(texte, creme.rgb, 0.75) : texte;
+			if (couleur.r < 0.9 && couleur.b >= 0.99) { ALBEDO = mix(ALBEDO, vec3(0.5, 0.72, 1.0), 0.5); }
 			METALLIC = metal;
 			ROUGHNESS = rugosite;
 		}
@@ -360,6 +364,7 @@ func _process(delta: float) -> void:
 	for camp: int in [SwarmSim.ALLIE, SwarmSim.ENNEMI]:
 		var lieux: PackedVector2Array = sim.positions(camp)
 		var touches: PackedFloat32Array = sim.touches(camp)
+		var ralentis: PackedFloat32Array = sim.ralentis(camp)
 		var angles: PackedFloat32Array = sim.caps(camp)
 		var modeles: Array[SwarmSim.UniteDef] = sim.modeles(camp)
 		var precedents: PackedVector2Array = _precedents[camp]
@@ -381,7 +386,9 @@ func _process(delta: float) -> void:
 			var indice: int = _effectifs[id]
 			if camp == SwarmSim.ENNEMI:
 				var touche: bool = touches[i] > 0.0
-				lot.set_instance_color(indice, CREME if touche else Color.WHITE)
+				# Ennemi ralenti par un carillon : teinte bleu pâle, pour voir d'un coup d'œil qui est pris.
+				var givre: bool = i < ralentis.size() and ralentis[i] > 0.0
+				lot.set_instance_color(indice, CREME if touche else (BLEU_RALENTI if givre else Color.WHITE))
 				if touche:
 					base = base.scaled_local(Vector3.ONE * 1.12)
 			var en_marche: bool = i < _en_marche[camp].size() and _en_marche[camp][i] == 1

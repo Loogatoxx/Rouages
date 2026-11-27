@@ -63,6 +63,8 @@ var prix_relance: int:
 		return 0 if _relance_disponible else regles.prix_relance
 var phase: Phase = Phase.DRAFT
 var vague_actuelle: int = 0
+## Vagues réellement tenues (une vague perdue n'en fait pas partie) : c'est elles qui remontent l'Horloge.
+var _vagues_tenues: int = 0
 var deplacements_pause: int = 0
 ## Chance (benchmark D4) : favorise les raretés des coffres. Gagnée par les vagues sans dégât, le porte-bonheur, l'Établi.
 var chance: int = 0
@@ -364,8 +366,7 @@ var dents: int:
 	get:
 		if bac_a_sable:
 			return -1
-		var tenues: int = vague_actuelle - (1 if phase == Phase.VAGUE else 0)
-		return regles.dents_apres(tenues) + depart.dents_bonus + int(_bonus(&"dents"))
+		return regles.dents_apres(_vagues_tenues) + depart.dents_bonus + int(_bonus(&"dents"))
 
 
 ## Change de phase et prévient les systèmes qui en dépendent.
@@ -410,6 +411,7 @@ func terminer_vague() -> void:
 		derniere_recompense += regles.bonus_sans_degat
 		ajouter_chance(regles.chance_par_vague_propre)
 	gagner(derniere_recompense)
+	_vagues_tenues = vague_actuelle
 	Events.vague_terminee.emit(vague_actuelle)
 	if vague_actuelle == nb_vagues:
 		_terminer_partie(true)
@@ -530,6 +532,7 @@ func reinitialiser() -> void:
 		rng.randomize()
 		randomize()
 	vague_actuelle = 0
+	_vagues_tenues = 0
 	deplacements_pause = 0
 	_porte_bonheur_achete = false
 	chance = int(_bonus(&"chance"))

@@ -4,7 +4,7 @@
 
 ---
 
-## 1. Icônes disponibles (`assets/ui/icones/*.png` — 30 fichiers)
+## 1. Icônes disponibles (`assets/ui/icones/*.png` — 31 fichiers)
 
 | Fichier | Statut | Concept unique | Où il sert |
 |---|---|---|---|
@@ -38,6 +38,7 @@
 | `portee.png` | **Nouvelle** *(v3)* | **Portée de tir** (deux cercles concentriques en pointillés laiton autour d'un point central, vus de 3/4 dessus) | Statistique / indicateur de portée de tir des tourelles et ateliers |
 | `armure.png` | **Nouvelle** *(v3)* | **Armure / carapace** (petit bouclier de bronze riveté en forme de carapace de scarabée) | Statistique de résistance / réduction de dégâts des ennemis ou pièces |
 | `poste.png` | **Nouvelle** *(playtest 3)* | **Poste de garde d'une escouade** (fanion triangulaire bleu ciel pastel sur hampe de laiton plantée dans un pavé crème + petit soldat-jouet) | Action / repère de positionnement du poste de garde d'une escouade sur la route |
+| `carillon.png` | **Nouvelle** *(playtest 3)* | **Coup de carillon de l'Horloge** (cloche de laiton inclinée avec battant et deux arcs d'onde sonore dorés de chaque côté) | Bouton du coup de carillon dans la barre du haut pendant une vague |
 
 ---
 
@@ -48,4 +49,4 @@
 3. **Lisibilité corrigée — `ressort.png`** : l'ancienne spirale plate a été remplacée par un **ressort hélicoïdal de laiton vu de 3/4**.
 4. **Concepts séparés — `vague.png` vs `ennemis_restants.png`** : `vague.png` désigne la **vague d'ennemis** (3 scarabées + fanion, sans chiffre) et `ennemis_restants.png` le **décompte d'ennemis actifs** (1 scarabée + sablier).
 
-**Bilan d'unicité** : **30 fichiers disponibles = 30 concepts strictement disjoints** (0 doublon).
+**Bilan d'unicité** : **31 fichiers disponibles = 31 concepts strictement disjoints** (0 doublon).

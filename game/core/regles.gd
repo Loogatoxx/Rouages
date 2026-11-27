@@ -79,6 +79,12 @@ const VagueDef = preload("res://game/waves/vague_def.gd")
 @export var vagues_dent: Array[int] = [2, 4, 6, 8, 11, 13]
 ## Jouets plus solides par niveau de leur atelier (PV et dégâts, en part du niveau 1).
 @export var gain_niveau_unite: float = 0.15
+## Coup de carillon (pilier 4) : le joueur fait sonner l'Horloge sur un point de la route ; les ennemis à moins de
+## `carillon_rayon` mètres sont étourdis `carillon_duree` secondes. Prêt au début de chaque vague, puis toutes les
+## `carillon_recharge` secondes. Pourquoi : sans geste du joueur, une vague n'est qu'une attente.
+@export var carillon_recharge: float = 25.0
+@export var carillon_rayon: float = 3.0
+@export var carillon_duree: float = 2.5
 @export_group("")
 @export var ressorts_depart: int
 @export var recompense_vague: int

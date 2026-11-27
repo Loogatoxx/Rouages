@@ -40,6 +40,10 @@ func avancer(dt: float, plateau: Plateau, alimentees: Dictionary, sim: SwarmSim,
 		var progression: float = _progressions.get(case, regles.avance_lancement) + dt * cadence
 		var places: int = plafond(plateau, alimentees, case, regles) - sim.effectif(case)
 		var sortis: int = 0
+		# Atelier enfermé entre des bâtiments (aucune case libre vers la route) : il garde son jouet prêt et attend
+		# qu'un passage s'ouvre, au lieu de le lâcher à travers ses voisins (relecture T14b).
+		if places > 0 and progression >= 1.0 and sim.sortie_atelier(case) == Vector2.INF and sim.a_un_plateau():
+			places = 0
 		if places > 0 and progression >= 1.0:
 			var sortie: Vector2 = _sortie(case, plateau, sim)
 			var unite: Plateau.PieceDef.UniteDef = unite_de_niveau(atelier.unite_produite, plateau.niveau_de(case), regles)

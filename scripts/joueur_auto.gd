@@ -120,6 +120,8 @@ func _jouer() -> void:
 					await physics_frame
 					t += 1.0 / 60.0
 					allies_max = maxi(allies_max, partie.sim.nombre(0))
+					if _style == "tactique" and partie.carillon_attente <= 0.0:
+						_sonner_si_utile(partie, noeud.plateau)
 					ennemis_max = maxi(ennemis_max, partie.sim.nombre(1))
 					if _captures and not prochaines.is_empty() and t >= prochaines[0] and numero in [1, 3, 5, 8, 9, 10]:
 						await _capturer("V%02d_%02ds" % [numero, int(prochaines[0])])
@@ -156,6 +158,29 @@ func _jouer() -> void:
 	f.store_string(texte + "\n")
 	f.close()
 	quit(0)
+
+
+# « tactique » fait sonner le carillon sur le poste de garde où se pressent le plus d'ennemis (au moins 4).
+func _sonner_si_utile(partie: Node, plateau) -> void:
+	var rayon: float = root.get_node("Run").regles.carillon_rayon
+	var ennemis: PackedVector2Array = partie.sim.positions(1)
+	var meilleur: Vector2 = Vector2.INF
+	var compte_max: int = 3
+	for c: Vector2i in plateau.coords_pieces():
+		if plateau.piece_de(c).type != PieceDef.Type.ATELIER:
+			continue
+		var poste: Vector2 = partie.sim.poste(c)
+		if poste == Vector2.INF:
+			continue
+		var compte: int = 0
+		for lieu: Vector2 in ennemis:
+			if lieu.distance_squared_to(poste) <= rayon * rayon:
+				compte += 1
+		if compte > compte_max:
+			compte_max = compte
+			meilleur = poste
+	if meilleur != Vector2.INF:
+		partie.sonner_carillon(meilleur)
 
 
 # Plan du plateau en caractères (variable d'environnement CARTE=1) : # route, . herbe, H horloge, lettres = pièces

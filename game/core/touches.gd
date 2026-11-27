@@ -16,7 +16,7 @@ const ACTIONS: Array[Array] = [
 	[&"camera_bas", "Caméra : bas"], [&"camera_gauche", "Caméra : gauche"], [&"camera_droite", "Caméra : droite"],
 	[&"camera_zoom_avant", "Zoom avant"], [&"camera_zoom_arriere", "Zoom arrière"],
 	[&"camera_redresser", "Redresser la caméra"], [&"camera_coucher", "Coucher la caméra"],
-	[&"plein_ecran", "Plein écran"],
+	[&"plein_ecran", "Plein écran"], [&"coup_carillon", "Coup de carillon"],
 ]
 
 ## Fichier des réglages (remplaçable par les tests, pour ne jamais toucher aux vrais réglages du joueur).

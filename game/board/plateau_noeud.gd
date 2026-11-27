@@ -11,6 +11,8 @@ var surcharge: Array[Vector2i] = []
 ## Tic-tac : dents de l'Horloge (-1 = illimitées) et dents consommées, lues par le HUD.
 var dents: int = -1
 var charge_horloge: int = 0
+## Dents consommées sur chaque générateur autonome (lu par le panneau de pièce, sans refaire le calcul).
+var charges_generateurs: Dictionary = {}
 
 
 func _ready() -> void:
@@ -23,8 +25,15 @@ func _ready() -> void:
 			return
 		if Run.dents > dents and dents >= 0:
 			# Après le bandeau « Vague tenue » (et celui d'un éventuel tiroir).
-			get_tree().create_timer(3.4).timeout.connect(func() -> void:
-				Events.message_joueur.emit(tr("L’Horloge se remonte : +1 dent d’énergie !")))
+			# Minuteur enfant du plateau : il disparaît avec lui (retour au menu avant la fin du délai).
+			var minuteur := Timer.new()
+			minuteur.one_shot = true
+			minuteur.wait_time = 3.4
+			add_child(minuteur)
+			minuteur.timeout.connect(func() -> void:
+				Events.message_joueur.emit(tr("L’Horloge se remonte : +1 dent d’énergie !"))
+				minuteur.queue_free())
+			minuteur.start()
 		_actualiser())
 	_actualiser()
 
@@ -34,6 +43,7 @@ func _actualiser() -> void:
 	var bilan: Energie.Bilan = Energie.analyser(plateau, dents)
 	alimentees = bilan.alimentees
 	charge_horloge = bilan.charge_horloge
+	charges_generateurs = bilan.charges
 	# Un bâtiment vient de dépasser la capacité de sa source : on le dit tout de suite, en clair.
 	for case: Vector2i in bilan.surcharge:
 		if not surcharge.has(case):

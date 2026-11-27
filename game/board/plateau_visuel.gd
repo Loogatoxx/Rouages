@@ -47,6 +47,7 @@ func _ready() -> void:
 	_gris.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	_regler_lumiere.call_deferred()
 	Events.horloge_touchee.connect(_sur_horloge_touchee)
+	Events.carillon_sonne.connect(_sur_carillon)
 	Events.plateau_modifie.connect(_actualiser)
 	Events.energie_recalculee.connect(_energie)
 	_poser_table()
@@ -486,6 +487,36 @@ func _reconstruire() -> void:
 			var rotor := racine.find_child("Rotor", true, false) as Node3D
 			if rotor != null:
 				_rotors.append(rotor)
+
+
+# Coup de carillon : une onde dorée part du point visé et s'élargit jusqu'au rayon d'effet, l'Horloge tressaute.
+func _sur_carillon(point: Vector2) -> void:
+	var onde := MeshInstance3D.new()
+	var tore := TorusMesh.new()
+	tore.inner_radius = 0.82
+	tore.outer_radius = 1.0
+	tore.rings = 64
+	tore.ring_segments = 6
+	onde.mesh = tore
+	var or_pale := StandardMaterial3D.new()
+	or_pale.albedo_color = Color(1.0, 0.84, 0.36, 0.9)
+	or_pale.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	or_pale.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	onde.material_override = or_pale
+	onde.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	onde.position = Vector3(point.x, 0.12, point.y)
+	onde.scale = Vector3(0.2, 0.25, 0.2)
+	add_child(onde)
+	var rayon: float = Run.regles.carillon_rayon
+	var animation: Tween = onde.create_tween().set_parallel().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	animation.tween_property(onde, "scale", Vector3(rayon, 0.25, rayon), 0.45)
+	animation.tween_property(or_pale, "albedo_color:a", 0.0, 0.6)
+	animation.chain().tween_callback(onde.queue_free)
+	Sons.jouer(&"carillon")
+	if _horloge != null:
+		var saut: Tween = _horloge.create_tween().set_trans(Tween.TRANS_SINE)
+		saut.tween_property(_horloge, "scale", Vector3(1.06, 0.94, 1.06), 0.06)
+		saut.tween_property(_horloge, "scale", Vector3.ONE, 0.2)
 
 
 # Playtest 3 (postes de garde) : un petit fanion sur la route, là où l'escouade de cet atelier se range. Planté au

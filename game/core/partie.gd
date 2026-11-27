@@ -15,6 +15,9 @@ var production: Production = Production.new()
 var tourelles: Tourelles = Tourelles.new()
 var directeur: DirecteurVagues = DirecteurVagues.new()
 var _entrees: Array[Vector2i] = []
+## Coup de carillon : secondes avant de pouvoir sonner de nouveau (0 = prêt).
+var carillon_attente: float = 0.0
+var _enfermes: Array[Vector2i] = []
 
 
 func _ready() -> void:
@@ -63,6 +66,15 @@ func _rentrer_jouets(_numero: int) -> void:
 func _configurer() -> void:
 	sim.configurer(_source.plateau, Run.regles.garde_ratio)
 	_entrees = ChampFlux.entrees(_source.plateau, ChampFlux.calculer(_source.plateau))
+	# Atelier sans aucune case libre vers la route : il ne peut pas sortir ses jouets. On le dit une fois.
+	var enfermes: Array[Vector2i] = []
+	for case: Vector2i in _source.plateau.coords_pieces():
+		if _source.plateau.piece_de(case).type == Production.Plateau.PieceDef.Type.ATELIER \
+				and sim.sortie_atelier(case) == Vector2.INF:
+			enfermes.append(case)
+			if not _enfermes.has(case):
+				Events.message_joueur.emit(tr("Cet atelier est enfermé : laisse une case libre entre lui et la route."))
+	_enfermes = enfermes
 
 
 func _commencer(numero: int) -> void:
@@ -71,6 +83,18 @@ func _commencer(numero: int) -> void:
 	var speciaux: Array[Resource] = Run.depart.ennemis_speciaux if numero >= Run.depart.vague_speciaux else ([] as Array[Resource])
 	directeur.commencer(Run.vagues[numero - 1], _entrees, Run.regles.delai_premier_ennemi, speciaux, Run.depart.part_speciaux)
 	production.nouvelle_vague()
+	carillon_attente = 0.0
+
+
+## Coup de carillon du joueur (pilier 4) : étourdit les ennemis autour de `point` (mètres). Faux s'il n'est pas prêt
+## ou hors vague.
+func sonner_carillon(point: Vector2) -> bool:
+	if Run.phase != Run.Phase.VAGUE or carillon_attente > 0.0:
+		return false
+	sim.ralentir_zone(point, Run.regles.carillon_rayon, 1.0, Run.regles.carillon_duree)
+	carillon_attente = Run.regles.carillon_recharge
+	Events.carillon_sonne.emit(point)
+	return true
 
 
 ## Fait vivre la vague : les ateliers sortent leurs jouets un par un, les ennemis arrivent, les tourelles tirent.
@@ -80,6 +104,7 @@ func _physics_process(delta: float) -> void:
 	if Run.phase != Run.Phase.VAGUE:
 		return
 	var dt: float = delta * Run.vitesse
+	carillon_attente = maxf(0.0, carillon_attente - dt)
 	production.bonus_cadence = Run.bonus_cadence
 	var allies_avant: int = sim.nombre(SwarmSim.ALLIE)
 	production.avancer(dt, _source.plateau, _source.alimentees, sim, Run.regles)

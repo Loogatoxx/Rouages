@@ -193,7 +193,7 @@ func _remplir_stats(piece: PieceDef) -> void:
 	if piece.type == PieceDef.Type.GENERATEUR:
 		var Energie = preload("res://game/board/energie.gd")
 		var capacite: int = Energie.capacite_du_generateur(_plateau, _case)
-		_ajouter_stat("engrenage_or", "⚙", "%d/%d" % [Energie.consommateurs_du_generateur(_plateau, _case), capacite],
+		_ajouter_stat("engrenage_or", "⚙", "%d/%d" % [noeud.charges_generateurs.get(_case, 0) if noeud != null else 0, capacite],
 				tr("Pièces alimentées / capacité du générateur") + "\n" + tr(piece.description))
 	if piece.consomme():
 		var eteint: bool = noeud != null and noeud.surcharge.has(_case)

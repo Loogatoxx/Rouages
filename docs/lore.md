@@ -96,3 +96,5 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Postes de garde et fanions | Les soldats de plomb d'Anselme ne courent pas après l'ennemi : ils gardent le pavé qu'on leur a confié, sous le fanion bleu de leur atelier, comme les sentinelles de la boîte à musique. |
 | Soldats qui tiennent, canons qui cassent | Lise avait remarqué que les petites baïonnettes glissent sur le bronze des cuirassés : « Eux retiennent, le canon réveille. » |
 | Scarabées par paquets | Les scarabées sortent des tiroirs par nichées : ceux d'un même tiroir ont été remontés ensemble, ils marchent ensemble. |
+| Carillon qui ralentit | Ses clochettes sonnent la berceuse de la boîte à musique : les scarabées qui l'entendent traînent la patte, à moitié endormis. |
+| Coup de carillon | L'Horloge-Mère peut sonner un grand coup quand on le lui demande : tous les scarabées à portée restent figés, comme quand Anselme tapait sur l'établi pour faire taire l'atelier. Puis elle doit reprendre son souffle. |

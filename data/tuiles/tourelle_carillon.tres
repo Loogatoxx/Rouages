@@ -6,7 +6,7 @@
 script = ExtResource("piece")
 id = &"tourelle_carillon"
 nom = "Carillon"
-description = "Ses clochettes font trembler les scarabées groupés."
+description = "Ses clochettes frappent tous les scarabées proches et les ralentissent : le terrain idéal pour un canon ou un mortier."
 type = 3
 niveau_max = 5
 prix_amelioration = 12
@@ -17,3 +17,5 @@ portee_tir = 3.0
 degats_tir = 4.0
 cadence_tir = 0.8
 zone_tir = 2.0
+ralentissement = 0.35
+duree_ralenti = 1.5

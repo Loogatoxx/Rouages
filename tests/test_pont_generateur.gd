@@ -163,3 +163,23 @@ func test_generateur_sans_bonus_d_engrenage() -> String:
 	temoin.poser(Vector2i(2, 0), ATELIER, 1)
 	var fort: float = Placement.cadence_atelier(temoin, Energie.calculer(temoin), Vector2i(2, 0), REGLES)
 	return "" if fort > faible else "Sur un générateur, le démultiplicateur ne doit pas donner son bonus (%s contre %s)." % [faible, fort]
+
+
+## Relecture T14b : quand l'Horloge est pleine, le bâtiment de trop reste éteint ; le même bâtiment, branché sur un
+## générateur autonome, tourne. (Un bâtiment n'a qu'un port : il ne peut pas être sur les deux réseaux à la fois.)
+func test_generateur_quand_l_horloge_est_pleine() -> String:
+	var plateau: Plateau = _pre()
+	plateau.poser(Vector2i.ZERO, HORLOGE)
+	plateau.poser(Vector2i(1, 0), CANON, 1)    # sur l'Horloge (1 dent)
+	plateau.poser(Vector2i(0, 1), DROIT, 0)    # engrenage nord-sud sous l'Horloge
+	plateau.poser(Vector2i(0, 2), CANON, 2)    # relié à l'Horloge par l'engrenage : de trop avec 1 dent
+	var bilan: Energie.Bilan = Energie.analyser(plateau, 1)
+	if bilan.surcharge_horloge != [Vector2i(0, 2)]:
+		return "Avec une dent, le second canon doit être refusé par l'Horloge."
+	plateau.retirer(Vector2i(0, 2))
+	plateau.poser(Vector2i(2, 2), GENERATEUR)
+	plateau.poser(Vector2i(1, 2), CANON, 3)    # port est, vers le générateur ; pas relié à l'Horloge
+	bilan = Energie.analyser(plateau, 1)
+	if not bilan.alimentees.has(Vector2i(1, 2)) or not bilan.surcharge.is_empty():
+		return "Le générateur doit alimenter le canon que l'Horloge pleine ne pouvait pas servir."
+	return ""
