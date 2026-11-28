@@ -86,9 +86,10 @@ func _jouer() -> void:
 		tuto.queue_free()  # jamais `regler_tutoriel` : il écrirait dans les réglages de Carlos
 	# Les bulles d'astuce restent invisibles (les fermer écrirait dans les réglages de Carlos).
 	var astuces: GDScript = load("res://game/ui/astuces.gd")
+	# Retirées de la scène (sans être fermées : fermer une bulle écrirait dans les réglages de Carlos).
 	for bulle: Node in current_scene.find_children("*", "PanelContainer", true, false):
 		if bulle.get_script() == astuces:
-			bulle.modulate = Color(1, 1, 1, 0)
+			bulle.queue_free()
 	var noeud: Node = current_scene.get_node("PlateauNoeud")
 	_horloge = run.depart.horloge
 	var partie: Node = current_scene.get_node("Partie")

@@ -24,6 +24,7 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
   branche `main`. **Pousser après chaque lot commité et testé** (`git push`), jamais de `--force`. Avant un push :
   `git ls-files | grep -iE "\.env|keystore|\.jks|\.apk|\.aab"` doit rester vide. Ses carrés verts comptent (e-mail de
   l'IPT relié au compte) ; pour les voir sur son profil public, c'est à lui d'activer « Private contributions ».
+- **Filmer une vague** : `VITESSE=1 Godot --path . --windowed --resolution 1280x720 --write-movie <x>.avi --fixed-fps 30 --script res://scripts/joueur_auto.gd -- --fenetre <dossier> <plateau> tactique 1 0 <vagues>`, puis `ffmpeg -ss <début> -i x.avi -c:v libx264 -crf 27 -an film.mp4` (l'AVI pèse ~3 Mo/s : le supprimer ensuite).
 - **Joueur automatique** (le juge de l'équilibrage) : sans fenêtre
   `Godot --headless --path . --script res://scripts/joueur_auto.gd -- --fenetre <dossier> <plateau 0-5> <spam|tactique> <graine> 0`
   (30 s par partie ; styles `spam`, `masse`, `moyen`, `tactique` ; `CARTE=1` pour le plan du plateau) ; avec captures :
