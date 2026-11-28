@@ -199,3 +199,14 @@
   palettes par carte, objets d'établi géants, cartes « La Serre » et « Le Quai »). Kits de décors et d'objets faits
   par Gemini dans Blender. 146 tests, builds réexportés, tout poussé sur GitHub.
 - **Objectif** : un plateau habité, des cartes qui ne se ressemblent pas, une interface claire dans les trois langues.
+
+## 2026-11-28 (matin) — « Je pars 2 h, avance un maximum, j'autorise tout, Hyper3D compris, utilise tous les crédits » (Carlos)
+- **Demande** : avancer seul sur tout ce qui reste, sans s'arrêter (sauf crédits épuisés ou blocage total) ; Codex,
+  Gemini, Hyper3D, Chrome et Computer Use autorisés ; générer tout ce qui est possible depuis les designs de Gemini.
+- **Fait** : 6 modèles Hyper3D générés sur le site (carillon, mortier, taupe, porte-bouclier, Pont, Générateur, en
+  parallèle dans 4 onglets), allégés et intégrés ; relecture Codex des lots 3 à 5 (11 remarques corrigées) ; vagues
+  4 et 5 raccourcies (canon à 6 m, boss allégé) ; cartes « Le Manège » et « Le Rail » ; butin qui vole au compteur,
+  recul des ennemis, rôles sur les cartes ; Piège à ressort et deux améliorations d'Établi ; test des textes non
+  traduits ; film d'une vague ; builds réexportés ; tout poussé sur GitHub (après intégration du README que Carlos
+  avait poussé). Bloqué : quota Gemini épuisé toute la matinée → images des paliers d'évolution pas encore faites.
+- **Objectif** : un jeu plus riche (modèles, cartes, contenu) et plus lisible (impacts, rôles) pour le retour de Carlos.
