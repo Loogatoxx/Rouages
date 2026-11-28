@@ -122,6 +122,17 @@ func _jouer() -> void:
 					await physics_frame
 					t += 1.0 / 60.0
 					allies_max = maxi(allies_max, partie.sim.nombre(0))
+					# TRACE=<numéro de vague> : toutes les 5 s, effectifs et cases des ennemis (pour comprendre une vague lente).
+					if OS.get_environment("TRACE") == str(numero) and fmod(t, 5.0) < 1.0 / 60.0:
+						var cases: Dictionary = {}
+						for lieu: Vector2 in partie.sim.positions(1):
+							var c := Vector2i((lieu / 2.0).round())
+							cases[c] = cases.get(c, 0) + 1
+						var pv: Array = []
+						for k: int in mini(4, partie.sim.positions(1).size()):
+							pv.append(int(partie.sim._camps[1].vies[k]))
+						print("    t=%3d s  jouets %2d  ennemis %2d  restants %2d  cases %s  pv %s" % [int(t), partie.sim.nombre(0),
+								partie.sim.nombre(1), partie.directeur.restants(partie.sim), cases, pv])
 					if _style == "tactique" and partie.carillon_attente <= 0.0:
 						_sonner_si_utile(partie, noeud.plateau)
 					ennemis_max = maxi(ennemis_max, partie.sim.nombre(1))
