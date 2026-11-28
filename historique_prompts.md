@@ -210,3 +210,15 @@
   traduits ; film d'une vague ; builds réexportés ; tout poussé sur GitHub (après intégration du README que Carlos
   avait poussé). Bloqué : quota Gemini épuisé toute la matinée → images des paliers d'évolution pas encore faites.
 - **Objectif** : un jeu plus riche (modèles, cartes, contenu) et plus lisible (impacts, rôles) pour le retour de Carlos.
+
+## 2026-11-28 (début d'après-midi) — suite de l'autonomie (même consigne : « avance un maximum, ne t'arrête pas »)
+- **Demande** : poursuite de la consigne du matin (Carlos absent, tout autorisé, Hyper3D sans limite de crédits).
+- **Fait** : Le Rail rééquilibré (une seule route en L : 0/6 → tactique 2/3) ; Gemini épuisé sur tous ses modèles →
+  images faites par la **génération d'images de Codex** : 5 paliers niveau 3 (atelier de soldats, lance-billes, canon,
+  carillon, mortier) puis générés sur Hyper3D en parallèle (5 onglets, 2,5 crédits), allégés et en jeu ; **vie
+  ambiante** : clés de remontoir qui tournent par à-coups, cloche de l'Horloge qui se balance, oiseau mécanique ;
+  **BD des chapitres** (14 cases générées, chapitres 1 à 4 branchés, écran BD traduit) ; planche « Épingle » ; joueur
+  automatique qui pose Ponts et engrenages de réserve ; mesure des 4 cartes jamais testées (La Serre devient tenable,
+  Boîte à musique +1 dent : tactique 1/2 ; Le Quai et Grand atelier restent durs pour le robot) ; commit et push.
+- **Bloqué** : quota Codex épuisé à 13 h 45 (retour 16 h 59) → 4 cases de BD (chapitres 5-6) en attente.
+- **Objectif** : un jeu plus vivant et plus beau à chaque niveau, une histoire racontée en images, des cartes mesurées.
