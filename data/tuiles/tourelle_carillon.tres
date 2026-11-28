@@ -19,3 +19,4 @@ cadence_tir = 0.8
 zone_tir = 2.0
 ralentissement = 0.35
 duree_ralenti = 1.5
+role = "Ralentir"

@@ -343,6 +343,8 @@ func casser_ennemi(def: UniteDef, position: Vector2) -> void:
 	ennemis_casses += 1
 	gagner(def.butin)
 	Events.ennemi_casse.emit(position)
+	if def.butin > 0:
+		Events.butin_tombe.emit(position, def.butin)
 
 
 ## Bascule entre le rythme normal et le rythme accéléré de la simulation.

@@ -384,6 +384,7 @@ func _process(delta: float) -> void:
 			if lot == null:
 				lot = _creer_lot(modeles[i], camp)
 			var base: Basis = Basis(Vector3.UP, -angles[i]) * _bases[id]
+			var recul := Vector2.ZERO
 			var indice: int = _effectifs[id]
 			if camp == SwarmSim.ENNEMI:
 				var touche: bool = touches[i] > 0.0
@@ -392,12 +393,16 @@ func _process(delta: float) -> void:
 				lot.set_instance_color(indice, CREME if touche else (BLEU_RALENTI if givre else Color.WHITE))
 				if touche:
 					base = base.scaled_local(Vector3.ONE * 1.12)
+					# Recul : l'ennemi touché est rejeté un instant en arrière de sa marche (impact qui se sent).
+					recul = Vector2.from_angle(angles[i]) * (-0.12 * touches[i] / 0.12)
 			var en_marche: bool = i < _en_marche[camp].size() and _en_marche[camp][i] == 1
 			var pose: Array = _pose_animee(base, modeles[i], camp, i, en_marche)
 			var hauteur: float = pose[1]
+			var ecart: Vector2 = recul
 			if relief and not modeles[i].volant:
 				hauteur += sim.relief(lieux[i])
-			lot.set_instance_transform(indice, Transform3D(pose[0], Vector3(lieux[i].x, hauteur, lieux[i].y)))
+			lot.set_instance_transform(indice, Transform3D(pose[0], Vector3(lieux[i].x + ecart.x, hauteur, lieux[i].y + ecart.y)))
+			recul = Vector2.ZERO
 			_effectifs[id] = indice + 1
 		_precedents[camp] = lieux.duplicate()
 	for id: StringName in _lots:

@@ -24,6 +24,8 @@ signal run_terminee(victoire: bool)
 signal ressorts_changes(total: int)
 ## Un ennemi vient d'être cassé à `position` (plan du plateau, mètres) : retour visuel et sonore.
 signal ennemi_casse(position: Vector2)
+## Un ennemi cassé lâche `quantite` ressorts à `position` (plan du plateau) : le HUD les fait voler vers le compteur.
+signal butin_tombe(position: Vector2, quantite: int)
 ## Le joueur demande la pause (Échap sans pièce sélectionnée, ou touche P).
 signal pause_demandee
 ## Un retour court à montrer au joueur (action refusée, astuce) : `texte` est une clé de traduction déjà formatée.

@@ -17,3 +17,4 @@ portee_tir = 6.0
 degats_tir = 20.0
 cadence_tir = 0.6
 zone_tir = 0.0
+role = "Achever les blindés"

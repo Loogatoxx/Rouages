@@ -477,3 +477,10 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   `train`. Voie dessinée par `_poser_voie_ferree`.
 - **Équilibrage** : canon à 6 m (le boss se battait hors de portée), boss de la vague 5 à 0,2 et de la vague 10 à
   0,35 de ses PV : vagues 4 et 5 ramenées vers 50-70 s.
+- **Impacts** (P3-44) : `Events.butin_tombe(position, quantite)` (émis par `Run.casser_ennemi`) → `HUD._faire_voler_butin`
+  (icône ressort projetée depuis le plateau, saut puis vol jusqu'au compteur, 6 au plus) ; `NueeVisuel` décale un
+  ennemi touché vers l'arrière de sa marche le temps du flash.
+- **Rôles** (P3-26) : `PieceDef.role` (clé de traduction), sous le nom des cartes de tirage et en tête de
+  `PieceDef.decrire`.
+- **Paliers d'évolution** (PT-51 lot 4, prêt) : `PlateauVisuel.creer_piece(..., niveau)` charge `<id>_n3_h3d.res`
+  dès le niveau `NIVEAU_PALIER` (3) s'il existe ; il suffira de générer et d'alléger les modèles « _n3 ».

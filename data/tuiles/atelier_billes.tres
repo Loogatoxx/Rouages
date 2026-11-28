@@ -17,3 +17,4 @@ unite_produite = ExtResource("bille")
 cadence_production = 0.3
 rarete = 1
 cout_energie = 2
+role = "Abattre les volants"

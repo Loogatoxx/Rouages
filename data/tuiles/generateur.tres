@@ -17,3 +17,4 @@ capacite_generateur = 3
 capacite_par_niveau = 1
 portee_generateur = 2
 unique = true
+role = "Énergie à distance"

@@ -28,6 +28,8 @@ const TEINTES_RARETE: Array[Color] = [Color("#D4A84B"), Color("#8FB3D9"), Color(
 @export var capacite_par_niveau: int = 0
 ## Générateur : longueur maximale de sa chaîne, en pièces (2 = un engrenage puis un bâtiment). 0 = sans limite.
 @export var portee_generateur: int = 0
+## Rôle en un mot (playtest 3, pilier 3) : affiché sur les cartes et dans les infobulles (« Bloquer », « Raser »…).
+@export var role: String = ""
 ## Dents d'énergie consommées par un atelier ou une tourelle sur sa source.
 @export var cout_energie: int = 1
 ## Pièce unique : on ne peut en poser qu'une sur le plateau.
@@ -61,6 +63,8 @@ static func decrire(objet: Resource) -> String:
 	if objet == null:
 		return ""
 	var texte: String = TranslationServer.translate(objet.get("description"))
+	if objet is PieceDef and objet.role != "":
+		texte = TranslationServer.translate("Rôle : %s") % TranslationServer.translate(objet.role) + "\n" + texte
 	if objet is PieceDef and objet.consomme():
 		texte += "\n" + TranslationServer.translate("Énergie : %d dents de l’Horloge") % objet.cout_energie
 	return texte

@@ -13,3 +13,4 @@ ports = 10
 transmet = true
 sur_route = true
 rarete = 2
+role = "Traverser"

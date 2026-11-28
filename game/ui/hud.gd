@@ -91,6 +91,7 @@ func _ready() -> void:
 	_creer_chance()
 	_creer_dents()
 	_creer_carillon()
+	Events.butin_tombe.connect(_faire_voler_butin)
 	_creer_apercu_vague()
 	var astuces := Astuces.new()
 	astuces.plateau_noeud = get_parent().get_node_or_null("PlateauNoeud")
@@ -616,6 +617,7 @@ class Carte extends Button:
 	var nom: Label = Label.new()
 	var _papier: PanelContainer = PanelContainer.new()
 	var _vignette: TextureRect = TextureRect.new()
+	var _role: Label
 	var _mouvement: Tween
 
 	func _init(lot: Lot, indice: int, coffre: bool) -> void:
@@ -663,11 +665,21 @@ class Carte extends Button:
 		_vignette.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		_vignette.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		colonne.add_child(_vignette)
+		if piece != null and piece.role != "":
+			var role := Label.new()
+			role.theme_type_variation = &"CarteTexte"
+			role.text = TranslationServer.translate(piece.role)
+			role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			role.add_theme_font_size_override(&"font_size", 15)
+			role.add_theme_color_override(&"font_color", Color("#7A4A21"))
+			_role = role
 		nom.theme_type_variation = &"CarteNom"
 		nom.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		nom.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		nom.custom_minimum_size.x = LARGEUR_MAX - 40.0
 		colonne.add_child(nom)
+		if _role != null:
+			colonne.add_child(_role)
 		_papier.clip_contents = true
 		# Cadre teinté par rareté : la rareté se lit à la couleur, sans lire un mot.
 		if rarete == PieceDef.Rarete.RARE:
@@ -750,6 +762,41 @@ func _recevoir_choc(pv: int) -> void:
 	_animation_choc.tween_property(_flash, "color:a", 0.0, 0.35)
 	_pv.modulate = Color("#e88e70")
 	_animation_choc.parallel().tween_property(_pv, "modulate", Color.WHITE, 0.32)
+
+
+# Playtest 3 (« des impacts qui se sentent ») : le ressort lâché par un cuirassé saute puis vole jusqu'au compteur
+# de ressorts ; on voit d'où vient l'argent. Au plus 6 ressorts en vol à la fois.
+var _butins_en_vol: int = 0
+
+func _faire_voler_butin(position: Vector2, quantite: int) -> void:
+	var camera: Camera3D = get_viewport().get_camera_3d()
+	if camera == null or _butins_en_vol >= 6:
+		return
+	var monde := Vector3(position.x, 0.6, position.y)
+	if camera.is_position_behind(monde):
+		return
+	var depart: Vector2 = camera.unproject_position(monde)
+	var arrivee: Vector2 = _ressorts.global_position + Vector2(-8.0, 4.0)
+	for k: int in mini(quantite, 3):
+		var ressort := TextureRect.new()
+		ressort.texture = preload("res://assets/ui/icones/ressort.png")
+		ressort.custom_minimum_size = Vector2(30, 30)
+		ressort.size = Vector2(30, 30)
+		ressort.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		ressort.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		ressort.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ressort.position = depart - Vector2(15, 15)
+		add_child(ressort)
+		_butins_en_vol += 1
+		var saut: Vector2 = ressort.position + Vector2(randf_range(-30, 30), -50.0)
+		var vol: Tween = ressort.create_tween()
+		vol.tween_interval(k * 0.08)
+		vol.tween_property(ressort, "position", saut, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		vol.tween_property(ressort, "position", arrivee, 0.55).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		vol.parallel().tween_property(ressort, "scale", Vector2(0.6, 0.6), 0.55)
+		vol.tween_callback(func() -> void:
+			_butins_en_vol -= 1
+			ressort.queue_free())
 
 
 func _faire_flotter_gain(montant: int) -> void:

@@ -16,3 +16,4 @@ transmet = false
 unite_produite = ExtResource("soldat")
 cadence_production = 0.5
 cout_energie = 2
+role = "Bloquer"

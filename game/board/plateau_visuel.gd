@@ -619,7 +619,7 @@ func _reconstruire() -> void:
 	for c: Vector2i in _source.plateau.coords_pieces():
 		var piece: PieceDef = _source.plateau.piece_de(c)
 		var racine: Node3D = creer_piece(piece, _source.plateau.ports_de(c),
-				null if _source.alimentees.has(c) else _gris)
+				null if _source.alimentees.has(c) else _gris, _source.plateau.niveau_de(c))
 		_pieces.add_child(racine)
 		racine.position = GrilleMonde.vers_monde(c)
 		if _source.surcharge.has(c):
@@ -888,14 +888,20 @@ func rebondir(case: Vector2i) -> void:
 
 
 ## Construit la même silhouette pour une pièce posée et pour son fantôme.
-func creer_piece(piece: PieceDef, ports: int, teinte: Material = null) -> Node3D:
+## Paliers d'évolution (PT-51, lot 4) : à partir de ce niveau, un bâtiment prend son modèle « _n3 » s'il existe
+## (`assets/final/<id>_n3/<id>_n3_h3d.res`) ; sinon il garde le sien, avec ses insignes de niveau.
+const NIVEAU_PALIER := 3
+
+func creer_piece(piece: PieceDef, ports: int, teinte: Material = null, niveau: int = 1) -> Node3D:
 	var racine := Node3D.new()
 	var modele: Node3D
 	if piece.type == PieceDef.Type.HORLOGE:
 		if ResourceLoader.exists(MODELE_HORLOGE):
 			modele = (load(MODELE_HORLOGE) as PackedScene).instantiate() as Node3D
 	else:
-		modele = _instancier(piece.id)
+		modele = _modele_hyper3d(StringName(String(piece.id) + "_n3")) if niveau >= NIVEAU_PALIER else null
+		if modele == null:
+			modele = _instancier(piece.id)
 	if modele != null:
 		racine.add_child(modele)
 		var ports_origine: int = PORTS_DU_KIT.get(piece.id, piece.ports)
