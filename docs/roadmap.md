@@ -319,7 +319,7 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 ## Restes du playtest 2 (toujours ouverts)
 | ID | Tâche | Qui | État / bloqué par |
 |---|---|---|---|
-| P2-40 | Beaucoup plus de contenu à débloquer (pièces de synergie, Établi, cosmétiques) | Fable → Codex + Gemini | après P3-28 (on équilibre d'abord) |
+| P2-40 | Beaucoup plus de contenu à débloquer (pièces de synergie, Établi, cosmétiques) | Fable → Codex + Gemini | 🟡 Piège à ressort (posé sur la route, étourdit ce qui passe, chapitre 3) ; Établi : « Couronne de l'Horloge » (+1 dent) et « Carillon huilé » (−4 s) ; 2 cartes (Manège, Rail) ; reste : cosmétiques |
 | P2-55 | Cartes plus grandes, détaillées et vivantes | Gemini + Fable | absorbé par P3-42 à P3-45 |
 | P2-56 | Chemins qui évoluent par segments | Fable | après P3-46 |
 | P2-58 | Lore en BD (3-4 cases par chapitre) | Fable → Gemini | quota Gemini |

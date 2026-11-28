@@ -63,6 +63,9 @@
 [ext_resource type="Resource" path="res://data/paliers_extension/grande_ouverture.tres" id="palier_4"]
 [ext_resource type="Resource" path="res://data/tuiles/pont.tres" id="pont"]
 [ext_resource type="Resource" path="res://data/tuiles/generateur.tres" id="generateur"]
+[ext_resource type="Resource" path="res://data/tuiles/piege_ressort.tres" id="piege"]
+[ext_resource type="Resource" path="res://data/ameliorations/dent_horloge.tres" id="meta_dent"]
+[ext_resource type="Resource" path="res://data/ameliorations/carillon_huile.tres" id="meta_carillon"]
 [ext_resource type="Resource" path="res://data/recettes/pont.tres" id="recette_pont"]
 [ext_resource type="Resource" path="res://data/recettes/generateur.tres" id="recette_generateur"]
 [ext_resource type="Resource" path="res://data/recettes/tourelle_mortier.tres" id="recette_mortier"]
@@ -138,6 +141,14 @@ objet = ExtResource("t")
 quantite = 1
 prix = 7
 
+[sub_resource type="Resource" id="lot_piege"]
+script = ExtResource("lot")
+objet = ExtResource("piege")
+quantite = 1
+poids = 1.5
+vague_min = 4
+prix = 14
+
 [sub_resource type="Resource" id="vente_canon"]
 script = ExtResource("lot")
 objet = ExtResource("canon")
@@ -192,7 +203,7 @@ poids = 0.6
 script = ExtResource("regles")
 paliers_extension = Array[Resource]([ExtResource("palier_1"), ExtResource("palier_2"), ExtResource("palier_3"), ExtResource("palier_4")])
 extension_tiroir = ExtResource("sentier")
-ameliorations = Array[ExtResource("amelioration")]([ExtResource("meta_pv_horloge"), ExtResource("meta_ressorts_depart"), ExtResource("meta_choix_draft"), ExtResource("meta_cadence_ateliers"), ExtResource("meta_rente"), ExtResource("meta_relance_offerte"), ExtResource("meta_trefle")])
+ameliorations = Array[ExtResource("amelioration")]([ExtResource("meta_pv_horloge"), ExtResource("meta_ressorts_depart"), ExtResource("meta_choix_draft"), ExtResource("meta_cadence_ateliers"), ExtResource("meta_rente"), ExtResource("meta_relance_offerte"), ExtResource("meta_trefle"), ExtResource("meta_dent"), ExtResource("meta_carillon")])
 chapitres = Array[ExtResource("chapitre")]([ExtResource("chapitre_1"), ExtResource("chapitre_2"), ExtResource("chapitre_3"), ExtResource("chapitre_4"), ExtResource("chapitre_5"), ExtResource("chapitre_6")])
 chapitre_deblocage_libre = 3
 difficultes_pv_ennemis = Array[float]([0.8, 1.0, 1.3])
@@ -214,7 +225,7 @@ multiplicateur_acceleration = 2.0
 choix_par_draft = 3
 vagues_coffre = Array[int]([3, 6, 9])
 coffre = Array[ExtResource("lot")]([SubResource("lot_canon"), SubResource("lot_carillon"), SubResource("lot_mortier"), SubResource("coffre_pont"), SubResource("coffre_generateur")])
-pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont")])
+pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont"), SubResource("lot_piege")])
 ressorts_depart = 0
 recompense_vague = 6
 recompense_par_vague = 2
@@ -227,5 +238,5 @@ recettes = Array[ExtResource("recette")]([ExtResource("recette_engrenage_croix")
 demontage_engrenage = 1
 demontage_atelier = 6
 demontage_tourelle = 8
-boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("vente_t"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes"), SubResource("vente_canon"), SubResource("vente_carillon")])
+boutique = Array[ExtResource("lot")]([SubResource("vente_droit"), SubResource("vente_coude"), SubResource("vente_t"), SubResource("lot_croix"), SubResource("lot_atelier"), SubResource("lot_billes"), SubResource("vente_canon"), SubResource("vente_carillon"), SubResource("lot_piege")])
 vagues = Array[ExtResource("vague")]([ExtResource("vague_1"), ExtResource("vague_2"), ExtResource("vague_3"), ExtResource("vague_4"), ExtResource("vague_5"), ExtResource("vague_6"), ExtResource("vague_7"), ExtResource("vague_8"), ExtResource("vague_9"), ExtResource("vague_10")])

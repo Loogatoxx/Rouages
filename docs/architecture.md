@@ -484,3 +484,7 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   `PieceDef.decrire`.
 - **Paliers d'évolution** (PT-51 lot 4, prêt) : `PlateauVisuel.creer_piece(..., niveau)` charge `<id>_n3_h3d.res`
   dès le niveau `NIVEAU_PALIER` (3) s'il existe ; il suffira de générer et d'alléger les modèles « _n3 ».
+- **Contenu** (P2-40) : `data/tuiles/piege_ressort.tres` (tourelle `sur_route`, ports E-O, portée 1,2 m, étourdit
+  presque : frein 0,8) ; `SwarmSim._tracer_couloirs` et `PlateauVisuel` ne traitent en Pont que les pièces `sur_route`
+  qui ne sont pas des tourelles ; dessin de repli et vignette procédurale. Établi : `dent_horloge` (effet `dents`, déjà
+  lu par `Run.dents`) et `carillon_huile` (effet `carillon`, lu par `Partie.sonner_carillon`).

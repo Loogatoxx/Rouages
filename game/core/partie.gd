@@ -140,7 +140,8 @@ func sonner_carillon(point: Vector2) -> bool:
 	if Run.phase != Run.Phase.VAGUE or carillon_attente > 0.0:
 		return false
 	sim.ralentir_zone(point, Run.regles.carillon_rayon, 1.0, Run.regles.carillon_duree)
-	carillon_attente = Run.regles.carillon_recharge
+	# Établi « Carillon huilé » : recharge plus courte (jamais sous 10 s).
+	carillon_attente = maxf(10.0, Run.regles.carillon_recharge - Progression.bonus(&"carillon"))
 	Events.carillon_sonne.emit(point)
 	return true
 

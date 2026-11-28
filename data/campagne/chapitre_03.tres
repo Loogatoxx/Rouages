@@ -5,6 +5,7 @@
 
 [ext_resource type="Resource" path="res://data/tuiles/atelier_billes.tres" id="deb_atelier_billes"]
 [ext_resource type="Resource" path="res://data/tuiles/tourelle_carillon.tres" id="deb_tourelle_carillon"]
+[ext_resource type="Resource" path="res://data/tuiles/piege_ressort.tres" id="deb_piege"]
 
 [resource]
 script = ExtResource("chapitre")
@@ -13,4 +14,4 @@ titre = "La Fourche du Grenier"
 recit = "Au grenier, deux chemins se rejoignent près d’un coffre. Quand un cuirassé s’y endort, une petite clé dépasse de sa carapace."
 depart = ExtResource("depart")
 difficulte = 1
-debloque = Array[Resource]([ExtResource("deb_atelier_billes"), ExtResource("deb_tourelle_carillon")])
+debloque = Array[Resource]([ExtResource("deb_atelier_billes"), ExtResource("deb_tourelle_carillon"), ExtResource("deb_piege")])

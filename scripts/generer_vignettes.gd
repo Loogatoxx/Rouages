@@ -55,6 +55,8 @@ func _init() -> void:
 		if PORTS.has(id):
 			_dents(modele, PORTS[id])
 		await _rendre(vue, camera, modele, String(id))
+	# Piège à ressort (P2-40) : pas de modèle de kit, même dessin que `PlateauVisuel._creer_piece_de_repli`.
+	await _rendre(vue, camera, _piege_ressort(), "piege_ressort")
 	for id: StringName in ENNEMIS:
 		var source: StringName = ENNEMIS[id][0]
 		var ennemi: Node3D = (load(KIT % [source, source]) as PackedScene).instantiate()
@@ -148,3 +150,42 @@ func _rendre(vue: SubViewport, camera: Camera3D, modele: Node3D, nom: String) ->
 	image.save_png(SORTIE + nom + ".png")
 	modele.queue_free()
 	await process_frame
+
+
+func _piege_ressort() -> Node3D:
+	var racine := Node3D.new()
+	var corail := StandardMaterial3D.new()
+	corail.albedo_color = Color("#E0795C")
+	var laiton := StandardMaterial3D.new()
+	laiton.albedo_color = Color("#D4A84B")
+	laiton.metallic = 0.8
+	laiton.roughness = 0.35
+	var socle := MeshInstance3D.new()
+	var dalle := BoxMesh.new()
+	dalle.size = Vector3(1.9, 0.1, 1.9)
+	socle.mesh = dalle
+	var pierre := StandardMaterial3D.new()
+	pierre.albedo_color = Color("#EFE3C8")
+	socle.material_override = pierre
+	racine.add_child(socle)
+	var formes: Array = [[CylinderMesh.new(), 0.62, 0.66, 0.08, 0.09, corail], [CylinderMesh.new(), 0.5, 0.5, 0.1, 0.14, laiton]]
+	for f: Array in formes:
+		var cylindre: CylinderMesh = f[0]
+		cylindre.top_radius = f[1]
+		cylindre.bottom_radius = f[2]
+		cylindre.height = f[3]
+		var maille := MeshInstance3D.new()
+		maille.mesh = cylindre
+		maille.position.y = f[4]
+		maille.material_override = f[5]
+		racine.add_child(maille)
+	for k: int in 3:
+		var spire := TorusMesh.new()
+		spire.inner_radius = 0.16 - k * 0.03
+		spire.outer_radius = 0.22 - k * 0.03
+		var maille := MeshInstance3D.new()
+		maille.mesh = spire
+		maille.position.y = 0.22 + k * 0.07
+		maille.material_override = laiton
+		racine.add_child(maille)
+	return racine

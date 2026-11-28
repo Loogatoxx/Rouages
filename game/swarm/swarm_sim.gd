@@ -214,7 +214,7 @@ func _tracer_couloirs(plateau: Plateau) -> void:
 		var marge_x: float = MARGE_ROUTE
 		var marge_y: float = MARGE_ROUTE
 		var piece: Plateau.PieceDef = plateau.piece_de(case)
-		if piece != null and piece.sur_route:
+		if piece != null and piece.sur_route and piece.type != Plateau.PieceDef.Type.TOURELLE:
 			# Le tablier suit la route : axe X si la route continue à gauche ou à droite, sinon axe Y.
 			var axe: Vector2 = Vector2.RIGHT if (gauche or droite) and not (haut or bas) else Vector2.DOWN
 			if axe == Vector2.RIGHT:

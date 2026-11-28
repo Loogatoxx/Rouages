@@ -85,7 +85,7 @@ func _anciens_profils(_partie: Partie) -> String:
 
 ## Contrôle les paliers des trois surprises et l'accès immédiat aux outils de base.
 func test_paliers_etabli() -> String:
-	var paliers: Dictionary = {&"trefle": 3, &"relance_offerte": 2, &"choix_draft": 4}
+	var paliers: Dictionary = {&"trefle": 3, &"relance_offerte": 2, &"choix_draft": 4, &"dent_horloge": 3, &"carillon_huile": 2}
 	for def: AmeliorationDef in REGLES.ameliorations:
 		var palier: int = paliers.get(def.id, 0)
 		for finis: int in range(5):

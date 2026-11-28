@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="PieceDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/piece_def.gd" id="piece"]
+
+[resource]
+script = ExtResource("piece")
+id = &"piege_ressort"
+nom = "Piège à ressort"
+description = "Se pose sur la route, relié par le côté. Chaque scarabée qui passe dessus est projeté et étourdi un instant : idéal au pied d'un poste de garde."
+type = 3
+niveau_max = 3
+prix_amelioration = 10
+ports = 10
+transmet = false
+sur_route = true
+rarete = 1
+portee_tir = 1.2
+degats_tir = 10.0
+cadence_tir = 0.5
+zone_tir = 1.1
+ralentissement = 0.8
+duree_ralenti = 1.2
+cout_energie = 1
+role = "Retenir"

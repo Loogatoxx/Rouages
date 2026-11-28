@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"dent_horloge"
+nom = "Couronne de l'Horloge"
+description = "+1 dent d'énergie pour l'Horloge au début de chaque partie, par niveau."
+niveaux_max = 2
+prix = Array[int]([10, 18])
+effet = &"dents"
+valeur_par_niveau = 1.0
+chapitre_min = 3

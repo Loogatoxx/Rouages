@@ -103,3 +103,5 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Le Quai (marée) | La maquette du port où Anselme est parti. Un mécanisme caché sous la table fait monter et descendre l'eau à chaque sonnerie : une jetée sur deux disparaît. |
 | Le Manège | La maquette de la fête foraine du village : sa plaque tournante faisait tourner les chevaux de bois ; Anselme y avait branché la route, qui change de côté toutes les deux sonneries. |
 | Le Rail | Le petit train électrique de Lise, remonté par l'Horloge : il fait son tour à heure fixe et ne s'arrête pour personne, ni scarabée ni soldat. |
+| Piège à ressort | Une vieille trappe de boîte à surprise qu'Anselme avait vissée dans les pavés : elle projette le premier scarabée qui marche dessus. |
+| Couronne de l'Horloge, Carillon huilé | Les outils d'Anselme, retrouvés un à un : une couronne de dents de rechange, une burette d'huile pour les cloches. |

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"carillon_huile"
+nom = "Carillon huilé"
+description = "Le coup de carillon se recharge 4 secondes plus vite, par niveau."
+niveaux_max = 2
+prix = Array[int]([6, 12])
+effet = &"carillon"
+valeur_par_niveau = 4.0
+chapitre_min = 2

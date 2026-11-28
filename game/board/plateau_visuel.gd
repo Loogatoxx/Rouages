@@ -909,7 +909,7 @@ func creer_piece(piece: PieceDef, ports: int, teinte: Material = null, niveau: i
 			if PieceDef.tourner_ports(ports_origine, tour) == ports:
 				modele.rotate_y(-tour * PI / 2.0)
 				break
-		if piece.sur_route:
+		if piece.sur_route and piece.type != PieceDef.Type.TOURELLE:
 			_amenager_pont(modele)
 		if piece.type == PieceDef.Type.TOURELLE:
 			_separer_tete(modele, piece.id)
@@ -954,6 +954,25 @@ func _creer_piece_de_repli(racine: Node3D, piece: PieceDef) -> void:
 			_cylindre(rotor, 0.65, 0.3, materiau("laiton"))
 			_boite(rotor, Vector3(0.94, 0.09, 0.14), Vector3.UP * 0.34,
 					materiau("bois_plateau"))
+		PieceDef.Type.TOURELLE when piece.sur_route:
+			# Piège à ressort : plaque de laiton ronde au ras de la route, ressort spiralé et cerclage corail.
+			var corail := StandardMaterial3D.new()
+			corail.albedo_color = Color("#E0795C")
+			var plaque := CylinderMesh.new()
+			plaque.top_radius = 0.62
+			plaque.bottom_radius = 0.66
+			plaque.height = 0.08
+			_ajouter_forme(racine, plaque, Vector3.UP * 0.05, corail)
+			var dessus := CylinderMesh.new()
+			dessus.top_radius = 0.5
+			dessus.bottom_radius = 0.5
+			dessus.height = 0.1
+			_ajouter_forme(racine, dessus, Vector3.UP * 0.1, materiau("laiton"))
+			for k: int in 3:
+				var spire := TorusMesh.new()
+				spire.inner_radius = 0.16 - k * 0.03
+				spire.outer_radius = 0.22 - k * 0.03
+				_ajouter_forme(racine, spire, Vector3.UP * (0.18 + k * 0.07), materiau("laiton"))
 		PieceDef.Type.TOURELLE:
 			_cylindre(racine, 0.62, 0.38, materiau("bois_clair"))
 			var finition := StandardMaterial3D.new()

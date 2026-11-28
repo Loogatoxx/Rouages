@@ -296,3 +296,23 @@ func test_train_frappe_la_voie() -> String:
 	if not is_equal_approx(vies_e[0], SCARABEE.pv - 5.0) or not is_equal_approx(vies_a[0], SOLDAT.pv - 5.0):
 		return "Le train doit blesser l'ennemi ET le jouet de la case."
 	return "" if is_equal_approx(vies_e[1], SCARABEE.pv) else "Le train ne doit pas toucher la case voisine."
+
+
+## P2-40 : le Piège à ressort se pose sur la route, tire sur ce qui passe dessus et ne fait pas monter les unités.
+func test_piege_a_ressort() -> String:
+	const PIEGE = preload("res://data/tuiles/piege_ressort.tres")
+	const Tourelles = preload("res://game/workshops/tourelles.gd")
+	var plateau: Plateau = _plateau()
+	if plateau.peut_poser(Vector2i(3, -1), PIEGE) or not plateau.peut_poser(Vector2i(3, 0), PIEGE):
+		return "Le piège se pose sur la route, pas dans l'herbe."
+	plateau.poser(Vector2i(3, 0), PIEGE, 0)
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	if sim.a_du_relief():
+		return "Un piège n'est pas un Pont : pas de tablier."
+	sim.ajouter(SCARABEE, Vector2(6, 0))
+	var tourelles := Tourelles.new()
+	tourelles.avancer(0.1, plateau, {Vector2i(3, 0): 0}, sim)
+	if sim._camps[SwarmSim.ENNEMI].vies[0] >= SCARABEE.pv:
+		return "Le piège doit frapper le scarabée qui passe dessus."
+	return "" if sim.ralentis(SwarmSim.ENNEMI)[0] > 0.0 else "Le piège doit étourdir (ralentir fort) sa cible."
