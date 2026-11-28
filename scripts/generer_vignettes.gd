@@ -18,7 +18,9 @@ const ENNEMIS := {&"scarabee": [&"scarabee", Color.TRANSPARENT], &"fourmi": [&"f
 		&"grand_scarabee": [&"scarabee_cuirasse", Color(0.35, 0.22, 0.08, 0.4)],
 		&"libellule": [&"fourmi", Color(0.37, 0.66, 0.63, 0.65)]}
 const EXTENSIONS := {&"extension_sentier": "res://data/extensions/sentier.tres",
-		&"extension_carrefour": "res://data/extensions/carrefour.tres"}
+		&"extension_carrefour": "res://data/extensions/carrefour.tres",
+		&"extension_virage": "res://data/extensions/virage.tres",
+		&"extension_grande_allee": "res://data/extensions/grande_allee.tres"}
 
 
 func _init() -> void:

@@ -151,3 +151,18 @@ func test_raccord_bloque_par_des_pieces() -> String:
 	if Extension.est_valide(plateau, SENTIER, Vector2i(-6, 0), 1):
 		return "Sans passage libre, le sentier ouest doit être refusé."
 	return ""
+
+
+## P2-56 : les nouvelles formes (virage en L, grande allée 5×5) se posent et ouvrent une entrée.
+func test_formes_variees() -> String:
+	for chemin: String in ["res://data/extensions/virage.tres", "res://data/extensions/grande_allee.tres"]:
+		var def: ExtensionDef = load(chemin)
+		var plateau: Plateau = DEPART.creer_plateau()
+		var posee: bool = false
+		for centre: Vector2i in [Vector2i(-7, 0), Vector2i(0, -7), Vector2i(0, 7), Vector2i(-6, 0), Vector2i(0, -6), Vector2i(0, 6), Vector2i(-6, 3), Vector2i(-7, -3)]:
+			for tour: int in 4:
+				if not posee and Extension.appliquer(plateau, def, centre, tour):
+					posee = true
+		if not posee:
+			return "L'extension %s doit pouvoir se poser contre le plateau de départ." % def.nom
+	return ""

@@ -186,8 +186,10 @@ func _actualiser_marqueurs() -> void:
 			if plateau.a_sol(sol + Vector2i.UP) and plateau.a_sol(sol + Vector2i.DOWN) \
 					and plateau.a_sol(sol + Vector2i.LEFT) and plateau.a_sol(sol + Vector2i.RIGHT):
 				continue
-			for x: int in range(-2, 3):
-				for y: int in range(-2, 3):
+			# Le centre d'une extension est à « taille / 2 + 1 » cases au plus du bord (3×3 : 2 ; 5×5 : 3).
+			var rayon: int = _choix.taille / 2 + 1
+			for x: int in range(-rayon, rayon + 1):
+				for y: int in range(-rayon, rayon + 1):
 					var centre: Vector2i = sol + Vector2i(x, y)
 					if not plateau.a_sol(centre):
 						candidats[centre] = true

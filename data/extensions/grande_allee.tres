@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ExtensionDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/extension_def.gd" id="extension"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="piece_a"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="piece_b"]
+
+[sub_resource type="Resource" id="bonus_a"]
+script = ExtResource("lot")
+objet = ExtResource("piece_a")
+quantite = 1
+
+[sub_resource type="Resource" id="bonus_b"]
+script = ExtResource("lot")
+objet = ExtResource("piece_b")
+quantite = 1
+
+[resource]
+script = ExtResource("extension")
+id = &"extension_grande_allee"
+nom = "Grande allée"
+description = "Grande planche 5×5 traversée par une longue allée : beaucoup de place pour construire, mais une entrée de plus et une route longue à garder. À la pose : 1 atelier de soldats, 1 engrenage en croix et 20 ressorts. Puis +4 ressorts à chaque fin de vague."
+ressorts = 20
+revenu = 4
+taille = 5
+chemins = Array[Vector2i]([Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2), Vector2i(2, 3), Vector2i(2, 4)])
+bonus = Array[ExtResource("lot")]([SubResource("bonus_a"), SubResource("bonus_b")])
