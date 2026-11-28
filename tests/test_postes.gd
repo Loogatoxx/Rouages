@@ -229,7 +229,8 @@ func test_cartes_a_mecaniques() -> String:
 		for case: Vector2i in depart.decors:
 			if plateau.decor_de(case) == &"":
 				return "%s : le décor de la case %s n'a pas pu être posé (route, eau ou hors terrain)." % [depart.nom, case]
-			if not ResourceLoader.exists("res://assets/final/kit_v2/%s/%s.glb" % [depart.decors[case], depart.decors[case]]):
+			if not ResourceLoader.exists("res://assets/final/kit_v2/%s/%s.glb" % [depart.decors[case], depart.decors[case]]) \
+					and not depart.decors[case] in [&"decor_rail", &"decor_plaque"]:
 				return "%s : modèle de décor introuvable (%s)." % [depart.nom, depart.decors[case]]
 	return ""
 
@@ -262,3 +263,36 @@ func test_pont_sur_l_eau_praticable() -> String:
 	plateau.poser(Vector2i(3, -2), PONT, 0)
 	sim.configurer(plateau)
 	return "" if not sim._occupees.has(Vector2i(3, -2)) else "Un Pont sur l'eau doit se traverser."
+
+
+## Le Manège : la plaque tournante échange les deux tronçons ; l'entrée change de côté, la route reste reliée.
+func test_manege_tourne() -> String:
+	const ChampFlux = preload("res://game/swarm/champ_flux.gd")
+	var manege: Resource = load("res://data/departs/manege.tres")
+	var plateau: Plateau = manege.creer_plateau()
+	var entrees_a: Array[Vector2i] = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau))
+	if plateau.decor_de(manege.variante_b[0]) != &"decor_plaque" or plateau.sol_de(manege.variante_a[0]) != Plateau.Sol.CHEMIN:
+		return "Au départ, le tronçon A est une route et le tronçon B une plaque."
+	manege.appliquer_variante(plateau, 1)
+	var entrees_b: Array[Vector2i] = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau))
+	if entrees_a == entrees_b or entrees_b.size() != entrees_a.size():
+		return "Le manège doit déplacer une entrée (avant %s, après %s)." % [entrees_a, entrees_b]
+	if plateau.decor_de(manege.variante_b[0]) != &"" or plateau.decor_de(manege.variante_a[0]) != &"decor_plaque":
+		return "Après un tour, le tronçon B est la route et A la plaque."
+	return ""
+
+
+## Le Rail : le train blesse tout ce qui est sur sa case, jouets compris, et rien à côté.
+func test_train_frappe_la_voie() -> String:
+	var plateau: Plateau = _plateau()
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	sim.ajouter(SCARABEE, Vector2(6, 0))
+	sim.ajouter(SOLDAT, Vector2(6.3, 0), Vector2i(3, -1))
+	sim.ajouter(SCARABEE, Vector2(10, 0))
+	sim.frapper_case(Vector2i(3, 0), 5.0)
+	var vies_e: PackedFloat32Array = sim._camps[SwarmSim.ENNEMI].vies
+	var vies_a: PackedFloat32Array = sim._camps[SwarmSim.ALLIE].vies
+	if not is_equal_approx(vies_e[0], SCARABEE.pv - 5.0) or not is_equal_approx(vies_a[0], SOLDAT.pv - 5.0):
+		return "Le train doit blesser l'ennemi ET le jouet de la case."
+	return "" if is_equal_approx(vies_e[1], SCARABEE.pv) else "Le train ne doit pas toucher la case voisine."

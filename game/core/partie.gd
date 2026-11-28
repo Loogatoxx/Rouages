@@ -18,6 +18,9 @@ var _entrees: Array[Vector2i] = []
 ## Coup de carillon : secondes avant de pouvoir sonner de nouveau (0 = prêt).
 var carillon_attente: float = 0.0
 var _enfermes: Array[Vector2i] = []
+## Rail : secondes avant le prochain train, et progression du train en cours (en cases ; -1 = pas de train).
+var _attente_train: float = 0.0
+var _train: float = -1.0
 
 
 func _ready() -> void:
@@ -27,6 +30,7 @@ func _ready() -> void:
 	Events.vague_commencee.connect(_commencer)
 	Events.vague_terminee.connect(_rentrer_jouets)
 	Events.vague_terminee.connect(_ouvrir_tiroir)
+	Events.vague_terminee.connect(_tourner_manege)
 	sim.ennemi_arrive.connect(Run.subir_degats)
 	sim.unite_morte.connect(_unite_morte)
 	_configurer()
@@ -85,6 +89,19 @@ func _commencer(numero: int) -> void:
 			Run.depart.part_speciaux)
 	production.nouvelle_vague()
 	carillon_attente = 0.0
+	_attente_train = Run.depart.periode_train * 0.6
+	_train = -1.0
+
+
+# Manège : toutes les `periode_variantes` vagues tenues, la plaque tourne et l'autre tronçon de route s'ouvre.
+func _tourner_manege(numero: int) -> void:
+	var depart: Resource = Run.depart
+	if depart.variante_a.is_empty() or numero >= Run.nb_vagues or numero % depart.periode_variantes != 0:
+		return
+	depart.appliquer_variante(_source.plateau, numero / depart.periode_variantes)
+	get_tree().create_timer(1.6).timeout.connect(func() -> void:
+		Events.message_joueur.emit(tr("Le manège tourne : la route du nord change de côté ! Déplace tes fanions.")))
+	Sons.jouer(&"rotation")
 
 
 ## Entrées par où arrive la vague `numero`. Carte à marée : une seule, à tour de rôle (les autres sont sous l'eau).
@@ -92,6 +109,29 @@ func entrees_de_la_vague(numero: int) -> Array[Vector2i]:
 	if Run.depart.maree and _entrees.size() > 1:
 		return [_entrees[(numero - 1) % _entrees.size()]]
 	return _entrees
+
+
+## Vitesse du train, en cases par seconde.
+const VITESSE_TRAIN := 5.0
+
+# Rail : le train part à intervalle régulier ; chaque case de voie qu'il franchit blesse ce qui s'y trouve.
+func _avancer_train(dt: float) -> void:
+	var voie: Array[Vector2i] = Run.depart.rail
+	if voie.is_empty():
+		return
+	if _train < 0.0:
+		_attente_train -= dt
+		if _attente_train <= 0.0:
+			_train = -2.0  # deux cases d'approche hors du plateau : on le voit venir
+			Events.train_part.emit()
+		return
+	var avant: int = floori(_train)
+	_train += dt * VITESSE_TRAIN
+	for indice: int in range(maxi(0, avant + 1), mini(voie.size(), floori(_train) + 1)):
+		sim.frapper_case(voie[indice], Run.depart.degats_train)
+	if _train >= voie.size() + 2:
+		_train = -1.0
+		_attente_train = Run.depart.periode_train
 
 
 ## Coup de carillon du joueur (pilier 4) : étourdit les ennemis autour de `point` (mètres). Faux s'il n'est pas prêt
@@ -120,6 +160,7 @@ func _physics_process(delta: float) -> void:
 		Sons.jouer(&"jouet_sort", 0.08)  # anti-répétition gérée par Sons
 	directeur.avancer(dt, sim)
 	tourelles.avancer(dt, _source.plateau, _source.alimentees, sim)
+	_avancer_train(dt)
 	sim.avancer(dt)
 	if Run.phase == Run.Phase.VAGUE and directeur.est_terminee(sim):
 		Run.terminer_vague()

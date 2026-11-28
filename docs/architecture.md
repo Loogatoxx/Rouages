@@ -461,3 +461,19 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
 - **Objets d'établi** (P3-45) : `PlateauVisuel.OBJETS_ETABLI` / `_poser_objets_etabli` posent `table_tasse`,
   `table_loupe`, `table_bobine`, `table_carnet`, `table_tournevis` (kit Blender de Gemini, dimensions en mètres du
   jeu : une tasse = 3 cases) à gauche et à droite du terrain, d'après `Run.depart.terrain`.
+
+## Après playtest 3 — lot 6 (Hyper3D lot 3, relecture T14c, Manège et Rail)
+- **Hyper3D** : carillon, mortier (coupe à 22 % pour la tête qui pivote), taupe et porte-bouclier (modèles propres,
+  prioritaires sur les emprunts teintés de `NueeVisuel.EMPRUNTS_H3D`), Pont (`_amenager_pont` : tablier long tourné
+  dans le sens de la route, hauteur ramenée à `SwarmSim.HAUTEUR_PONT`), Générateur. 3 crédits.
+- **Étourdissement** : `Nuee.etourdis` (minuterie à part ; `_freiner` avec un frein ≥ 0,99 n'y touche que là) ; un
+  étourdi ne frappe pas, ne bouge pas et n'est pas poussé par la séparation.
+- **Manège** (P3-48) : `DepartDef.variante_a` / `variante_b` / `periode_variantes`, `appliquer_variante(plateau, i)`
+  (tronçon actif = route, l'autre = herbe avec le décor `decor_plaque`, dessiné par `PlateauVisuel._plaque_tournante`) ;
+  `Partie._tourner_manege` après les vagues paires. `Plateau.retirer_decor`.
+- **Rail** (P3-49) : `DepartDef.rail` / `periode_train` / `degats_train` ; décor `decor_rail` sur l'herbe de la voie ;
+  `Partie._avancer_train` (5 cases/s, deux cases d'approche) → `SwarmSim.frapper_case` (les deux camps, sauf volants et
+  fouisseurs) ; signal `Events.train_part` → `PlateauVisuel._faire_rouler_train` (locomotive et deux wagons) et son
+  `train`. Voie dessinée par `_poser_voie_ferree`.
+- **Équilibrage** : canon à 6 m (le boss se battait hors de portée), boss de la vague 5 à 0,2 et de la vague 10 à
+  0,35 de ses PV : vagues 4 et 5 ramenées vers 50-70 s.

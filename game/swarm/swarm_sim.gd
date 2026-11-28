@@ -524,6 +524,18 @@ func _freiner(ennemis: Nuee, i: int, frein: float, duree: float) -> void:
 	ennemis.ralentis[i] = maxf(ennemis.ralentis[i], duree)
 
 
+## Blesse toutes les unités au sol (des deux camps) qui se trouvent sur la case `case` : le train du Rail.
+## Les jouets ne sont pas épargnés : c'est au joueur de garder ses fanions hors de la voie.
+func frapper_case(case: Vector2i, degats: float) -> void:
+	for nuee: Nuee in _camps:
+		for i: int in nuee.lieux.size():
+			if nuee.modeles[i].volant or nuee.modeles[i].fouisseur:
+				continue
+			if Vector2i((nuee.lieux[i] / MAILLE).round()) == case:
+				nuee.vies[i] -= degats
+				nuee.touches[i] = 0.12
+
+
 ## Ralentit (ou étourdit, `frein` = 1) tous les ennemis à moins de `rayon` mètres de `centre` : le coup de carillon
 ## du joueur. Renvoie le nombre d'ennemis touchés. Volants et fouisseurs compris : c'est le son de l'Horloge.
 func ralentir_zone(centre: Vector2, rayon: float, frein: float, duree: float) -> int:

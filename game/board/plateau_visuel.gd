@@ -54,6 +54,7 @@ func _ready() -> void:
 	Events.horloge_touchee.connect(_sur_horloge_touchee)
 	Events.carillon_sonne.connect(_sur_carillon)
 	Events.phase_changee.connect(_montrer_maree)
+	Events.train_part.connect(_faire_rouler_train)
 	# Une extension peut changer les entrées : la marée et les objets d'établi suivent (relecture T14c).
 	Events.plateau_modifie.connect(func() -> void:
 		if Run.depart.maree and Run.phase == Run.Phase.CONSTRUCTION:
@@ -354,10 +355,23 @@ func _actualiser() -> void:
 	for c: Vector2i in nouvelles:
 		_actualiser_bords(c)
 	# Décors de la carte (bosquet, rocher, mare…) : posés une fois, tournés d'un quart de tour choisi par la case.
+	# Une plaque de manège qui redevient route disparaît.
+	for c: Vector2i in _decors_poses.keys():
+		if _source.plateau.decor_de(c) == &"":
+			if is_instance_valid(_decors_poses[c]):
+				_decors_poses[c].queue_free()
+			_decors_poses.erase(c)
+	_poser_voie_ferree()
 	for c: Vector2i in _source.plateau.coords_decors():
 		if _decors_poses.has(c):
 			continue
-		var decor: Node3D = _instancier(_source.plateau.decor_de(c))
+		var nom_decor: StringName = _source.plateau.decor_de(c)
+		if nom_decor == &"decor_rail":
+			continue  # dessiné avec toute la voie par `_poser_voie_ferree`
+		if nom_decor == &"decor_plaque":
+			_decors_poses[c] = _plaque_tournante(c)
+			continue
+		var decor: Node3D = _instancier(nom_decor)
 		if decor == null:
 			continue
 		_sol.add_child(decor)
@@ -652,6 +666,88 @@ func _onde(point: Vector2, rayon: float, couleur: Color, duree: float = 0.45) ->
 	animation.tween_property(onde, "scale", Vector3(rayon, 0.25, rayon), duree)
 	animation.tween_property(voile, "albedo_color:a", 0.0, duree * 1.3)
 	animation.chain().tween_callback(onde.queue_free)
+
+
+# Voie ferrée (carte « Le Rail ») : traverses de bois et deux rails de laiton sur chaque case de la voie, routes
+# comprises (le train les traverse). Dessinée une seule fois.
+var _voie_posee: bool = false
+
+func _poser_voie_ferree() -> void:
+	if _voie_posee or Run.depart.rail.is_empty():
+		return
+	_voie_posee = true
+	var voie: Array[Vector2i] = Run.depart.rail
+	var traverse := BoxMesh.new()
+	traverse.size = Vector3(1.5, 0.08, 0.26)
+	var rail := BoxMesh.new()
+	var bois: Material = materiau("bois_plateau")
+	var laiton: Material = materiau("laiton")
+	for k: int in voie.size():
+		var case: Vector2i = voie[k]
+		var suivante: Vector2i = voie[mini(k + 1, voie.size() - 1)] if k + 1 < voie.size() else case + (case - voie[maxi(0, k - 1)])
+		var axe: Vector2 = Vector2(suivante - case).normalized()
+		var centre: Vector3 = GrilleMonde.vers_monde(case) + Vector3.UP * 0.06
+		var lacet: float = atan2(axe.x, axe.y)
+		for t: int in 3:
+			var piece: MeshInstance3D = _ajouter_forme(_sol, traverse, centre + Vector3(axe.x, 0, axe.y) * (t - 1) * 0.62, bois)
+			piece.rotation.y = lacet
+		rail.size = Vector3(0.08, 0.1, GrilleMonde.TAILLE_CASE)
+		for cote: float in [-0.45, 0.45]:
+			var normale := Vector2(-axe.y, axe.x) * cote
+			var barre: MeshInstance3D = _ajouter_forme(_sol, rail, centre + Vector3(normale.x, 0.06, normale.y), laiton)
+			barre.rotation.y = lacet
+
+
+# Plaque tournante du Manège : disque de laiton cerclé de rouge cerise, sur une case qu'on ne peut pas construire.
+func _plaque_tournante(case: Vector2i) -> Node3D:
+	var racine := Node3D.new()
+	_sol.add_child(racine)
+	racine.position = GrilleMonde.vers_monde(case)
+	var cerise := StandardMaterial3D.new()
+	cerise.albedo_color = Color("#C8484F")
+	var disque := CylinderMesh.new()
+	disque.top_radius = 0.86
+	disque.bottom_radius = 0.86
+	disque.height = 0.06
+	_ajouter_forme(racine, disque, Vector3.UP * 0.04, cerise)
+	var centre := CylinderMesh.new()
+	centre.top_radius = 0.7
+	centre.bottom_radius = 0.7
+	centre.height = 0.08
+	_ajouter_forme(racine, centre, Vector3.UP * 0.07, materiau("laiton"))
+	var fleche := BoxMesh.new()
+	fleche.size = Vector3(0.18, 0.04, 1.1)
+	_ajouter_forme(racine, fleche, Vector3.UP * 0.12, materiau("pierre_creme"))
+	return racine
+
+
+# Le train du Rail : une locomotive cerise et deux wagons qui roulent le long de la voie, à la vitesse du jeu.
+func _faire_rouler_train() -> void:
+	var voie: Array[Vector2i] = Run.depart.rail
+	if voie.size() < 2:
+		return
+	var train := Node3D.new()
+	add_child(train)
+	var cerise := StandardMaterial3D.new()
+	cerise.albedo_color = Color("#C8484F")
+	var vert := StandardMaterial3D.new()
+	vert.albedo_color = Color("#3F6B4E")
+	_boite(train, Vector3(1.0, 0.7, 1.5), Vector3(0, 0.45, 0), cerise)
+	_boite(train, Vector3(0.6, 0.5, 0.5), Vector3(0, 0.95, -0.35), materiau("laiton"))
+	for k: int in 2:
+		_boite(train, Vector3(0.95, 0.55, 1.3), Vector3(0, 0.38, 1.6 + k * 1.45), vert)
+	var debut: Vector2 = Vector2(voie[0]) * GrilleMonde.TAILLE_CASE
+	var direction: Vector2 = (Vector2(voie[1]) - Vector2(voie[0])).normalized()
+	var fin: Vector2 = Vector2(voie[-1]) * GrilleMonde.TAILLE_CASE
+	var depart: Vector2 = debut - direction * 2.0 * GrilleMonde.TAILLE_CASE
+	var arrivee: Vector2 = fin + direction * 2.0 * GrilleMonde.TAILLE_CASE
+	train.position = Vector3(depart.x, 0.05, depart.y)
+	train.rotation.y = atan2(-direction.x, -direction.y)
+	var duree: float = (voie.size() + 4) / (preload("res://game/core/partie.gd").VITESSE_TRAIN * maxf(0.5, Run.vitesse))
+	var trajet: Tween = train.create_tween()
+	trajet.tween_property(train, "position", Vector3(arrivee.x, 0.05, arrivee.y), duree)
+	trajet.tween_callback(train.queue_free)
+	Sons.jouer(&"train")
 
 
 # Marée (carte « Le Quai ») : les routes par où la prochaine vague n'arrivera PAS sont recouvertes d'un voile d'eau,

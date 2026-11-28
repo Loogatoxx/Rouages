@@ -149,6 +149,12 @@ func ajouter_decor(coord: Vector2i, nom: StringName) -> void:
 		modifie.emit()
 
 
+## Retire le décor d'une case (plaque tournante du Manège qui libère une route).
+func retirer_decor(coord: Vector2i) -> void:
+	if _decors.erase(coord):
+		modifie.emit()
+
+
 ## Nom du décor de la case, ou &"" s'il n'y en a pas.
 func decor_de(coord: Vector2i) -> StringName:
 	return _decors.get(coord, &"")

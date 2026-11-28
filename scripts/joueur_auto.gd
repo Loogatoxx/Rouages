@@ -693,6 +693,9 @@ func _poste_probable(plateau, c: Vector2i, passage: Dictionary, trajets: Array =
 			if absi(dx) + absi(dy) > portee or absi(dx) + absi(dy) == 0 or plateau.sol_de(route) != Plateau.Sol.CHEMIN:
 				continue
 			var note: float = passage.get(route, 0.0) * 4.0 - (absi(dx) + absi(dy)) * 0.5
+			# Un joueur attentif ne plante pas son fanion sur la voie du train (carte « Le Rail »).
+			if portee > 1 and route in root.get_node("Run").depart.rail:
+				note -= 20.0
 			if portee > 1:
 				# Entrées que ce drapeau serait le premier à garder.
 				for trajet: Dictionary in trajets:

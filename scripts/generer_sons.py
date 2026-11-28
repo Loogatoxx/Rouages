@@ -206,6 +206,12 @@ def main():
     mixer(s, note(hz("C6"), 1.5, 2.4, ((1, 1.0), (2.76, 0.4), (5.4, 0.15))), 0.09, 0.85)
     mixer(s, note(hz("E6"), 1.4, 2.6, ((1, 1.0), (2.76, 0.35))), 0.18, 0.7)
     ecrire("carillon", s)
+    # Train du Rail (playtest 3) : deux coups de sifflet doux puis le roulement des essieux sur le bois.
+    s = note(hz("A5"), 0.5, 3.0, ((1, 1.0), (2.0, 0.3)))
+    mixer(s, note(hz("C#6"), 0.5, 3.0, ((1, 1.0), (2.0, 0.3))), 0.0, 0.8)
+    for k in range(8):
+        mixer(s, bois(260 + (k % 2) * 40, 0.08, 40, 0.5), 0.45 + k * 0.14, 0.55)
+    ecrire("train", s)
     # Début de vague : arpège montant + bloc de bois.
     s = melodie(["C5", "E5", "G5", "C6"], 0.11, 4.0, 0.9)
     mixer(s, bois(500, 0.2, 25), 0.0, 0.5)

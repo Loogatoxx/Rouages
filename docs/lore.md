@@ -101,3 +101,5 @@ Chaque chapitre est un **diorama pliant** rangé dans l'atelier, qu'on déplie s
 | Décors du plateau (bosquets, parterres, mare, caisses) | Les petits arbres et les parterres sont collés à la maquette depuis toujours : Anselme refusait qu'on y touche. Les caisses, elles, contiennent les pièces de ses agrandissements jamais finis. |
 | La Serre (îlot et rigole) | La maquette de la serre du jardin : Lise y avait creusé une vraie rigole pour arroser ses graines. L'eau arrête les rouages comme les jouets ; il faut un pont. |
 | Le Quai (marée) | La maquette du port où Anselme est parti. Un mécanisme caché sous la table fait monter et descendre l'eau à chaque sonnerie : une jetée sur deux disparaît. |
+| Le Manège | La maquette de la fête foraine du village : sa plaque tournante faisait tourner les chevaux de bois ; Anselme y avait branché la route, qui change de côté toutes les deux sonneries. |
+| Le Rail | Le petit train électrique de Lise, remonté par l'Horloge : il fait son tour à heure fixe et ne s'arrête pour personne, ni scarabée ni soldat. |

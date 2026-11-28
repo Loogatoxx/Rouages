@@ -1,0 +1,50 @@
+[gd_resource type="Resource" script_class="DepartDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/depart_def.gd" id="depart"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="atelier"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="droit"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="coude"]
+[ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="croix"]
+
+[sub_resource type="Resource" id="lot_atelier"]
+script = ExtResource("lot")
+objet = ExtResource("atelier")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_droit"]
+script = ExtResource("lot")
+objet = ExtResource("droit")
+quantite = 3
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_coude"]
+script = ExtResource("lot")
+objet = ExtResource("coude")
+quantite = 2
+poids = 1.0
+
+[sub_resource type="Resource" id="lot_croix"]
+script = ExtResource("lot")
+objet = ExtResource("croix")
+quantite = 1
+poids = 1.0
+
+[resource]
+script = ExtResource("depart")
+nom = "Le Manège"
+description = "La route du nord passe sur une plaque tournante : toutes les deux vagues, le manège tourne et la route part de l’autre côté. Une seconde route, fixe, arrive du sud."
+terrain = Rect2i(-5, -5, 11, 11)
+chemins = Array[Vector2i]([Vector2i(0, -1), Vector2i(0, -2), Vector2i(0, -3), Vector2i(0, 1), Vector2i(0, 2), Vector2i(0, 3), Vector2i(0, 4), Vector2i(0, 5)])
+horloge = Vector2i(0, 0)
+reserve = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_croix")])
+decors = Dictionary[Vector2i, StringName]({Vector2i(-5, 5): &"decor_bosquet", Vector2i(5, 5): &"decor_parterre", Vector2i(-5, 1): &"decor_caisses", Vector2i(5, 1): &"decor_rocher", Vector2i(-2, -5): &"decor_parterre", Vector2i(2, -5): &"decor_parterre", Vector2i(0, -5): &"decor_bosquet", Vector2i(3, 3): &"decor_mare", Vector2i(-3, 3): &"decor_bosquet"})
+variante_a = Array[Vector2i]([Vector2i(-1, -3), Vector2i(-2, -3), Vector2i(-3, -3), Vector2i(-4, -3), Vector2i(-4, -4), Vector2i(-4, -5)])
+variante_b = Array[Vector2i]([Vector2i(1, -3), Vector2i(2, -3), Vector2i(3, -3), Vector2i(4, -3), Vector2i(4, -4), Vector2i(4, -5)])
+periode_variantes = 2
+dents_bonus = 1
+teinte_herbe = Color(1.04, 1.0, 0.9, 1)
+teinte_route = Color(1.06, 0.97, 0.9, 1)
+teinte_table = Color(1.1, 0.88, 0.86, 1)
+lumiere = Color(1.0, 0.95, 0.9, 1)
