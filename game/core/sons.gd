@@ -9,9 +9,11 @@ const DOSSIER := "res://assets/audio/"
 const REGLAGES := "user://reglages.cfg"
 const VOIES := 10
 ## Intervalle minimal entre deux lectures du même son (secondes) : évite la mitraillette quand 50 scarabées cassent.
-const ANTI_REPETITION := {&"scarabee_casse": 0.07, &"jouet_sort": 0.25, &"horloge_touchee": 0.3, &"rotation": 0.05}
+const ANTI_REPETITION := {&"scarabee_casse": 0.07, &"jouet_sort": 0.25, &"horloge_touchee": 0.3, &"rotation": 0.05,
+		&"tir_canon": 0.09, &"tir_mortier": 0.14, &"tir_carillon": 0.18, &"frappe": 0.11}
 ## Volume propre à chaque son (dB) : les sons fréquents restent discrets.
-const VOLUMES := {&"scarabee_casse": -14.0, &"jouet_sort": -12.0, &"clic": -8.0, &"ressorts": -4.0, &"rotation": -6.0}
+const VOLUMES := {&"scarabee_casse": -14.0, &"jouet_sort": -12.0, &"clic": -8.0, &"ressorts": -4.0, &"rotation": -6.0,
+		&"tir_canon": -13.0, &"tir_mortier": -11.0, &"tir_carillon": -15.0, &"frappe": -16.0}
 
 const MUSIQUE := &"Musique"
 const EFFETS := &"Effets"

@@ -163,5 +163,9 @@ func _physics_process(delta: float) -> void:
 	tourelles.avancer(dt, _source.plateau, _source.alimentees, sim)
 	_avancer_train(dt)
 	sim.avancer(dt)
+	# Choc des jouets au contact (P3-29, « sons de blocage ») : un « toc » de bois, espacé par l'anti-répétition.
+	if sim.frappes_melee > 0:
+		sim.frappes_melee = 0
+		Sons.jouer(&"frappe", 0.2)
 	if Run.phase == Run.Phase.VAGUE and directeur.est_terminee(sim):
 		Run.terminer_vague()

@@ -212,6 +212,21 @@ def main():
     for k in range(8):
         mixer(s, bois(260 + (k % 2) * 40, 0.08, 40, 0.5), 0.45 + k * 0.14, 0.55)
     ecrire("train", s)
+    # Tirs des tourelles (playtest 3, P3-29 « des impacts qui se sentent ») : très courts et discrets, ils se répètent.
+    # Canon : « pop » de bouchon (bois grave + souffle bref).
+    s = bois(210, 0.16, 30, 1.4)
+    mixer(s, bois(700, 0.05, 90, 0.8), 0.0, 0.35)
+    ecrire("tir_canon", s)
+    # Mortier : « boum » étouffé, plus grave et plus long, comme une balle de feutre lâchée dans une boîte.
+    s = bois(95, 0.32, 13, 1.0)
+    mixer(s, bois(160, 0.12, 35, 1.6), 0.0, 0.5)
+    ecrire("tir_mortier", s)
+    # Tourelle carillon : petit tintement clair (une seule cloche, bien plus léger que le coup de carillon).
+    ecrire("tir_carillon", note(hz("E6"), 0.55, 6.0, ((1, 1.0), (2.76, 0.3))))
+    # Choc au corps à corps : « toc » de bois clair très court (épée de bois sur carapace de laiton).
+    s = bois(1150, 0.07, 70, 0.9)
+    mixer(s, bois(2600, 0.03, 140, 0.3), 0.004, 0.3)
+    ecrire("frappe", s)
     # Début de vague : arpège montant + bloc de bois.
     s = melodie(["C5", "E5", "G5", "C6"], 0.11, 4.0, 0.9)
     mixer(s, bois(500, 0.2, 25), 0.0, 0.5)

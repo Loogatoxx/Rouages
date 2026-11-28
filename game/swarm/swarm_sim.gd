@@ -110,6 +110,9 @@ class Nuee:
 
 ## Fraction du chemin que les alliés peuvent parcourir sans cible.
 var garde_ratio: float = 1.0
+## Coups portés au corps à corps par les jouets depuis la dernière lecture (P3-29 : la partie en fait un petit
+## « toc » de bois ; la simulation ne joue aucun son elle-même).
+var frappes_melee: int = 0
 var _distance_max: int = 0
 var _camps: Array[Nuee] = [Nuee.new(), Nuee.new()]
 var _distances: Dictionary = {}
@@ -774,6 +777,8 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 				var bonus: float = _bouclier(cible) if camp == ALLIE else 0.0
 				adverse.vies[cible] -= adverse.modeles[cible].degats_recus(modele.degats, melee, bonus) * coups
 				adverse.touches[cible] = 0.12
+				if camp == ALLIE and melee:
+					frappes_melee += coups
 				if camp == ALLIE and modele.portee >= PORTEE_DISTANCE:
 					for coup: int in coups:
 						tir.emit(lieu, adversaires[cible])

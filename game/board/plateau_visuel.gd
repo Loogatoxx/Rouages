@@ -109,12 +109,16 @@ func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
 		precedent.kill()
 	# Impact visible selon la tourelle : onde bleue du carillon, souffle de l'obus, étincelle du boulet.
 	var piece: PieceDef = _source.plateau.piece_de(case)
+	# Et un son court par famille (P3-29) : tintement, « boum » étouffé ou « pop » de bouchon, discrets et espacés.
 	if piece != null and piece.ralentissement > 0.0:
 		_onde(arrivee, maxf(1.0, piece.zone_tir), Color(0.55, 0.78, 1.0, 0.75))
+		Sons.jouer(&"tir_carillon", 0.05)
 	elif piece != null and piece.zone_tir > 0.0:
 		_onde(arrivee, piece.zone_tir, Color(1.0, 0.9, 0.7, 0.85), 0.35)
+		Sons.jouer(&"tir_mortier", 0.08)
 	else:
 		_onde(arrivee, 0.5, Color(1.0, 0.95, 0.8, 0.9), 0.2)
+		Sons.jouer(&"tir_canon", 0.1)
 	var tete: Node3D = modele.find_child("Tete", true, false) as Node3D
 	var mobile: Node3D = tete if tete != null else modele
 	var repos: Vector3 = mobile.get_meta(&"echelle_repos", mobile.scale)
