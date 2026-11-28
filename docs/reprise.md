@@ -15,7 +15,7 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
      non traduits ; Piège à ressort ; Établi « Couronne de l'Horloge » et « Carillon huilé » ; film d'une vague.
   152 tests. Builds Mac et Windows réexportés le 2026-11-28 à 13 h (Mac relancé).
   **Reste** : PT-51 lot 4 (5 paliers « _n3 » : images Gemini puis Hyper3D — quota Gemini épuisé ce matin) ;
-  P3-43 vie ambiante (modèles animés) ; Le Rail trop dur pour le joueur automatique (0/6) ; joueur automatique qui
+  P3-43 vie ambiante (modèles animés) ; joueur automatique qui
   pose des Ponts (La Serre, Le Quai, Boîte à musique, Grand atelier non mesurées) ; P2-58 BD ; P2-56 chemins par
   segments ; cosmétiques (P2-40).
   **Attend Carlos** : jouer (le jeu a beaucoup changé) ; juger Le Rail, Le Quai, La Serre ; test Windows.
