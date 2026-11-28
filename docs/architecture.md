@@ -497,3 +497,12 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   presque : frein 0,8) ; `SwarmSim._tracer_couloirs` et `PlateauVisuel` ne traitent en Pont que les pièces `sur_route`
   qui ne sont pas des tourelles ; dessin de repli et vignette procédurale. Établi : `dent_horloge` (effet `dents`, déjà
   lu par `Run.dents`) et `carillon_huile` (effet `carillon`, lu par `Partie.sonner_carillon`).
+- **Cosmétiques** (P2-40, `game/board/cosmetiques_plateau.gd`) : améliorations d'Établi à un niveau, sans effet de jeu
+  (`effet` = `nappe`, `guirlande`, `lanternes`) ; `PlateauVisuel` crée le nœud hors headless et l'actualise à chaque
+  `plateau_modifie` (bornes du terrain). Formes procédurales (cylindres, prismes, sphères, shader vichy).
+- **BD des chapitres** (P2-58) : `ChapitreDef.bd` (Texture2D) + `bulles` (clés de traduction) ; `BdChapitre`
+  (`game/ui/bd_chapitre.gd`, CanvasLayer 8) : `montrer_si_nouvelle` au premier lancement (`Progression.bd_vue`),
+  `montrer_dans` pour « Revoir l'histoire ». Images JPG 1280 px dans `assets/bd/` (originaux hors dépôt).
+- **Sons de jeu** (P3-29) : `tir_canon`, `tir_mortier`, `tir_carillon` joués par `PlateauVisuel._sur_tir` ; `frappe`
+  joué par `Partie` d'après `SwarmSim.frappes_melee` (la simulation ne joue jamais de son).
+

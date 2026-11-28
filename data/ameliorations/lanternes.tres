@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"lanternes"
+nom = "Lanternes de veille"
+description = "Cosmétique : quatre lanternes de papier qui veillent aux coins de la maquette."
+chapitre_min = 2
+niveaux_max = 1
+prix = Array[int]([8])
+effet = &"lanternes"
+valeur_par_niveau = 1.0

@@ -62,6 +62,7 @@ var _rebond: Tween
 var _marqueurs: Node3D
 var _sol: Node3D
 var _gris: StandardMaterial3D = StandardMaterial3D.new()
+var _cosmetiques: Node3D
 
 
 func _ready() -> void:
@@ -84,6 +85,11 @@ func _ready() -> void:
 	# Micro-détails d'ambiance (poussière dorée, pétales) : seulement avec un vrai rendu, pas en headless.
 	if DisplayServer.get_name() != "headless":
 		add_child(preload("res://game/board/ambiance_plateau.gd").new())
+		# Cosmétiques achetés à l'Établi (P2-40) : nappe, guirlande, lanternes ; ils suivent les bornes du terrain.
+		_cosmetiques = preload("res://game/board/cosmetiques_plateau.gd").new()
+		add_child(_cosmetiques)
+		_placer_cosmetiques.call_deferred()
+		Events.plateau_modifie.connect(_placer_cosmetiques)
 
 
 # Les tirs viennent de la simulation de la partie (signal `tir`) ; le visuel ne fait que les montrer.
@@ -313,6 +319,11 @@ func _placer_objets_etabli() -> void:
 		var x: float = (est + objet[3]) if objet[1] > 0 else (ouest - objet[3])
 		# La table est à 0,25 m sous le dessus de l'herbe : les objets y reposent.
 		modele.position = Vector3(x, -0.25, lerpf(nord, sud, objet[2]))
+
+
+func _placer_cosmetiques() -> void:
+	if _cosmetiques != null and _source != null and _source.plateau != null:
+		_cosmetiques.actualiser(_source.plateau.coords_sols())
 
 
 # La scène d'ambiance est partagée ; ces réglages s'appliquent à la vue du plateau.

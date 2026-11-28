@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"guirlande"
+nom = "Guirlande de fanions"
+description = "Cosmétique : une guirlande de fanions pastel tendue autour de la maquette."
+chapitre_min = 1
+niveaux_max = 1
+prix = Array[int]([6])
+effet = &"guirlande"
+valeur_par_niveau = 1.0

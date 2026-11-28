@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmeliorationDef" format=3]
+
+[ext_resource type="Script" path="res://game/core/amelioration_def.gd" id="amelioration"]
+
+[resource]
+script = ExtResource("amelioration")
+id = &"nappe"
+nom = "Nappe à carreaux"
+description = "Cosmétique : une nappe à carreaux pastel sous la maquette."
+niveaux_max = 1
+prix = Array[int]([5])
+effet = &"nappe"
+valeur_par_niveau = 1.0
