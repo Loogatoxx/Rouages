@@ -52,3 +52,47 @@ func test_pas_de_retour_ligne_litteral_dans_les_cles() -> String:
 		if ligne.size() > 0 and ligne[0].contains("\\n"):
 			return "Entrée %d : la clé contient « \\n » en toutes lettres (utiliser un vrai retour à la ligne entre guillemets)." % numero
 	return ""
+
+
+## P3-32 : tout texte affiché (tr(...) du code, textes des scènes, noms et descriptions des données) a son entrée
+## dans le fichier de traductions. Les identifiants internes (minuscules et soulignés) ne sont pas des textes.
+func test_aucun_texte_sans_traduction() -> String:
+	var cles: Dictionary = {}
+	var fichier := FileAccess.open("res://traductions/textes.csv", FileAccess.READ)
+	while not fichier.eof_reached():
+		var ligne: PackedStringArray = fichier.get_csv_line()
+		if ligne.size() > 0:
+			cles[ligne[0]] = true
+	var manquants: PackedStringArray = []
+	var motif_tr := RegEx.create_from_string("\\btr\\(\"((?:[^\"\\\\]|\\\\.)*)\"\\)")
+	var motif_donnee := RegEx.create_from_string("(?m)^(?:nom|description|role|titre|recit) = \"((?:[^\"\\\\]|\\\\.)*)\"")
+	var motif_scene := RegEx.create_from_string("(?m)^(?:text|tooltip_text) = \"((?:[^\"\\\\]|\\\\.)*)\"")
+	var identifiant := RegEx.create_from_string("^[a-z0-9_]*$|^[\\d\\s%sdx×+/.:·—–()\\[\\]-]*$")
+	for chemin: String in _fichiers("res://game", ["gd", "tscn"]) + _fichiers("res://data", ["tres"]):
+		if chemin.contains("banc_nuees"):
+			continue  # outil de mesure, jamais montré au joueur
+		var texte: String = FileAccess.get_file_as_string(chemin)
+		var motif: RegEx = motif_donnee
+		if chemin.ends_with(".gd"):
+			motif = motif_tr
+		elif chemin.ends_with(".tscn"):
+			motif = motif_scene
+		if true:
+			for trouve: RegExMatch in motif.search_all(texte):
+				var cle: String = trouve.get_string(1).replace("\\n", "\n").replace("\\\"", "\"")
+				if cle != "" and identifiant.search(cle) == null and not cles.has(cle):
+					manquants.append("%s (%s)" % [cle.left(60), chemin.get_file()])
+	return "" if manquants.is_empty() else "Textes sans traduction : %s" % ", ".join(manquants.slice(0, 6))
+
+
+func _fichiers(dossier: String, extensions: Array) -> PackedStringArray:
+	var resultat := PackedStringArray()
+	var acces := DirAccess.open(dossier)
+	if acces == null:
+		return resultat
+	for sous: String in acces.get_directories():
+		resultat.append_array(_fichiers(dossier.path_join(sous), extensions))
+	for nom: String in acces.get_files():
+		if nom.get_extension() in extensions:
+			resultat.append(dossier.path_join(nom))
+	return resultat
