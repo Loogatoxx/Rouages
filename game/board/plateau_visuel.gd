@@ -626,6 +626,8 @@ func _reconstruire() -> void:
 			_marquer_plein(racine)
 		if piece.type == PieceDef.Type.ATELIER and _source.alimentees.has(c):
 			_planter_drapeau(c)
+			if DisplayServer.get_name() != "headless":
+				racine.add_child(_vapeur())
 		if piece.type == PieceDef.Type.ATELIER:
 			_ateliers[c] = racine
 		elif piece.type == PieceDef.Type.TOURELLE:
@@ -808,6 +810,42 @@ func _sur_carillon(point: Vector2) -> void:
 		var saut: Tween = _horloge.create_tween().set_trans(Tween.TRANS_SINE)
 		saut.tween_property(_horloge, "scale", Vector3(1.06, 0.94, 1.06), 0.06)
 		saut.tween_property(_horloge, "scale", Vector3.ONE, 0.2)
+
+
+# Vie ambiante (P3-43) : un filet de vapeur blanche s'échappe du toit d'un atelier alimenté, même pendant la pause.
+func _vapeur() -> CPUParticles3D:
+	var fumee := CPUParticles3D.new()
+	fumee.amount = 6
+	fumee.lifetime = 2.4
+	fumee.preprocess = 2.4
+	fumee.position = Vector3(0.35, 1.6, 0.2)
+	fumee.direction = Vector3(0.15, 1, 0)
+	fumee.spread = 12.0
+	fumee.gravity = Vector3(0.05, 0.25, 0)
+	fumee.initial_velocity_min = 0.25
+	fumee.initial_velocity_max = 0.4
+	fumee.scale_amount_min = 0.6
+	fumee.scale_amount_max = 1.1
+	var courbe := Curve.new()
+	courbe.add_point(Vector2(0, 0.4))
+	courbe.add_point(Vector2(1, 1.6))
+	fumee.scale_amount_curve = courbe
+	var boule := SphereMesh.new()
+	boule.radius = 0.1
+	boule.height = 0.2
+	boule.radial_segments = 8
+	boule.rings = 4
+	var blanc := StandardMaterial3D.new()
+	blanc.albedo_color = Color(1, 1, 1, 0.55)
+	blanc.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	blanc.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	boule.material = blanc
+	fumee.mesh = boule
+	var fondu := Gradient.new()
+	fondu.set_color(0, Color(1, 1, 1, 0.6))
+	fondu.set_color(1, Color(1, 1, 1, 0.0))
+	fumee.color_ramp = fondu
+	return fumee
 
 
 # Playtest 3 (postes de garde) : un petit fanion sur la route, là où l'escouade de cet atelier se range. Planté au

@@ -8,9 +8,60 @@ extends Node3D
 const PASTELS: Array[Color] = [Color("#F2B5C4"), Color("#F5DC8A"), Color("#B8E0B0"), Color("#FFF3DE")]
 
 
+## Papillons (playtest 3, « aucune vie ambiante ») : quelques ailes pastel qui volettent au-dessus de l'herbe.
+const NOMBRE_PAPILLONS := 5
+var _papillons: Array[Node3D] = []
+var _caps: PackedVector2Array = []
+var _temps: float = 0.0
+
+
 func _ready() -> void:
 	add_child(_poussiere())
 	add_child(_petales())
+	for k: int in NOMBRE_PAPILLONS:
+		_papillons.append(_papillon(PASTELS[k % PASTELS.size()]))
+		_caps.append(Vector2(randf_range(-9, 9), randf_range(-9, 9)))
+
+
+# Deux ailes plates articulées sur un corps minuscule ; l'ensemble est petit (40 cm d'envergure) pour rester un détail.
+func _papillon(couleur: Color) -> Node3D:
+	var corps := Node3D.new()
+	add_child(corps)
+	corps.position = Vector3(randf_range(-9, 9), randf_range(0.8, 1.6), randf_range(-9, 9))
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = couleur
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var forme := QuadMesh.new()
+	forme.size = Vector2(0.2, 0.16)
+	for cote: float in [-1.0, 1.0]:
+		var charniere := Node3D.new()
+		charniere.name = "Aile%d" % int(cote)
+		corps.add_child(charniere)
+		var aile := MeshInstance3D.new()
+		aile.mesh = forme
+		aile.material_override = mat
+		aile.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		aile.rotation.x = -PI / 2.0
+		aile.position = Vector3(0.1 * cote, 0, 0)
+		charniere.add_child(aile)
+	return corps
+
+
+# Chaque papillon vole vers un point au hasard en ondulant, puis en choisit un autre ; ses ailes battent.
+func _process(delta: float) -> void:
+	_temps += delta
+	for k: int in _papillons.size():
+		var papillon: Node3D = _papillons[k]
+		var ici := Vector2(papillon.position.x, papillon.position.z)
+		var cible: Vector2 = _caps[k]
+		if ici.distance_to(cible) < 0.4:
+			_caps[k] = Vector2(randf_range(-10, 10), randf_range(-10, 10))
+		var pas: Vector2 = ici.move_toward(cible, delta * 1.1)
+		papillon.position = Vector3(pas.x, 1.2 + 0.35 * sin(_temps * 1.7 + k), pas.y)
+		papillon.rotation.y = atan2(-(cible.x - ici.x), -(cible.y - ici.y))
+		var battement: float = 0.9 * sin(_temps * 16.0 + k * 1.3)
+		papillon.get_child(0).rotation.z = battement
+		papillon.get_child(1).rotation.z = -battement
 
 
 func _materiau(couleur: Color, additif: bool) -> StandardMaterial3D:
