@@ -125,7 +125,10 @@ func _point_souris() -> Vector2:
 	if camera == null or not vue.get_visible_rect().has_point(souris) or vue.gui_get_hovered_control() != null:
 		return Vector2.INF
 	var point: Variant = Plane(Vector3.UP, 0).intersects_ray(camera.project_ray_origin(souris), camera.project_ray_normal(souris))
-	return Vector2.INF if point == null else Vector2(point.x, point.z)
+	# Hors du plateau (sur l'établi) : pas de cible, la recharge n'est pas consommée (relecture T14c).
+	if point == null or not _source.plateau.a_sol(GrilleMonde.vers_case(point)):
+		return Vector2.INF
+	return Vector2(point.x, point.z)
 
 
 func _quitter_poste() -> void:
@@ -151,6 +154,7 @@ func _verifier_stock() -> void:
 func _choisir(id: StringName) -> void:
 	if id != &"":
 		_quitter_poste()
+		_quitter_carillon()  # relecture T14c : une pièce prise en main annule la visée
 	_panneau.fermer()
 	if _fantome != null:
 		_fantome.hide()

@@ -216,7 +216,8 @@ func _forme_de_repli(id: StringName, camp: int) -> ArrayMesh:
 func _forme_hyper3d(def: SwarmSim.UniteDef, camp: int) -> Mesh:
 	var nom: StringName = &"soldat" if def.id == &"soldat_remontoir" else def.id
 	var teinte: Color = Color.WHITE
-	if EMPRUNTS_H3D.has(nom):
+	# Un modèle propre (playtest 3 : taupe et porte-bouclier générés) passe avant l'emprunt.
+	if EMPRUNTS_H3D.has(nom) and not ResourceLoader.exists(MODELE_H3D % [nom, nom]):
 		teinte = EMPRUNTS_H3D[nom][1]
 		nom = EMPRUNTS_H3D[nom][0]
 	var chemin: String = MODELE_H3D % [nom, nom]

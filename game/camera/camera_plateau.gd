@@ -55,7 +55,7 @@ func _process(delta: float) -> void:
 	_secousse = maxf(0.0, _secousse - delta)
 	var mouvement: Vector2 = Input.get_vector("camera_gauche", "camera_droite", "camera_haut", "camera_bas")
 	_cible += Vector3(mouvement.x, 0, mouvement.y) * _cadre * 0.55 * delta
-	_cible = _cible.clamp(Vector3(-24, 0, -24), Vector3(24, 0, 24))
+	_cible = _cible.clamp(Vector3(-40, 0, -40), Vector3(40, 0, 40))
 	var tourner: float = Input.get_axis("camera_coucher", "camera_redresser")
 	if tourner != 0.0:
 		_inclinaison = clampf(_inclinaison + tourner * 45.0 * delta, INCLINAISON_MIN, INCLINAISON_MAX)

@@ -51,6 +51,8 @@ class Nuee:
 	## Ralentissement (playtest 3) : secondes restantes et part de vitesse retirée (1 = étourdi, ne frappe plus).
 	var ralentis := PackedFloat32Array()
 	var freins := PackedFloat32Array()
+	## Étourdissement (coup de carillon) : minuterie à part, que les ralentissements des tourelles ne prolongent pas.
+	var etourdis := PackedFloat32Array()
 	var choix := PackedInt64Array()
 	var modeles: Array[UniteDef] = []
 	## Atelier d'où sort chaque unité, et effectif vivant par atelier (plafond par bâtiment, playtest 2).
@@ -71,6 +73,7 @@ class Nuee:
 		recharges[i] = recharges[fin]
 		ralentis[i] = ralentis[fin]
 		freins[i] = freins[fin]
+		etourdis[i] = etourdis[fin]
 		choix[i] = choix[fin]
 		modeles[i] = modeles[fin]
 		var origine: Vector2i = origines[i]
@@ -83,6 +86,7 @@ class Nuee:
 		recharges.resize(fin)
 		ralentis.resize(fin)
 		freins.resize(fin)
+		etourdis.resize(fin)
 		choix.resize(fin)
 		modeles.pop_back()
 		origines.pop_back()
@@ -95,6 +99,7 @@ class Nuee:
 		recharges.clear()
 		ralentis.clear()
 		freins.clear()
+		etourdis.clear()
 		choix.clear()
 		modeles.clear()
 		origines.clear()
@@ -189,13 +194,14 @@ func _tracer_couloirs(plateau: Plateau) -> void:
 	_occupees.clear()
 	_ponts.clear()
 	for case: Vector2i in plateau.coords_pieces():
-		if not _distances.has(case):
+		# Un Pont posé sur l'eau se traverse (relecture T14c) : ce n'est pas un obstacle.
+		if not _distances.has(case) and not plateau.piece_de(case).sur_route:
 			_occupees[case] = true
-	# Décors et eau : les jouets les contournent comme des bâtiments.
+	# Décors et eau : les jouets les contournent comme des bâtiments (sauf l'eau enjambée par un Pont).
 	for case: Vector2i in plateau.coords_decors():
 		_occupees[case] = true
 	for case: Vector2i in plateau.coords_sols():
-		if plateau.sol_de(case) == Plateau.Sol.EAU:
+		if plateau.sol_de(case) == Plateau.Sol.EAU and plateau.piece_de(case) == null:
 			_occupees[case] = true
 	var demi: float = MAILLE / 2.0
 	var file: Array[Vector2i] = []
@@ -458,6 +464,7 @@ func ajouter(def: UniteDef, position: Vector2, origine: Vector2i = SANS_ORIGINE)
 	nuee.recharges.append(0.0)
 	nuee.ralentis.append(0.0)
 	nuee.freins.append(0.0)
+	nuee.etourdis.append(0.0)
 	nuee.choix.append(randi() if def.camp == ALLIE else 0)
 	nuee.modeles.append(def)
 	nuee.rayon_max = maxf(nuee.rayon_max, def.rayon)
@@ -505,6 +512,11 @@ func _freiner(ennemis: Nuee, i: int, frein: float, duree: float) -> void:
 	if ennemis.modeles[i].boss:
 		frein *= 0.5
 		duree *= 0.5
+	# Étourdissement (frein plein) : minuterie séparée. Relecture T14c : sinon un carillon voisin, qui ralentit toutes
+	# les 1,25 s, prolongeait sans fin le « frein maximal » laissé par le coup du joueur.
+	if frein >= 0.99:
+		ennemis.etourdis[i] = maxf(ennemis.etourdis[i], duree)
+		return
 	if ennemis.ralentis[i] <= 0.0:
 		ennemis.freins[i] = frein
 	else:
@@ -524,9 +536,13 @@ func ralentir_zone(centre: Vector2, rayon: float, frein: float, duree: float) ->
 	return touches_zone
 
 
-## Secondes de ralentissement restantes pour chaque unité du camp (pour teinter les ennemis ralentis).
+## Secondes de ralentissement restantes pour chaque unité du camp (pour teinter les ennemis ralentis ou étourdis).
 func ralentis(camp: int) -> PackedFloat32Array:
-	return _camps[camp].ralentis
+	var nuee: Nuee = _camps[camp]
+	var resultat: PackedFloat32Array = nuee.ralentis.duplicate()
+	for i: int in resultat.size():
+		resultat[i] = maxf(resultat[i], nuee.etourdis[i])
+	return resultat
 
 
 func _bouclier(i: int) -> float:
@@ -630,6 +646,10 @@ func avancer(dt: float) -> void:
 
 	for nuee: Nuee in _camps:
 		_separer(nuee, dt)
+		# Un étourdi ne bouge pas, même poussé par ses voisins (relecture T14c).
+		for i: int in nuee.etourdis.size():
+			if nuee.etourdis[i] > 0.0:
+				nuee.suivants[i] = nuee.lieux[i]
 		_contenir(nuee)
 		nuee.lieux = nuee.suivants
 	for camp: int in [ALLIE, ENNEMI]:
@@ -662,6 +682,8 @@ func _indexer(nuee: Nuee, dt: float) -> void:
 			nuee.touches[i] = maxf(0.0, nuee.touches[i] - dt)
 		if nuee.ralentis[i] > 0.0:
 			nuee.ralentis[i] = maxf(0.0, nuee.ralentis[i] - dt)
+		if nuee.etourdis[i] > 0.0:
+			nuee.etourdis[i] = maxf(0.0, nuee.etourdis[i] - dt)
 		var lieu: Vector2 = nuee.lieux[i]
 		var case := Vector2i((lieu / MAILLE).floor())
 		var cellule: Cellule = nuee.grille.get(case)
@@ -722,11 +744,11 @@ func _decider(camp: int, i: int, cibles: Array, dt: float) -> void:
 	var recharge: float = nuee.recharges[i]
 	# Ralentissement (carillon) : l'unité avance moins vite ; étourdie (frein ≥ 1), elle ne bouge ni ne frappe.
 	var allure: float = 1.0
+	if nuee.etourdis[i] > 0.0:
+		nuee.recharges[i] = maxf(0.0, recharge - dt)
+		return
 	if nuee.ralentis[i] > 0.0:
 		allure = maxf(0.0, 1.0 - nuee.freins[i])
-		if allure <= 0.01:
-			nuee.recharges[i] = maxf(0.0, recharge - dt)
-			return
 	# Un boss est frappé à son bord : sinon son grand rayon (séparation) tiendrait les jouets hors de portée.
 	var allonge: float = modele.portee
 	if cible >= 0 and adverse.modeles[cible].boss:

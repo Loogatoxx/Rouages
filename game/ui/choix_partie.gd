@@ -245,12 +245,16 @@ func _actualiser() -> void:
 	var entrees: int = ChampFlux.entrees(plateau, ChampFlux.calculer(plateau)).size()
 	var lignes := PackedStringArray()
 	lignes.append(tr("Entrées des ennemis : %d") % entrees)
-	lignes.append(tr("Énergie de l’Horloge au départ : %d dents") % (Run.regles.dents_depart + depart.dents_bonus))
+	if _mode == 2:
+		lignes.append(tr("Énergie de l’Horloge : illimitée (bac à sable)"))
+	else:
+		lignes.append(tr("Énergie de l’Horloge au départ : %d dents") % (Run.regles.dents_depart + depart.dents_bonus))
 	var speciaux := PackedStringArray()
 	for ennemi: Resource in depart.ennemis_speciaux:
 		speciaux.append(tr(ennemi.nom))
 	if not speciaux.is_empty():
 		lignes.append(tr("Ennemis propres à cette carte : %s") % ", ".join(speciaux))
 	var record_carte: int = Progression.record(depart.nom, _difficulte)
-	lignes.append(tr("Record : %d / %d") % [record_carte, vagues] if record_carte > 0 else tr("Pas encore de record ici."))
+	# Le record est partagé entre Classique et Longue route : on l'écrit sans dénominateur (relecture T14c).
+	lignes.append(tr("Record : %d vagues tenues") % record_carte if record_carte > 0 else tr("Pas encore de record ici."))
 	_faits.text = "\n".join(lignes)

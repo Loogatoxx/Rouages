@@ -325,8 +325,8 @@ logique) · **Codex** (code délégué par fiche, relecture) · **Gemini** (icô
 | P2-58 | Lore en BD (3-4 cases par chapitre) | Fable → Gemini | quota Gemini |
 | P2-22 | Chasse au texte continue, distinction des éléments du plateau | Fable + Gemini | avec P3-32 |
 | P2-11 | Vitrine de l'écran titre à revoir | Fable | avec P3-30 |
-| PT-51 | Lot 2 Hyper3D : carillon et mortier | Gemini → Carlos → Hyper3D | 🟡 images générées le 2026-11-27 (`art_refs/hyper3d/lot2/tourelle_carillon.png`, `tourelle_mortier.png`) : **attendent la validation de Carlos** avant la génération 3D (1 crédit pour les deux) |
-| PT-51b | Pont Hyper3D (tablier dans le sens de la route, arche pour l'arbre) | Gemini → Carlos → Hyper3D | après PT-51 |
+| PT-51 | Lot 2 Hyper3D : carillon et mortier | Gemini → Hyper3D | ✅ générés le 2026-11-28 et en jeu (le mortier pivote par sa tête) ; lot 3 aussi : taupe, porte-bouclier, Pont, Générateur |
+| PT-51b | Pont Hyper3D (tablier dans le sens de la route) | Gemini → Hyper3D | ✅ en jeu (tablier orienté et aplati à la hauteur du relief des unités) |
 | PT-53 | Animations générées (marche, tir, ateliers, horloge) | Hyper3D + Gemini | PT-51 |
 | PT-54 | Micro-décors 3D | Gemini | quota Gemini ; sert P3-42 |
 

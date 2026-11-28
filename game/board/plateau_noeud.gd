@@ -8,6 +8,8 @@ var plateau: Plateau
 var alimentees: Dictionary = {}
 ## Bâtiments reliés à un générateur plein : éteints, signalés par le visuel (playtest 3).
 var surcharge: Array[Vector2i] = []
+## Ceux que l'Horloge n'a pas pu servir (la jauge du HUD ne rougit que pour eux, pas pour un générateur plein).
+var surcharge_horloge: Array[Vector2i] = []
 ## Tic-tac : dents de l'Horloge (-1 = illimitées) et dents consommées, lues par le HUD.
 var dents: int = -1
 var charge_horloge: int = 0
@@ -54,5 +56,6 @@ func _actualiser() -> void:
 			Sons.jouer(&"horloge_touchee")
 			break
 	surcharge = bilan.surcharge
+	surcharge_horloge = bilan.surcharge_horloge
 	Events.plateau_modifie.emit()
 	Events.energie_recalculee.emit(alimentees.keys())

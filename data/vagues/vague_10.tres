@@ -19,6 +19,6 @@ nombre = 36
 intervalle = 0.85
 multiplicateur_pv = 5.4
 boss = ExtResource("boss")
-pv_boss_facteur = 0.5
+pv_boss_facteur = 0.35
 groupe = 7
 multiplicateur_degats = 1.8

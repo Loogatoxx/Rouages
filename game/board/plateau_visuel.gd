@@ -9,6 +9,7 @@ const Extension = preload("res://game/board/extension.gd")
 const ChampFlux = preload("res://game/swarm/champ_flux.gd")
 const Materiaux = preload("res://game/core/materiaux.gd")
 const DecoupeTourelle = preload("res://game/board/decoupe_tourelle.gd")
+const SwarmSim = preload("res://game/swarm/swarm_sim.gd")
 const MODELE_HORLOGE := "res://assets/final/horloge/horloge.glb"
 
 # Masques des rigoles mesurées sur les socles exportés (N, E, S, O).
@@ -17,7 +18,7 @@ const PORTS_DU_KIT := {&"engrenage_droit": 5, &"engrenage_coude": 3, &"engrenage
 const VOISINS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 ## Tourelles dont la tête pivote seule (playtest 3) : [seuil de coupe (fraction de la hauteur), découpe par morceaux,
 ## le fût regarde vers +Z dans le modèle]. Une tourelle absente d'ici ne pivote pas (le carillon est un clocher).
-const TETES := {&"tourelle_canon": [0.2, false, true], &"tourelle_mortier": [0.5, true, true]}
+const TETES := {&"tourelle_canon": [0.2, false, true], &"tourelle_mortier": [0.22, false, true]}
 static var _decoupes: Dictionary[StringName, DecoupeTourelle.Decoupe] = {}
 const ECHELLE_PLATEAU := GrilleMonde.TAILLE_CASE / 2.0
 
@@ -53,6 +54,11 @@ func _ready() -> void:
 	Events.horloge_touchee.connect(_sur_horloge_touchee)
 	Events.carillon_sonne.connect(_sur_carillon)
 	Events.phase_changee.connect(_montrer_maree)
+	# Une extension peut changer les entrées : la marée et les objets d'établi suivent (relecture T14c).
+	Events.plateau_modifie.connect(func() -> void:
+		if Run.depart.maree and Run.phase == Run.Phase.CONSTRUCTION:
+			_montrer_maree(Run.phase, false)
+		_placer_objets_etabli())
 	Events.plateau_modifie.connect(_actualiser)
 	Events.energie_recalculee.connect(_energie)
 	_poser_table()
@@ -142,6 +148,22 @@ func _separer_tete(modele: Node3D, id: StringName) -> void:
 static var _tablier_degage: Mesh
 
 func _amenager_pont(modele: Node3D) -> void:
+	# Pont Hyper3D (playtest 3) : son tablier long est tourné dans le sens de la route (perpendiculaire aux ports,
+	# qui regardent l'herbe des deux côtés), et sa hauteur est calée sur celle où marchent les unités.
+	if modele.get_meta(&"face_plus_z", false):
+		var volume: MeshInstance3D = _premier_maillage(modele)
+		if volume != null:
+			var boite: AABB = volume.mesh.get_aabb()
+			if boite.size.x > boite.size.z:
+				var pivot := Node3D.new()
+				pivot.rotation.y = PI / 2.0
+				modele.add_child(pivot)
+				volume.reparent(pivot, false)
+			# Hauteur du tablier : on aplatit le modèle pour que son dessus soit à la hauteur du relief des unités.
+			var hauteur: float = boite.size.y * volume.scale.y
+			if hauteur > 0.01:
+				modele.scale.y = clampf(SwarmSim.HAUTEUR_PONT * 1.15 / hauteur, 0.4, 1.6)
+		return
 	var structure := modele.find_child("Pont_Structure", true, false) as MeshInstance3D
 	var arbre := modele.find_child("Arbre_Engrenage", true, false) as Node3D
 	if structure == null or arbre == null:
@@ -191,21 +213,44 @@ const OBJETS_ETABLI := [
 	[&"table_carnet", -1, 0.92, 8.0, 12.0], [&"table_tournevis", 1, 0.48, 9.5, 80.0],
 ]
 
+var _objets_etabli: Array[Node3D] = []
+var _bornes_etabli: Rect2i
+
 func _poser_objets_etabli() -> void:
-	var terrain: Rect2i = Run.depart.terrain
-	var ouest: float = (terrain.position.x - 0.5) * GrilleMonde.TAILLE_CASE
-	var est: float = (terrain.end.x - 0.5) * GrilleMonde.TAILLE_CASE
-	var nord: float = (terrain.position.y - 0.5) * GrilleMonde.TAILLE_CASE
-	var sud: float = (terrain.end.y - 0.5) * GrilleMonde.TAILLE_CASE
 	for objet: Array in OBJETS_ETABLI:
 		var modele: Node3D = _instancier(objet[0])
+		if modele != null:
+			add_child(modele)
+			modele.rotation.y = deg_to_rad(objet[4])
+		_objets_etabli.append(modele)
+	_placer_objets_etabli.call_deferred()
+
+
+# Place les objets d'après les bornes ACTUELLES du terrain (une extension peut l'agrandir vers un objet).
+func _placer_objets_etabli() -> void:
+	if _source == null or _source.plateau == null or _objets_etabli.is_empty():
+		return
+	var mini := Vector2i(1 << 20, 1 << 20)
+	var maxi := Vector2i(-(1 << 20), -(1 << 20))
+	for case: Vector2i in _source.plateau.coords_sols():
+		mini = mini.min(case)
+		maxi = maxi.max(case)
+	var bornes := Rect2i(mini, maxi - mini + Vector2i.ONE)
+	if bornes == _bornes_etabli:
+		return
+	_bornes_etabli = bornes
+	var ouest: float = (bornes.position.x - 0.5) * GrilleMonde.TAILLE_CASE
+	var est: float = (bornes.end.x - 0.5) * GrilleMonde.TAILLE_CASE
+	var nord: float = (bornes.position.y - 0.5) * GrilleMonde.TAILLE_CASE
+	var sud: float = (bornes.end.y - 0.5) * GrilleMonde.TAILLE_CASE
+	for k: int in OBJETS_ETABLI.size():
+		var modele: Node3D = _objets_etabli[k]
 		if modele == null:
 			continue
-		add_child(modele)
+		var objet: Array = OBJETS_ETABLI[k]
 		var x: float = (est + objet[3]) if objet[1] > 0 else (ouest - objet[3])
 		# La table est à 0,25 m sous le dessus de l'herbe : les objets y reposent.
 		modele.position = Vector3(x, -0.25, lerpf(nord, sud, objet[2]))
-		modele.rotation.y = deg_to_rad(objet[4])
 
 
 # La scène d'ambiance est partagée ; ces réglages s'appliquent à la vue du plateau.
@@ -611,7 +656,7 @@ func _onde(point: Vector2, rayon: float, couleur: Color, duree: float = 0.45) ->
 
 # Marée (carte « Le Quai ») : les routes par où la prochaine vague n'arrivera PAS sont recouvertes d'un voile d'eau,
 # et un bandeau dit par où elle vient. Recalculé à chaque changement de phase.
-func _montrer_maree(phase: int) -> void:
+func _montrer_maree(phase: int, annoncer: bool = true) -> void:
 	if _voile_maree != null:
 		_voile_maree.queue_free()
 		_voile_maree = null
@@ -653,7 +698,7 @@ func _montrer_maree(phase: int) -> void:
 		if not seches.has(case):
 			var flaque: MeshInstance3D = _ajouter_forme(_voile_maree, nappe, GrilleMonde.vers_monde(case) + Vector3.UP * 0.06, eau)
 			flaque.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	if phase == Run.Phase.CONSTRUCTION and not ouvertes.is_empty():
+	if annoncer and phase == Run.Phase.CONSTRUCTION and not ouvertes.is_empty():
 		var ecart: Vector2i = ouvertes[0] - Run.depart.horloge
 		var cote: String = ("l’est" if ecart.x > 0 else "l’ouest") if absi(ecart.x) >= absi(ecart.y) else ("le sud" if ecart.y > 0 else "le nord")
 		Events.message_joueur.emit(tr("Marée : la vague %d arrivera par %s.") % [numero, tr(cote)])

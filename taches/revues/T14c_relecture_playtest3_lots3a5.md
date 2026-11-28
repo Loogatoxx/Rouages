@@ -1,0 +1,15 @@
+1. **High · bloquant** — [swarm_sim.gd:511](/Users/carlos/Developer/Rouages/game/swarm/swarm_sim.gd:511) Une tourelle recharge 1,5 s de ralentissement toutes les 1,25 s en conservant le frein maximal. Après le coup du joueur, sa cible peut rester étourdie indéfiniment. Séparer les deux minuteries.
+2. **Medium · moyen** — [swarm_sim.gd:199](/Users/carlos/Developer/Rouages/game/swarm/swarm_sim.gd:199) Sur la Serre, un Pont posé sur l’eau reste infranchissable aux jouets. Ouvrir son tablier dans le parcours allié.
+3. **Medium · moyen** — [pose_controleur.gd:153](/Users/carlos/Developer/Rouages/game/board/pose_controleur.gd:153) Choisir une tuile pendant la visée affiche son fantôme, mais le clic suivant sonne. Quitter la visée à la sélection.
+4. **Medium · moyen** — [pose_controleur.gd:128](/Users/carlos/Developer/Rouages/game/board/pose_controleur.gd:128) Cliquer sur l’établi hors plateau consomme la recharge. Vérifier `plateau.a_sol()` sur la case projetée.
+5. **Medium · moyen** — [plateau_visuel.gd:55](/Users/carlos/Developer/Rouages/game/board/plateau_visuel.gd:55) Sur le Quai, une extension peut changer l’entrée annoncée sans rafraîchir le voile. Actualiser la marée après recalcul des entrées en construction.
+6. **Medium · moyen** — [swarm_sim.gd:905](/Users/carlos/Developer/Rouages/game/swarm/swarm_sim.gd:905) Deux ennemis étourdis qui se chevauchent continuent de se repousser. Appliquer la séparation aux unités mobiles.
+7. **Low · mineur** — [choix_partie.gd:255](/Users/carlos/Developer/Rouages/game/ui/choix_partie.gd:255) Après quinze vagues en Longue route, Classique affiche « 15 / 10 ». Afficher le record partagé sans dénominateur.
+8. **Low · mineur** — [choix_partie.gd:248](/Users/carlos/Developer/Rouages/game/ui/choix_partie.gd:248) Le bac à sable annonce une énergie limitée. Partager le calcul de `Run.dents` avec l’aperçu.
+9. **Low · mineur** — [hud.gd:214](/Users/carlos/Developer/Rouages/game/ui/hud.gd:214) Après réaffectation, l’infobulle indique toujours C. Afficher `Touches.nom_touche()`.
+10. **Low · mineur** — [plateau_visuel.gd:195](/Users/carlos/Developer/Rouages/game/board/plateau_visuel.gd:195) Des extensions vers l’est peuvent atteindre la bobine fixe. Replacer les accessoires selon les nouvelles limites.
+11. **Low · mineur** — [camera_plateau.gd:58](/Users/carlos/Developer/Rouages/game/camera/camera_plateau.gd:58) Au-delà de 24 m, une extension ne peut plus être centrée en vue de dessus. Borner le déplacement selon le terrain courant.
+
+**Rien à signaler** en lecture statique sur les tableaux parallèles, les frappes pendant l’étourdissement, les boss, les shaders, Échap, le verrouillage des chapitres, les actions et `%s` de l’aide, le cache des teintes et la libération des ondes.
+
+**Fichiers créés ou modifiés** · Aucun. **Reste à brancher** · Rien. **Écart** · Rapport livré ici, dépôt en lecture seule.

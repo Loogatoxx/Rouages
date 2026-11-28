@@ -232,3 +232,33 @@ func test_cartes_a_mecaniques() -> String:
 			if not ResourceLoader.exists("res://assets/final/kit_v2/%s/%s.glb" % [depart.decors[case], depart.decors[case]]):
 				return "%s : modèle de décor introuvable (%s)." % [depart.nom, depart.decors[case]]
 	return ""
+
+
+## Relecture T14c : un carillon qui ralentit sans cesse ne prolonge pas l'étourdissement du coup de carillon.
+func test_etourdissement_non_prolonge() -> String:
+	var plateau: Plateau = _plateau()
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	sim.ajouter(SCARABEE, Vector2(16, 0))
+	sim.ralentir_zone(Vector2(16, 0), 3.0, 1.0, 1.0)
+	# Pendant 3 s, un carillon le ralentit toutes les 0,5 s.
+	for pas: int in 90:
+		if pas % 15 == 0:
+			sim.blesser_zone(sim.positions(SwarmSim.ENNEMI)[0], 3.0, 0.01, 1.0, 0.35, 1.5)
+		sim.avancer(1.0 / 30.0)
+	var avant: Vector2 = sim.positions(SwarmSim.ENNEMI)[0]
+	return "" if avant.x < 15.5 else "L'étourdissement (1 s) ne doit pas durer 3 s : le scarabée doit avoir avancé, ralenti."
+
+
+## Relecture T14c : un Pont posé sur l'eau se traverse ; sans lui, l'eau bloque les jouets.
+func test_pont_sur_l_eau_praticable() -> String:
+	const PONT = preload("res://data/tuiles/pont.tres")
+	var plateau: Plateau = _plateau()
+	plateau.ajouter_sol(Vector2i(3, -2), Plateau.Sol.EAU)
+	var sim := SwarmSim.new()
+	sim.configurer(plateau)
+	if not sim._occupees.has(Vector2i(3, -2)):
+		return "L'eau nue doit bloquer les jouets."
+	plateau.poser(Vector2i(3, -2), PONT, 0)
+	sim.configurer(plateau)
+	return "" if not sim._occupees.has(Vector2i(3, -2)) else "Un Pont sur l'eau doit se traverser."

@@ -8,6 +8,7 @@ Budget initial : **44 crédits**. Toute génération exige une image validée pa
 | 2026-11-26 | horloge | 1 | T07b | **43** |
 | 2026-11-27 | lot 2 (3 bâtiments : atelier de soldats, atelier de lance-billes, canon), validé par Carlos | 0,5 par modèle | DEMANDE_LOT2 | voir le compteur du site |
 | 2026-11-27 | lot 1 (7 unités), validé par Carlos, généré par Claude sur le site (Gen-2.5, High) | 0,5 par modèle (géométrie + texture + export compris) | DEMANDE_LOT1 | voir le compteur du site |
+| 2026-11-28 | fin du lot 2 (carillon, mortier) + lot 3 (taupe, porte-bouclier, Pont, Générateur) : 6 modèles. Carlos : « j'autorise tout, utilise le nombre de crédits qu'il faut » | 3 | DEMANDE_LOT2, art_refs/hyper3d/lot3 | compteur du site 77 % → 68 % |
 
 ## Plan (PT-52, 2026-11-26)
 Lot 1 unités (7) · lot 2 bâtiments palier 1 (5) · lot 3 paliers 2-4 des 5 bâtiments (15) · lot 4 horloge (3) + décor

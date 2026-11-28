@@ -211,7 +211,7 @@ func _actualiser_carillon() -> void:
 	var attente: float = partie.carillon_attente if partie != null else 0.0
 	_bouton_carillon.text = "" if attente <= 0.0 else str(ceili(attente))
 	_bouton_carillon.modulate = Color.WHITE if attente <= 0.0 else Color(1, 1, 1, 0.6)
-	_bouton_carillon.tooltip_text = tr("Coup de carillon : clique ici puis sur la route pour étourdir les ennemis proches (touche C)") \
+	_bouton_carillon.tooltip_text = tr("Coup de carillon : clique ici puis sur la route pour étourdir les ennemis proches (touche %s)") % Touches.nom_touche(&"coup_carillon") \
 			if attente <= 0.0 else tr("Le carillon se remonte : encore %d s.") % ceili(attente)
 
 
@@ -239,7 +239,7 @@ func _actualiser_dents() -> void:
 		_plaque_dents.visible = false  # bac à sable : énergie illimitée
 		return
 	_plaque_dents.visible = true
-	var pleine: bool = not noeud.surcharge.is_empty()
+	var pleine: bool = not noeud.surcharge_horloge.is_empty()
 	_dents.text = "%d / %d" % [noeud.charge_horloge, noeud.dents]
 	_dents.add_theme_color_override(&"font_color", Color("#C0392B") if pleine else Color("#3B2A1A"))
 	_plaque_dents.tooltip_text = tr("Énergie de l’Horloge : %d dents utilisées sur %d.\nUn atelier en consomme 2, une petite tourelle 1. Les engrenages n’en consomment pas.\nL’Horloge gagne une dent après les vagues 2, 4, 6 et 8.") % [noeud.charge_horloge, noeud.dents]
