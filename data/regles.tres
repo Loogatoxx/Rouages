@@ -33,6 +33,7 @@
 [ext_resource type="Resource" path="res://data/extensions/carrefour.tres" id="carrefour"]
 [ext_resource type="Resource" path="res://data/extensions/virage.tres" id="virage"]
 [ext_resource type="Resource" path="res://data/extensions/grande_allee.tres" id="grande_allee"]
+[ext_resource type="Resource" path="res://data/extensions/epingle.tres" id="epingle"]
 [ext_resource type="Script" path="res://game/waves/vague_def.gd" id="vague"]
 [ext_resource type="Resource" path="res://data/vagues/vague_01.tres" id="vague_1"]
 [ext_resource type="Resource" path="res://data/vagues/vague_02.tres" id="vague_2"]
@@ -157,6 +158,13 @@ quantite = 1
 poids = 0.8
 vague_min = 5
 
+[sub_resource type="Resource" id="lot_epingle"]
+script = ExtResource("lot")
+objet = ExtResource("epingle")
+quantite = 1
+poids = 0.8
+vague_min = 4
+
 [sub_resource type="Resource" id="lot_piege"]
 script = ExtResource("lot")
 objet = ExtResource("piege")
@@ -241,7 +249,7 @@ multiplicateur_acceleration = 2.0
 choix_par_draft = 3
 vagues_coffre = Array[int]([3, 6, 9])
 coffre = Array[ExtResource("lot")]([SubResource("lot_canon"), SubResource("lot_carillon"), SubResource("lot_mortier"), SubResource("coffre_pont"), SubResource("coffre_generateur")])
-pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont"), SubResource("lot_piege"), SubResource("lot_virage"), SubResource("lot_grande_allee")])
+pioche = Array[ExtResource("lot")]([SubResource("lot_atelier"), SubResource("lot_droit"), SubResource("lot_coude"), SubResource("lot_t"), SubResource("lot_croix"), SubResource("lot_sentier"), SubResource("lot_carrefour"), SubResource("lot_billes"), SubResource("lot_pont"), SubResource("lot_piege"), SubResource("lot_virage"), SubResource("lot_grande_allee"), SubResource("lot_epingle")])
 ressorts_depart = 0
 recompense_vague = 6
 recompense_par_vague = 2

@@ -365,6 +365,15 @@ Cap et diagnostics : `docs/game_design_p3.md` (« Tenir la ligne »). Tâches : 
   le maillage une fois (par hauteur pour le canon Hyper3D, par morceaux d'un seul tenant pour le mortier du kit) en
   socle + nœud « Tete » centré sur son pivot. `_sur_tir` ne fait tourner que la tête ; une tourelle absente de
   `PlateauVisuel.TETES` (carillon) ne pivote pas. Un futur modèle Hyper3D s'ajoute par une ligne dans `TETES`.
+  La découpe est mémorisée **par modèle** (`_separer_tete(modele, id, nom_modele)`) : le palier `<id>_n3` a son
+  propre maillage et ne réutilise pas celle du niveau 1.
+- **Pièces mobiles** (P3-43, vie ambiante) : `DecoupeTourelle.extraire(maillage, zone, pivot_haut, reference)` détache
+  les triangles dont le centre tombe dans une zone (fractions de l'AABB du modèle) ; `PlateauVisuel.PIECES_MOBILES`
+  liste par modèle [nom, zone, pivot en haut, axe, mouvement]. Chaque pièce devient un nœud « Mobile<nom> » animé par
+  `_animer_mobiles` : « tic » (clé de remontoir, un huitième de tour par seconde, comme un échappement) ou « balance »
+  (cloche de l'Horloge, à la volée au coup de carillon). Horloge : toujours ; ateliers : seulement alimentés. En rendu
+  sans fenêtre la géométrie importée est illisible : rien n'est détaché. Ajouter une pièce = une ligne (vérifier la
+  zone avec un rendu orthographique du modèle). L'oiseau mécanique est procédural (`AmbiancePlateau`).
 - **Énergie** (P3-10/12, `Energie.analyser` → `Bilan`) : profondeur ≥ 0 = réseau de l'horloge, < 0 = réseau d'un
   générateur (énergie faible : `Placement._donne_bonus` refuse les bonus d'engrenage). Générateur : chaîne de
   `portee_generateur` pièces, capacité en dents (`cout_energie` par bâtiment, 1 pour l'instant) servie **dans l'ordre

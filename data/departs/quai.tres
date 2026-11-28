@@ -53,4 +53,4 @@ teinte_herbe = Color(1.22, 1.03, 0.78, 1)
 teinte_route = Color(0.74, 0.82, 0.96, 1)
 teinte_table = Color(0.82, 0.9, 1.0, 1)
 lumiere = Color(0.96, 0.99, 1.0, 1)
-dents_bonus = 1
+dents_bonus = 2

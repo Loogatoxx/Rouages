@@ -252,6 +252,8 @@ func _notification(quoi: int) -> void:
 
 
 func _lancer_chapitre() -> void:
+	# Premier lancement du chapitre : sa BD d'abord (P2-58).
+	await (load("res://game/ui/bd_chapitre.gd") as GDScript).montrer_si_nouvelle(self, Run.regles.chapitres[_chapitre])
 	Run.preparer_chapitre(_chapitre)
 	commencer_partie(get_tree())
 

@@ -13,27 +13,18 @@ class Decoupe:
 	var socle: ArrayMesh
 	var tete: ArrayMesh
 	var pivot: Vector3
+	## Bornes de la tête (repère du maillage).
+	var mini: Vector3
+	var maxi: Vector3
 
 
 ## Découpe `maillage` ; renvoie null s'il n'y a rien à séparer (tête ou socle vide).
 static func decouper(maillage: Mesh, seuil: float, morceaux: bool) -> Decoupe:
-	if maillage == null or maillage.get_surface_count() == 0:
+	var surfaces: Array[Array] = _lire_surfaces(maillage)
+	if surfaces.is_empty():
 		return null
 	var boite: AABB = maillage.get_aabb()
 	var limite: float = boite.position.y + boite.size.y * seuil
-	var surfaces: Array[Array] = []
-	for s: int in maillage.get_surface_count():
-		var tableaux: Array = maillage.surface_get_arrays(s)
-		var sommets: PackedVector3Array = tableaux[Mesh.ARRAY_VERTEX]
-		if sommets.is_empty():
-			return null  # rendu factice (sans fenêtre) : pas de géométrie à lire
-		if tableaux[Mesh.ARRAY_INDEX] == null or (tableaux[Mesh.ARRAY_INDEX] as PackedInt32Array).is_empty():
-			var suite := PackedInt32Array()
-			suite.resize(sommets.size())
-			for i: int in sommets.size():
-				suite[i] = i
-			tableaux[Mesh.ARRAY_INDEX] = suite
-		surfaces.append(tableaux)
 	# Pour chaque triangle : va-t-il dans la tête ?
 	var choix: Array[PackedByteArray] = []
 	if morceaux:
@@ -48,6 +39,82 @@ static func decouper(maillage: Mesh, seuil: float, morceaux: bool) -> Decoupe:
 				var hauteur: float = (sommets[indices[t * 3]].y + sommets[indices[t * 3 + 1]].y + sommets[indices[t * 3 + 2]].y) / 3.0
 				dans_tete[t] = 1 if hauteur > limite else 0
 			choix.append(dans_tete)
+	var resultat: Decoupe = _separer(maillage, surfaces, choix)
+	if resultat == null:
+		return null
+	var mini: Vector3 = resultat.mini
+	var maxi: Vector3 = resultat.maxi
+	# Pivot : centre de la base de la tête (les sommets du premier cinquième de sa hauteur), au niveau de la coupe.
+	var plancher: float = mini.y + (maxi.y - mini.y) * 0.2
+	var somme := Vector3.ZERO
+	var compte: int = 0
+	for s: int in surfaces.size():
+		var sommets: PackedVector3Array = surfaces[s][Mesh.ARRAY_VERTEX]
+		var indices: PackedInt32Array = surfaces[s][Mesh.ARRAY_INDEX]
+		for t: int in choix[s].size():
+			if choix[s][t] == 0:
+				continue
+			for k: int in 3:
+				var sommet: Vector3 = sommets[indices[t * 3 + k]]
+				if sommet.y <= plancher:
+					somme += sommet
+					compte += 1
+	resultat.pivot = somme / compte if compte > 0 else (mini + maxi) / 2.0
+	resultat.pivot.y = 0.0
+	return resultat
+
+
+## Extrait d'un modèle d'un seul bloc la pièce dont les triangles ont leur centre dans `zone` (fractions de l'AABB du
+## maillage, de 0 à 1) : clé de remontoir, cloche (P3-43, vie ambiante). Pivot : centre de la pièce, ou milieu de son
+## sommet si `pivot_haut` (une cloche se balance depuis son anse). Renvoie null sans géométrie lisible ou zone vide.
+static func extraire(maillage: Mesh, zone: AABB, pivot_haut: bool = false, reference: AABB = AABB()) -> Decoupe:
+	var surfaces: Array[Array] = _lire_surfaces(maillage)
+	if surfaces.is_empty():
+		return null
+	# `reference` : boîte d'origine du modèle, pour enchaîner plusieurs extractions sur le même socle.
+	var totale: AABB = reference if reference.has_volume() else maillage.get_aabb()
+	var cadre := AABB(totale.position + zone.position * totale.size, zone.size * totale.size)
+	var choix: Array[PackedByteArray] = []
+	for tableaux: Array in surfaces:
+		var sommets: PackedVector3Array = tableaux[Mesh.ARRAY_VERTEX]
+		var indices: PackedInt32Array = tableaux[Mesh.ARRAY_INDEX]
+		var dans_piece := PackedByteArray()
+		dans_piece.resize(indices.size() / 3)
+		for t: int in dans_piece.size():
+			var centre: Vector3 = (sommets[indices[t * 3]] + sommets[indices[t * 3 + 1]] + sommets[indices[t * 3 + 2]]) / 3.0
+			dans_piece[t] = 1 if cadre.has_point(centre) else 0
+		choix.append(dans_piece)
+	var resultat: Decoupe = _separer(maillage, surfaces, choix)
+	if resultat == null:
+		return null
+	resultat.pivot = (resultat.mini + resultat.maxi) / 2.0
+	if pivot_haut:
+		resultat.pivot.y = resultat.maxi.y
+	return resultat
+
+
+# Tableaux de chaque surface, indices complétés ; vide en rendu factice (sans fenêtre), où la géométrie est illisible.
+static func _lire_surfaces(maillage: Mesh) -> Array[Array]:
+	var surfaces: Array[Array] = []
+	if maillage == null:
+		return surfaces
+	for s: int in maillage.get_surface_count():
+		var tableaux: Array = maillage.surface_get_arrays(s)
+		var sommets: PackedVector3Array = tableaux[Mesh.ARRAY_VERTEX]
+		if sommets.is_empty():
+			return [] as Array[Array]
+		if tableaux[Mesh.ARRAY_INDEX] == null or (tableaux[Mesh.ARRAY_INDEX] as PackedInt32Array).is_empty():
+			var suite := PackedInt32Array()
+			suite.resize(sommets.size())
+			for i: int in sommets.size():
+				suite[i] = i
+			tableaux[Mesh.ARRAY_INDEX] = suite
+		surfaces.append(tableaux)
+	return surfaces
+
+
+# Répartit les triangles entre socle (0) et tête (1) selon `choix` ; null si l'une des deux moitiés est vide.
+static func _separer(maillage: Mesh, surfaces: Array[Array], choix: Array[PackedByteArray]) -> Decoupe:
 	var resultat := Decoupe.new()
 	resultat.socle = ArrayMesh.new()
 	resultat.tete = ArrayMesh.new()
@@ -78,23 +145,8 @@ static func decouper(maillage: Mesh, seuil: float, morceaux: bool) -> Decoupe:
 			cible.surface_set_material(cible.get_surface_count() - 1, maillage.surface_get_material(s))
 	if resultat.socle.get_surface_count() == 0 or resultat.tete.get_surface_count() == 0:
 		return null
-	# Pivot : centre de la base de la tête (les sommets du premier cinquième de sa hauteur), au niveau de la coupe.
-	var plancher: float = mini.y + (maxi.y - mini.y) * 0.2
-	var somme := Vector3.ZERO
-	var compte: int = 0
-	for s: int in surfaces.size():
-		var sommets: PackedVector3Array = surfaces[s][Mesh.ARRAY_VERTEX]
-		var indices: PackedInt32Array = surfaces[s][Mesh.ARRAY_INDEX]
-		for t: int in choix[s].size():
-			if choix[s][t] == 0:
-				continue
-			for k: int in 3:
-				var sommet: Vector3 = sommets[indices[t * 3 + k]]
-				if sommet.y <= plancher:
-					somme += sommet
-					compte += 1
-	resultat.pivot = somme / compte if compte > 0 else (mini + maxi) / 2.0
-	resultat.pivot.y = 0.0
+	resultat.mini = mini
+	resultat.maxi = maxi
 	return resultat
 
 

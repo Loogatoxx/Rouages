@@ -20,7 +20,8 @@ const ENNEMIS := {&"scarabee": [&"scarabee", Color.TRANSPARENT], &"fourmi": [&"f
 const EXTENSIONS := {&"extension_sentier": "res://data/extensions/sentier.tres",
 		&"extension_carrefour": "res://data/extensions/carrefour.tres",
 		&"extension_virage": "res://data/extensions/virage.tres",
-		&"extension_grande_allee": "res://data/extensions/grande_allee.tres"}
+		&"extension_grande_allee": "res://data/extensions/grande_allee.tres",
+		&"extension_epingle": "res://data/extensions/epingle.tres"}
 
 
 func _init() -> void:

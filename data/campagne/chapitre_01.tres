@@ -6,6 +6,9 @@
 [ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="deb_atelier_soldats"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_droit.tres" id="deb_engrenage_droit"]
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_coude.tres" id="deb_engrenage_coude"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_01_1.jpg" id="bd_1"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_01_2.jpg" id="bd_2"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_01_3.jpg" id="bd_3"]
 
 [resource]
 script = ExtResource("chapitre")
@@ -15,3 +18,5 @@ recit = "Déplie la prairie sur l’établi. Au centre du village, le tic-tac de
 depart = ExtResource("depart")
 difficulte = 0
 debloque = Array[Resource]([ExtResource("deb_atelier_soldats"), ExtResource("deb_engrenage_droit"), ExtResource("deb_engrenage_coude")])
+bd = Array[Texture2D]([ExtResource("bd_1"), ExtResource("bd_2"), ExtResource("bd_3")])
+bulles = PackedStringArray("L’atelier de Maître Anselme attend son retour.", "Tic… tac… L’Horloge-Mère bat encore.", "Et chaque tic-tac réveille un jouet.")

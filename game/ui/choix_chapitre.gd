@@ -10,6 +10,7 @@ signal ferme
 const Progression = preload("res://game/core/progression.gd")
 const Interface = preload("res://game/ui/menu_titre.gd")
 const Plan = preload("res://game/ui/choix_partie.gd").Plan
+const BdChapitre = preload("res://game/ui/bd_chapitre.gd")
 
 var _chapitre: int = 0
 var _boutons: Array[Button] = []
@@ -21,6 +22,7 @@ var _faits := Label.new()
 var _jouer := Button.new()
 var _difficile := Button.new()
 var _retour := Button.new()
+var _histoire := Button.new()
 var _panneau := PanelContainer.new()
 
 
@@ -90,6 +92,9 @@ func _ready() -> void:
 	_retour.custom_minimum_size = Vector2(180, 50)
 	_retour.pressed.connect(_fermer)
 	pied.add_child(_retour)
+	_histoire.custom_minimum_size = Vector2(220, 50)
+	_histoire.pressed.connect(_revoir_histoire)
+	pied.add_child(_histoire)
 	_jouer.custom_minimum_size = Vector2(280, 50)
 	_jouer.pressed.connect(_lancer.bind(false))
 	pied.add_child(_jouer)
@@ -120,8 +125,15 @@ func _choisir(i: int) -> void:
 
 
 func _lancer(difficile: bool) -> void:
+	# Premier lancement du chapitre : sa BD d'abord (P2-58).
+	await BdChapitre.montrer_si_nouvelle(self, Run.regles.chapitres[_chapitre])
 	Run.preparer_chapitre(_chapitre, difficile)
 	Interface.commencer_partie(get_tree())
+
+
+func _revoir_histoire() -> void:
+	await BdChapitre.montrer_dans(self, Run.regles.chapitres[_chapitre])
+	_boutons[_chapitre].grab_focus()
 
 
 func _unhandled_input(evenement: InputEvent) -> void:
@@ -168,6 +180,8 @@ func _actualiser() -> void:
 	_faits.text = "\n".join(lignes)
 	_jouer.text = tr("Jouer ce chapitre") if _chapitre >= finis else tr("Rejouer ce chapitre")
 	_jouer.disabled = _chapitre > finis
+	_histoire.text = tr("Revoir l’histoire")
+	_histoire.visible = not choisi.bd.is_empty() and _chapitre <= finis
 	_difficile.text = tr("Rejouer en Difficile")
 	_difficile.visible = _chapitre < finis
 	_difficile.tooltip_text = tr("Difficile : plus de PV ennemis, engrenages d’or ×1,5, un coffre de plus, +2 chance. Optionnel.")

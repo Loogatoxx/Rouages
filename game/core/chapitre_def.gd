@@ -15,3 +15,7 @@ const DepartDef = preload("res://game/core/depart_def.gd")
 ## Pièces débloquées à partir de ce chapitre (playtest 2 : le pool de départ est réduit, chaque chapitre en ajoute).
 ## Disponibles dans un chapitre = cumul des `debloque` des chapitres 1 à celui-ci ; annoncées en début de chapitre.
 @export var debloque: Array[Resource] = []
+## Lore en BD (P2-58, « façon Plants vs. Zombies ») : quelques cases illustrées montrées au premier lancement du
+## chapitre. Aucun texte dans les images ; la bulle de chaque case (même ordre) est traduite par `tr()`.
+@export var bd: Array[Texture2D] = []
+@export var bulles: PackedStringArray = []

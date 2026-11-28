@@ -474,6 +474,12 @@ func _poser_reserve(run: Node, plateau) -> void:
 				break
 		if not pose and _style == "tactique":
 			pose = _poser_engrenage(run, plateau, true, _prises_libres(plateau, Energie.calculer(plateau, run.dents)))
+		if not pose and _batiment_en_attente(run):
+			pose = _poser_pont(run, plateau)
+		# Dernier recours quand un bâtiment attend sa place : l'engrenage de la réserve (coude, T…) qui ouvre le plus
+		# de prises, faute d'engrenage en croix pour `_relier` (Grand atelier : la seule sortie de l'Horloge est au sud).
+		if not pose and _batiment_en_attente(run):
+			pose = _poser_engrenage(run, plateau, false, _prises_libres(plateau, Energie.calculer(plateau, run.dents)))
 		if not pose:
 			if OS.get_environment("CARTE") == "1":
 				for id: StringName in _batiments_a_poser(run, plateau):
@@ -597,6 +603,40 @@ func _relier(run: Node, plateau, cible: Vector2i) -> bool:
 		run.reserve.retirer(&"engrenage_croix")
 		return true
 	return false
+
+
+# Pont (Boîte à musique, Le Quai, La Serre : « au-delà, il faut un Pont ») : quand un bâtiment attend sa place, le
+# joueur jette le Pont de sa réserve sur la case de route (ou d'eau) qui ouvre le plus de nouvelles cases d'herbe au
+# réseau de l'Horloge. Au moins trois cases gagnées, sinon il le garde.
+func _poser_pont(run: Node, plateau) -> bool:
+	if run.reserve.quantite(&"pont") <= 0:
+		return false
+	var pont: Resource = run.reserve.trouver(&"pont")
+	var avant: int = _atteignables(plateau, run.dents).size()
+	if OS.get_environment("CARTE") == "1":
+		print("    essai de pont, atteignables ", avant)
+	var meilleur: Array = []
+	var gain_max: int = 2
+	for c: Vector2i in plateau.coords_sols():
+		if not plateau.peut_poser(c, pont):
+			continue
+		for r: int in 2:
+			var copie = plateau.dupliquer()
+			if not copie.poser(c, pont, r):
+				continue
+			var al: Dictionary = Energie.calculer(copie, run.dents)
+			if not al.has(c) or Energie.energie_faible(al, c):
+				continue
+			var gain: int = _atteignables(copie, run.dents).size() - avant
+			if OS.get_environment("CARTE") == "1":
+				print("    pont ", c, " r", r, " gain ", gain)
+			if gain > gain_max:
+				gain_max = gain
+				meilleur = [c, r]
+	if meilleur.is_empty() or not plateau.poser(meilleur[0], pont, meilleur[1]):
+		return false
+	run.reserve.retirer(&"pont")
+	return true
 
 
 # S'assure d'avoir un engrenage en croix en réserve : déjà là, fabriqué (2 engrenages droits) ou acheté.

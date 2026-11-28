@@ -21,3 +21,5 @@ export_credentials.cfg
 
 # Textures extraites du .glb par Godot à l'import (regénérées automatiquement ; incluses dans les builds)
 assets/final/horloge/horloge_texture_*
+# Originaux PNG des cases de BD (~3 Mo chacun) : le jeu utilise les JPG d'assets/bd/.
+art_refs/bd/

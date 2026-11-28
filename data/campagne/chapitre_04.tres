@@ -5,6 +5,9 @@
 
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_croix.tres" id="deb_engrenage_croix"]
 [ext_resource type="Resource" path="res://data/tuiles/generateur.tres" id="deb_generateur"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_04_1.jpg" id="bd_1"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_04_2.jpg" id="bd_2"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_04_3.jpg" id="bd_3"]
 
 [resource]
 script = ExtResource("chapitre")
@@ -15,3 +18,5 @@ depart = ExtResource("depart")
 difficulte = 1
 tiroirs = Array[int]([5])
 debloque = Array[Resource]([ExtResource("deb_engrenage_croix"), ExtResource("deb_generateur")])
+bd = Array[Texture2D]([ExtResource("bd_1"), ExtResource("bd_2"), ExtResource("bd_3")])
+bulles = PackedStringArray("Sous les vitres, le jardin d’hiver.", "Les libellules passent au-dessus des soldats.", "Un coup de carillon, et tout ralentit.")

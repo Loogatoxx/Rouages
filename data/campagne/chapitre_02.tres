@@ -5,6 +5,9 @@
 
 [ext_resource type="Resource" path="res://data/tuiles/engrenage_t.tres" id="deb_engrenage_t"]
 [ext_resource type="Resource" path="res://data/tuiles/tourelle_canon.tres" id="deb_tourelle_canon"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_02_1.jpg" id="bd_1"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_02_2.jpg" id="bd_2"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_02_3.jpg" id="bd_3"]
 
 [resource]
 script = ExtResource("chapitre")
@@ -14,3 +17,5 @@ recit = "Un tiroir entrouvert laisse passer une file de fourmis mécaniques. À 
 depart = ExtResource("depart")
 difficulte = 0
 debloque = Array[Resource]([ExtResource("deb_engrenage_t"), ExtResource("deb_tourelle_canon")])
+bd = Array[Texture2D]([ExtResource("bd_1"), ExtResource("bd_2"), ExtResource("bd_3")])
+bulles = PackedStringArray("Un tiroir grince…", "Les fourmis marchent au rythme du carillon.", "Les soldats de bois tiennent la ligne.")

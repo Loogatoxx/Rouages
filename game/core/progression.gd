@@ -58,6 +58,20 @@ static func finir_chapitre(n: int) -> void:
 		_sauver(fichier)
 
 
+## Vrai si la BD du chapitre `n` a déjà été montrée (P2-58) : elle ne s'impose qu'au premier lancement.
+static func bd_vue(n: int) -> bool:
+	var fichier: ConfigFile = _lire()
+	return fichier != null and fichier.get_value("bd", "chapitre_%d" % n, false)
+
+
+static func noter_bd_vue(n: int) -> void:
+	var fichier: ConfigFile = _lire()
+	if fichier == null or bd_vue(n):
+		return
+	fichier.set_value("bd", "chapitre_%d" % n, true)
+	_sauver(fichier)
+
+
 ## Note un chapitre terminé en Difficile (affiché d'une étoile ; aucun blocage, P2-51).
 static func finir_chapitre_difficile(n: int) -> void:
 	var fichier: ConfigFile = _lire()

@@ -46,6 +46,19 @@ alors **remonter les scarabées** au lieu de les casser (mode final et nouveau m
 | La note de l'Établi « Rouages huilés » est **signée L., d'une écriture d'enfant** | description de l'amélioration (à ajouter) | Lise a appris le métier ici |
 | À la victoire de la V10, l'Horloge sonne **un coup de plus** que prévu et une aiguille avance seule | son et animation (à ajouter) | quelqu'un approche : le rendez-vous se rapproche |
 
+## BD des chapitres (P2-58, 2026-11-28)
+Trois cases par chapitre, montrées au premier lancement (puis « Revoir l'histoire »). Peu de mots, l'image raconte ;
+les bulles sont dans l'interface (traduites), jamais dans l'image. Le secret de Lise tient jusqu'au chapitre 6 : avant,
+on ne voit que des indices (la clé sous la carapace au ch. 3, le Grand Scarabée fatigué au ch. 5).
+| Ch. | Case 1 | Case 2 | Case 3 |
+|---|---|---|---|
+| 1 | L'atelier d'Anselme attend son retour (chaise vide, note au crayon) | Le cœur de l'Horloge-Mère se remet à battre | Un soldat de bois se réveille et s'étire |
+| 2 | Un tiroir grince : des fourmis curieuses passent la tête | Elles marchent au rythme du carillon | Les soldats tiennent la ligne près d'un fanion |
+| 3 | Au grenier, deux chemins se rejoignent près d'un coffre | Un cuirassé s'endort, sans violence | **Une petite clé dépasse de sa carapace** (indice) |
+| 4 | Le jardin d'hiver sous les vitres | Les libellules passent au-dessus des soldats | Un coup de carillon, tout ralentit |
+| 5 | Trois notes s'échappent de la boîte à musique | Le Grand Scarabée approche au pas de la mélodie | Son ressort fatigué le fait ralentir (il s'épuise, il n'est pas méchant) |
+| 6 | La porte de l'atelier s'ouvre : Lise | Elle reconnaît les gardiens qu'elle fabriquait enfant | Avec la clé d'or, elle leur redonne un tour de ressort |
+
 ## Easter eggs (cachés, sans incidence sur le jeu)
 - Le défi du jour du **1er avril** : tous les scarabées portent un minuscule chapeau de soldat.
 - Quatre clics sur le carnet fermé de la table pendant la pause font jouer trois notes de la boîte à musique (« LISE »).

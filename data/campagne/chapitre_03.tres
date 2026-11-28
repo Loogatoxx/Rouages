@@ -6,6 +6,9 @@
 [ext_resource type="Resource" path="res://data/tuiles/atelier_billes.tres" id="deb_atelier_billes"]
 [ext_resource type="Resource" path="res://data/tuiles/tourelle_carillon.tres" id="deb_tourelle_carillon"]
 [ext_resource type="Resource" path="res://data/tuiles/piege_ressort.tres" id="deb_piege"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_03_1.jpg" id="bd_1"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_03_2.jpg" id="bd_2"]
+[ext_resource type="Texture2D" path="res://assets/bd/chapitre_03_3.jpg" id="bd_3"]
 
 [resource]
 script = ExtResource("chapitre")
@@ -15,3 +18,5 @@ recit = "Au grenier, deux chemins se rejoignent près d’un coffre. Quand un cu
 depart = ExtResource("depart")
 difficulte = 1
 debloque = Array[Resource]([ExtResource("deb_atelier_billes"), ExtResource("deb_tourelle_carillon"), ExtResource("deb_piege")])
+bd = Array[Texture2D]([ExtResource("bd_1"), ExtResource("bd_2"), ExtResource("bd_3")])
+bulles = PackedStringArray("Au grenier, deux chemins se rejoignent.", "Un cuirassé s’endort…", "…une petite clé dépasse de sa carapace.")

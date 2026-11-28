@@ -3,22 +3,26 @@
 Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochaine étape), `docs/architecture.md`
 (principes, signaux, contrat d'assets) et `docs/backlog.md` (ne rien coder de ce qui y figure avant la fin de la roadmap).
 
-## État (mis à jour le 2026-11-28, 13 h, après playtest 3, autonomie totale)
+## État (mis à jour le 2026-11-28, 14 h, après playtest 3, autonomie totale)
 - **Après playtest 3** : cap « Tenir la ligne » (`docs/game_design_p3.md`), roadmap § « Après playtest 3 » (P3-xx).
-  **Lots 1 à 7 faits, commités et poussés** (lots 6-7 le 2026-11-28 pendant l'absence de Carlos, qui a tout autorisé,
+  **Lots 1 à 8 faits, commités et poussés** (lots 6-8 le 2026-11-28 pendant l'absence de Carlos, qui a tout autorisé,
   Hyper3D compris) :
   6. Hyper3D : carillon, mortier (tête qui pivote), taupe, porte-bouclier, Pont, Générateur (3 crédits) ; relecture
      Codex T14c (11 remarques traitées : étourdissement à part, Pont sur l'eau praticable…) ; canon à 6 m, boss V5
      allégé (vagues 4-5 deux fois plus courtes) ;
   7. cartes « Le Manège » (plaque tournante) et « Le Rail » (petit train) ; ressorts qui volent au compteur, recul
-     des ennemis, rôle des pièces sur les cartes ; paliers d'évolution prêts (`<id>_n3_h3d.res`) ; test des textes
-     non traduits ; Piège à ressort ; Établi « Couronne de l'Horloge » et « Carillon huilé » ; film d'une vague.
-  152 tests. Builds Mac et Windows réexportés le 2026-11-28 à 13 h (Mac relancé).
-  **Reste** : PT-51 lot 4 (5 paliers « _n3 » : images Gemini puis Hyper3D — quota Gemini épuisé ce matin) ;
-  P3-43 vie ambiante (modèles animés) ; joueur automatique qui
-  pose des Ponts (La Serre, Le Quai, Boîte à musique, Grand atelier non mesurées) ; P2-58 BD ; P2-56 chemins par
-  segments ; cosmétiques (P2-40).
-  **Attend Carlos** : jouer (le jeu a beaucoup changé) ; juger Le Rail, Le Quai, La Serre ; test Windows.
+     des ennemis, rôle des pièces sur les cartes ; test des textes non traduits ; Piège à ressort ; Établi
+     « Couronne de l'Horloge » et « Carillon huilé » ; film d'une vague ;
+  8. Le Rail rééquilibré (une seule route en L) ; **paliers niveau 3 Hyper3D des 5 bâtiments** (images faites par la
+     génération d'images de Codex, Gemini étant épuisé ; 2,5 crédits) ; **vie ambiante** : clés de remontoir qui
+     tournent par à-coups, cloche de l'Horloge qui se balance, oiseau mécanique ; **BD des chapitres** (écran
+     `bd_chapitre.gd`, chapitres 1 à 4 illustrés) ; planche « Épingle » ; joueur automatique qui pose des Ponts et des
+     engrenages de réserve quand il est bloqué (La Serre, Boîte à musique, Grand atelier, Le Quai mesurées).
+  160 tests environ. Builds Mac et Windows réexportés le 2026-11-28 à 13 h (à refaire après le lot 8).
+  **Reste** : BD des chapitres 5 et 6 (cases 2 et 3 : quota Codex de retour à 16 h 59, Gemini épuisé ; relancer
+  `bd_gen.sh` puis brancher dans `chapitre_05/06.tres` et resserrer `test_bd`) ; Boîte à musique, Le Quai et Grand
+  atelier restent durs pour le joueur auto (voir § équilibrage de l'historique) ; cosmétiques (P2-40).
+  **Attend Carlos** : jouer (le jeu a beaucoup changé) ; juger Le Quai, Boîte à musique et Grand atelier ; test Windows.
 - **GitHub** (demande de Carlos, 2026-11-27) : dépôt privé `https://github.com/Loogatoxx/Rouages`, distant `origin`,
   branche `main`. **Pousser après chaque lot commité et testé** (`git push`), jamais de `--force`. Avant un push :
   `git ls-files | grep -iE "\.env|keystore|\.jks|\.apk|\.aab"` doit rester vide. Ses carrés verts comptent (e-mail de
@@ -131,6 +135,13 @@ Ce fichier remplace la lecture du dépôt. Ensuite : `docs/roadmap.md` (prochain
   payant) n'est volontairement **pas** autorisé : il demande confirmation à Carlos. Ne jamais modifier soi-même ces autorisations.
   Les générateurs de l'addon Blender sont « off » : Carlos devra activer Hyper3D dans l'addon avant l'étape 7.
 - **2 échecs de suite sur le même point** → stop et message à Carlos (règle anti-boucle).
+- **Images sans Gemini** (2026-11-28) : la CLI Codex génère des images (`codex exec -i <référence.png> "Génère UNE
+  image… enregistre-la dans art_refs/…"`, sandbox `workspace-write`, effort `low`) ; l'image arrive d'abord dans
+  `~/.codex/generated_images/` puis Codex la copie. Quota partagé avec le code délégué (épuisé après ~25 images).
+- **Nouveaux fichiers d'images** (BD, vignettes) : lancer `Godot --headless --path . --import` avant les tests, sinon
+  les `.tres` qui les référencent ne se chargent pas (les erreurs pendant l'import lui-même sont normales).
+- **Pièces mobiles** (clé, cloche) : la géométrie des modèles importés est illisible sans fenêtre → vérifier une zone
+  de `PlateauVisuel.PIECES_MOBILES` par un rendu orthographique fenêtré du modèle (script `vues.gd` du scratchpad).
 - Le shell est **zsh** : `set -- $var` n'y découpe pas les mots (piège rencontré avec le banc) ; écrire les boucles en `bash`.
 - Les références `.gd` utilisent `class_name` + `preload` ; les tests sont des `RefCounted` avec des méthodes `test_*()` qui
   renvoient `""` si OK.

@@ -9,6 +9,7 @@ Budget initial : **44 crédits**. Toute génération exige une image validée pa
 | 2026-11-27 | lot 2 (3 bâtiments : atelier de soldats, atelier de lance-billes, canon), validé par Carlos | 0,5 par modèle | DEMANDE_LOT2 | voir le compteur du site |
 | 2026-11-27 | lot 1 (7 unités), validé par Carlos, généré par Claude sur le site (Gen-2.5, High) | 0,5 par modèle (géométrie + texture + export compris) | DEMANDE_LOT1 | voir le compteur du site |
 | 2026-11-28 | fin du lot 2 (carillon, mortier) + lot 3 (taupe, porte-bouclier, Pont, Générateur) : 6 modèles. Carlos : « j'autorise tout, utilise le nombre de crédits qu'il faut » | 3 | DEMANDE_LOT2, art_refs/hyper3d/lot3 | compteur du site 77 % → 68 % |
+| 2026-11-28 | lot 4 : paliers niveau 3 des 5 bâtiments (`atelier_soldats_n3`, `atelier_billes_n3`, `tourelle_canon_n3`, `tourelle_carillon_n3`, `tourelle_mortier_n3`). Images faites par la génération d'images de Codex (quota Gemini épuisé), à partir des images du lot 2 ; même autorisation de Carlos | 2,5 | art_refs/hyper3d/lot4 | compteur du site 68 % → 60 % |
 
 ## Plan (PT-52, 2026-11-26)
 Lot 1 unités (7) · lot 2 bâtiments palier 1 (5) · lot 3 paliers 2-4 des 5 bâtiments (15) · lot 4 horloge (3) + décor

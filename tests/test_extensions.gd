@@ -153,9 +153,10 @@ func test_raccord_bloque_par_des_pieces() -> String:
 	return ""
 
 
-## P2-56 : les nouvelles formes (virage en L, grande allée 5×5) se posent et ouvrent une entrée.
+## P2-56 : les nouvelles formes (virage en L, grande allée 5×5, épingle en U) se posent et ouvrent une entrée.
 func test_formes_variees() -> String:
-	for chemin: String in ["res://data/extensions/virage.tres", "res://data/extensions/grande_allee.tres"]:
+	for chemin: String in ["res://data/extensions/virage.tres", "res://data/extensions/grande_allee.tres",
+			"res://data/extensions/epingle.tres"]:
 		var def: ExtensionDef = load(chemin)
 		var plateau: Plateau = DEPART.creer_plateau()
 		var posee: bool = false

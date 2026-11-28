@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ExtensionDef" format=3]
+
+[ext_resource type="Script" path="res://game/board/extension_def.gd" id="extension"]
+[ext_resource type="Script" path="res://game/core/lot.gd" id="lot"]
+[ext_resource type="Resource" path="res://data/tuiles/atelier_soldats.tres" id="piece_a"]
+
+[sub_resource type="Resource" id="bonus_a"]
+script = ExtResource("lot")
+objet = ExtResource("piece_a")
+quantite = 1
+
+[resource]
+script = ExtResource("extension")
+id = &"extension_epingle"
+nom = "Épingle"
+description = "Planche en épingle à cheveux : la route descend, fait demi-tour et remonte. Un atelier posé au milieu garde les deux allées. À la pose : +1 entrée de scarabées, 1 atelier de soldats et 15 ressorts. Puis +3 ressorts à chaque fin de vague."
+ressorts = 15
+revenu = 3
+taille = 5
+chemins = Array[Vector2i]([Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(1, 3), Vector2i(2, 3), Vector2i(3, 3), Vector2i(3, 2), Vector2i(3, 1), Vector2i(4, 1)])
+bonus = Array[ExtResource("lot")]([SubResource("bonus_a")])

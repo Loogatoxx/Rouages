@@ -20,6 +20,23 @@ const VOISINS := [Vector2i.UP, Vector2i.RIGHT, Vector2i.DOWN, Vector2i.LEFT]
 ## le fût regarde vers +Z dans le modèle]. Une tourelle absente d'ici ne pivote pas (le carillon est un clocher).
 const TETES := {&"tourelle_canon": [0.2, false, true], &"tourelle_mortier": [0.22, false, true]}
 static var _decoupes: Dictionary[StringName, DecoupeTourelle.Decoupe] = {}
+## Pièces qui bougent seules (P3-43, vie ambiante), détachées une fois du modèle d'un seul bloc : nom du modèle →
+## [nom, zone (fractions de l'AABB du maillage), pivot en haut, axe (repère du maillage), mouvement]. « tic » : la clé
+## de remontoir avance d'un huitième de tour à chaque seconde, comme un échappement d'horloge ; « balance » : la
+## cloche se balance (plus fort au coup de carillon). Les clés des ateliers ne tournent que s'ils sont alimentés.
+const PIECES_MOBILES := {
+	&"horloge": [
+		[&"Cle", AABB(Vector3(0.0, 0.56, 0.0), Vector3(0.185, 0.11, 1.0)), false, Vector3.RIGHT, &"tic"],
+		[&"Cloche", AABB(Vector3(0.485, 0.772, 0.445), Vector3(0.12, 0.098, 0.11)), true, Vector3.BACK, &"balance"],
+	],
+	&"atelier_soldats": [[&"Cle", AABB(Vector3(0.0, 0.86, 0.0), Vector3(1.0, 0.14, 1.0)), false, Vector3.UP, &"tic"]],
+	&"atelier_soldats_n3": [[&"Cle", AABB(Vector3(0.25, 0.835, 0.0), Vector3(0.45, 0.165, 1.0)), false, Vector3.UP, &"tic"]],
+}
+## Résultat des extractions par modèle : [socle restant, Array des découpes (null si la zone était vide)].
+static var _pieces_detachees: Dictionary[StringName, Array] = {}
+var _mobiles: Array[Node3D] = []
+var _temps_vie: float = 0.0
+var _volee: float = 0.0
 const ECHELLE_PLATEAU := GrilleMonde.TAILLE_CASE / 2.0
 
 @onready var _source: PlateauNoeud = get_parent()
@@ -118,16 +135,17 @@ func _sur_tir(depart: Vector2, arrivee: Vector2) -> void:
 
 
 # Sépare le maillage d'une tourelle en socle fixe + tête pivotante (une seule découpe par modèle, gardée en mémoire).
-func _separer_tete(modele: Node3D, id: StringName) -> void:
+func _separer_tete(modele: Node3D, id: StringName, nom_modele: StringName) -> void:
 	if not TETES.has(id):
 		return
 	var volume: MeshInstance3D = _premier_maillage(modele)
 	if volume == null:
 		return
-	var reglage: Array = TETES[id]
-	if not _decoupes.has(id):
-		_decoupes[id] = DecoupeTourelle.decouper(volume.mesh, reglage[0], reglage[1])
-	var decoupe: DecoupeTourelle.Decoupe = _decoupes[id]
+	var reglage: Array = TETES.get(nom_modele, TETES[id])
+	# Découpe mémorisée par modèle : le palier « _n3 » a son propre maillage, il ne réutilise pas celle du niveau 1.
+	if not _decoupes.has(nom_modele):
+		_decoupes[nom_modele] = DecoupeTourelle.decouper(volume.mesh, reglage[0], reglage[1])
+	var decoupe: DecoupeTourelle.Decoupe = _decoupes[nom_modele]
 	if decoupe == null:
 		return
 	volume.mesh = decoupe.socle
@@ -141,6 +159,45 @@ func _separer_tete(modele: Node3D, id: StringName) -> void:
 	haut.mesh = decoupe.tete
 	haut.position = -decoupe.pivot
 	tete.add_child(haut)
+
+
+# Vie ambiante (P3-43) : détache les pièces mobiles du modèle (voir PIECES_MOBILES). Chaque pièce devient un nœud
+# « Mobile<nom> » posé sur son pivot ; `_process` le fait tourner autour de son axe. Sans géométrie lisible (rendu
+# sans fenêtre), le modèle reste entier et immobile.
+func _detacher_pieces(modele: Node3D, nom_modele: StringName) -> void:
+	if not PIECES_MOBILES.has(nom_modele):
+		return
+	var volume: MeshInstance3D = _premier_maillage(modele)
+	if volume == null:
+		return
+	if not _pieces_detachees.has(nom_modele):
+		var reference: AABB = volume.mesh.get_aabb()
+		var reste: Mesh = volume.mesh
+		var decoupes: Array = []
+		for reglage: Array in PIECES_MOBILES[nom_modele]:
+			var decoupe: DecoupeTourelle.Decoupe = DecoupeTourelle.extraire(reste, reglage[1], reglage[2], reference)
+			decoupes.append(decoupe)
+			if decoupe != null:
+				reste = decoupe.socle
+		_pieces_detachees[nom_modele] = [reste, decoupes]
+	var chaine: Array = _pieces_detachees[nom_modele]
+	volume.mesh = chaine[0]
+	for k: int in (chaine[1] as Array).size():
+		var decoupe: DecoupeTourelle.Decoupe = chaine[1][k]
+		if decoupe == null:
+			continue
+		var reglage: Array = PIECES_MOBILES[nom_modele][k]
+		var mobile := Node3D.new()
+		mobile.name = "Mobile%s" % reglage[0]
+		volume.get_parent().add_child(mobile)
+		mobile.transform = volume.transform.translated_local(decoupe.pivot)
+		mobile.set_meta(&"base", mobile.transform)
+		mobile.set_meta(&"axe", reglage[3])
+		mobile.set_meta(&"mouvement", reglage[4])
+		var piece := MeshInstance3D.new()
+		piece.mesh = decoupe.tete
+		piece.position = -decoupe.pivot
+		mobile.add_child(piece)
 
 
 # Playtest 3 (« les troupes traversent le Pont ») : le tablier est tourné dans le sens de la route et élargi, les
@@ -611,6 +668,7 @@ func _reconstruire() -> void:
 	_tourelles.clear()
 	_tirs_tourelles.clear()
 	_rotors.clear()
+	_mobiles.clear()
 	if _pieces != null:
 		remove_child(_pieces)
 		_pieces.queue_free()
@@ -636,6 +694,9 @@ func _reconstruire() -> void:
 			_horloge = racine
 			if racine.get_child_count() > 0:
 				racine.get_child(0).rotation.y = -_cote_porte(c) * PI / 2.0
+		if piece.type == PieceDef.Type.HORLOGE or _source.alimentees.has(c):
+			for mobile: Node in racine.find_children("Mobile*", "Node3D", true, false):
+				_mobiles.append(mobile as Node3D)
 		if piece.type == PieceDef.Type.ENGRENAGE and _source.alimentees.has(c):
 			var rotor := racine.find_child("Rotor", true, false) as Node3D
 			if rotor != null:
@@ -802,8 +863,27 @@ func _montrer_maree(phase: int, annoncer: bool = true) -> void:
 		Events.message_joueur.emit(tr("Marée : la vague %d arrivera par %s.") % [numero, tr(cote)])
 
 
+# Pièces mobiles (P3-43) : clés de remontoir par à-coups d'un huitième de tour chaque seconde (tic-tac), cloche de
+# l'Horloge qui se balance ; un coup de carillon la fait sonner à la volée quelques secondes.
+func _animer_mobiles(delta: float) -> void:
+	if _mobiles.is_empty():
+		return
+	_temps_vie += delta
+	_volee = maxf(0.0, _volee - delta * 0.4)
+	var tic: float = floorf(_temps_vie) + smoothstep(0.0, 0.18, fposmod(_temps_vie, 1.0))
+	for mobile: Node3D in _mobiles:
+		if not is_instance_valid(mobile):
+			continue
+		var angle: float = tic * PI / 4.0
+		if mobile.get_meta(&"mouvement") == &"balance":
+			angle = 0.1 * (1.0 + 2.0 * _volee) * sin(_temps_vie * PI * (1.0 + _volee))
+		var base: Transform3D = mobile.get_meta(&"base")
+		mobile.transform = base * Transform3D(Basis(mobile.get_meta(&"axe"), angle), Vector3.ZERO)
+
+
 # Coup de carillon : une onde dorée part du point visé et s'élargit jusqu'au rayon d'effet, l'Horloge tressaute.
 func _sur_carillon(point: Vector2) -> void:
+	_volee = 1.0
 	_onde(point, Run.regles.carillon_rayon, Color(1.0, 0.84, 0.36, 0.9), 0.5)
 	Sons.jouer(&"carillon")
 	if _horloge != null:
@@ -933,6 +1013,7 @@ const NIVEAU_PALIER := 3
 func creer_piece(piece: PieceDef, ports: int, teinte: Material = null, niveau: int = 1) -> Node3D:
 	var racine := Node3D.new()
 	var modele: Node3D
+	var nom_modele: StringName = piece.id
 	if piece.type == PieceDef.Type.HORLOGE:
 		if ResourceLoader.exists(MODELE_HORLOGE):
 			modele = (load(MODELE_HORLOGE) as PackedScene).instantiate() as Node3D
@@ -940,7 +1021,10 @@ func creer_piece(piece: PieceDef, ports: int, teinte: Material = null, niveau: i
 		modele = _modele_hyper3d(StringName(String(piece.id) + "_n3")) if niveau >= NIVEAU_PALIER else null
 		if modele == null:
 			modele = _instancier(piece.id)
+		else:
+			nom_modele = StringName(String(piece.id) + "_n3")
 	if modele != null:
+		_detacher_pieces(modele, nom_modele)
 		racine.add_child(modele)
 		var ports_origine: int = PORTS_DU_KIT.get(piece.id, piece.ports)
 		for tour: int in 4:
@@ -950,7 +1034,7 @@ func creer_piece(piece: PieceDef, ports: int, teinte: Material = null, niveau: i
 		if piece.sur_route and piece.type != PieceDef.Type.TOURELLE:
 			_amenager_pont(modele)
 		if piece.type == PieceDef.Type.TOURELLE:
-			_separer_tete(modele, piece.id)
+			_separer_tete(modele, piece.id, nom_modele)
 			_colorer_rarete(modele, piece.rarete)
 			# Tourelle Hyper3D : au repos, le fût regarde vers l'extérieur (dos au port), comme le kit.
 			if modele.get_meta(&"face_plus_z", false):
@@ -1092,3 +1176,4 @@ func _sur_horloge_touchee(_pv_restants: int) -> void:
 func _process(delta: float) -> void:
 	for rotor: Node3D in _rotors:
 		rotor.rotate_y(delta * 2.0)
+	_animer_mobiles(delta)
