@@ -23,6 +23,7 @@ var _jouer := Button.new()
 var _difficile := Button.new()
 var _retour := Button.new()
 var _histoire := Button.new()
+var _lancement_en_cours: bool = false
 var _panneau := PanelContainer.new()
 
 
@@ -125,6 +126,10 @@ func _choisir(i: int) -> void:
 
 
 func _lancer(difficile: bool) -> void:
+	# Un seul lancement à la fois : un double clic relancerait pendant la BD (déjà notée vue) et la sauterait.
+	if _lancement_en_cours:
+		return
+	_lancement_en_cours = true
 	# Premier lancement du chapitre : sa BD d'abord (P2-58).
 	await BdChapitre.montrer_si_nouvelle(self, Run.regles.chapitres[_chapitre])
 	Run.preparer_chapitre(_chapitre, difficile)
@@ -132,7 +137,11 @@ func _lancer(difficile: bool) -> void:
 
 
 func _revoir_histoire() -> void:
+	if _lancement_en_cours:
+		return
+	_lancement_en_cours = true
 	await BdChapitre.montrer_dans(self, Run.regles.chapitres[_chapitre])
+	_lancement_en_cours = false
 	_boutons[_chapitre].grab_focus()
 
 

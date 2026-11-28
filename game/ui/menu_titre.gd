@@ -251,7 +251,13 @@ func _notification(quoi: int) -> void:
 		_ecrire_difficile()
 
 
+var _lancement_en_cours: bool = false
+
 func _lancer_chapitre() -> void:
+	# Un seul lancement à la fois : un double clic relancerait pendant la BD (déjà notée vue) et la sauterait.
+	if _lancement_en_cours:
+		return
+	_lancement_en_cours = true
 	# Premier lancement du chapitre : sa BD d'abord (P2-58).
 	await (load("res://game/ui/bd_chapitre.gd") as GDScript).montrer_si_nouvelle(self, Run.regles.chapitres[_chapitre])
 	Run.preparer_chapitre(_chapitre)
